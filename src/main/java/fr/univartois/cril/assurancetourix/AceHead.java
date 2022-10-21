@@ -22,8 +22,6 @@ package fr.univartois.cril.assurancetourix;
 
 import static org.xcsp.common.Types.TypeFramework.COP;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -111,22 +109,6 @@ class AceHead extends Head {
         return problem;
     }
     
-    
-    
-
-    private static void removeHook() {
-        try {
-            Class<?> clazz = Class.forName("java.lang.ApplicationShutdownHooks");
-            Field hooks = clazz.getDeclaredField("hooks");
-            hooks.setAccessible(true);
-            Object h = hooks.get(null);
-            Method clear = Map.class.getMethod("clear");
-            clear.invoke(h);
-        }catch(ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     static class AceXCSP3 extends XCSP3 {
 
         private Head head;
