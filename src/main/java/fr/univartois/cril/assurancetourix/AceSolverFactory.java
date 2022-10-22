@@ -21,6 +21,9 @@
 package fr.univartois.cril.assurancetourix;
 
 import fr.univartois.cril.juniverse.csp.IUniverseCSPSolver;
+import fr.univartois.cril.juniverse.pb.IUniversePseudoBooleanSolver;
+import fr.univartois.cril.juniverse.sat.IUniverseSatSolver;
+import fr.univartois.cril.juniverse.utils.ISolverFactory;
 
 /**
  * The AceSolverFactory
@@ -30,7 +33,7 @@ import fr.univartois.cril.juniverse.csp.IUniverseCSPSolver;
  *
  * @version 0.1.0
  */
-public class AceSolverFactory {
+public class AceSolverFactory implements ISolverFactory {
 
     /**
      * Creates a new AceSolverFactory.
@@ -41,5 +44,24 @@ public class AceSolverFactory {
     public static IUniverseCSPSolver newDefault(){
         return new JUniverseAceProblemAdapter();
     }
+
+    @Override
+    public IUniverseSatSolver createSatSolver() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IUniversePseudoBooleanSolver createPseudoBooleanSolver() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IUniverseCSPSolver createCspSolver() {
+        return newDefault();
+    }
+    
+    
 }
 
