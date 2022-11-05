@@ -18,7 +18,7 @@
  * If not, see {@link http://www.gnu.org/licenses}.
  */
 
-package fr.univartois.cril.assurancetourix;
+package fr.univartois.cril.aceurancetourix;
 
 import fr.univartois.cril.juniverse.csp.IUniverseCSPSolver;
 import fr.univartois.cril.juniverse.pb.IUniversePseudoBooleanSolver;

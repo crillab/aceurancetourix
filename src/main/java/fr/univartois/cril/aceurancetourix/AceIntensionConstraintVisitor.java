@@ -18,7 +18,7 @@
  * If not, see {@link http://www.gnu.org/licenses}.
  */
 
-package fr.univartois.cril.assurancetourix;
+package fr.univartois.cril.aceurancetourix;
 
 import java.util.Deque;
 import java.util.LinkedList;

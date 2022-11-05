@@ -14,11 +14,6 @@ apply plugin: "jacoco"
  * Main Configuration *
  **********************/
 
-def outDir = "${rootDir}/dist"
-def jarDir = "${outDir}/home"
-
-ext.moduleName = "fr.univartois.cril.assurancetourix"
-
 sourceCompatibility = "10"
 targetCompatibility = "10"
 
@@ -39,34 +34,6 @@ dependencies {
     testImplementation group: "org.junit.jupiter", name: "junit-jupiter-params", version: "5.6.0"
     testImplementation group: "org.junit.platform", name: "junit-platform-launcher", version: "1.6.0"
     testImplementation group: "org.junit.platform", name: "junit-platform-runner", version: "1.6.0"
-}
-
-/*************************
- * Eclipse Configuration *
- *************************/
-
-eclipse.classpath.file.whenMerged {
-    // Modularizing project dependencies.
-    entries.findAll{ isModule(it) }.each{ it.entryAttributes["module"] = "true" }
-}
-
-/****************************************
- * Compilation Configuration for Jigsaw *
- ****************************************/
-
-afterEvaluate {
-    compileJava {
-        // Setting the module name.
-        inputs.property("moduleName", moduleName)
-
-        // Adding the classpath to the module path.
-        doFirst {
-            options.compilerArgs = [
-                "--module-path", classpath.asPath
-            ]
-            classpath = files()
-        }
-    }
 }
 
 /**********************
@@ -101,30 +68,14 @@ jacocoTestReport {
  * Packaging *
  *************/
 
-// Putting the generated jars in the output directory.
-tasks.withType(Jar) {
-    destinationDirectory = file("${jarDir}")
-}
-
-// Collects external dependencies of assurancetourix into the output directory.
-task collectExternalDependencies(type: Copy) {
-    from configurations.runtimeClasspath.collect {
-        if (it.name.contains("ACE") || it.name.contains("juniverse")) { it }
+jar {
+    manifest {
+        attributes 'Main-Class': 'fr.univartois.cril.aceurancetourix.AceLauncher'
     }
-    into "${jarDir}"
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
-// Removes the binary files of assurancetourix when cleaning.
-task removeBinaries(type: Delete) {
-    delete "dist"
-}
-clean.dependsOn removeBinaries
 
-/*************
- * Functions *
- *************/
-
-// Checking whether an Eclipse classpath entry must be put in the module path.
-boolean isModule(entry) {
-    (entry.kind == "src") || ((entry.kind == "lib") && (entry.entryAttributes["gradle_used_by_scope"] != "test"))
-}

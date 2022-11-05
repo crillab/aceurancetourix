@@ -18,14 +18,17 @@
  * If not, see {@link http://www.gnu.org/licenses}.
  */
 
-package fr.univartois.cril.assurancetourix;
+package fr.univartois.cril.aceurancetourix;
 
 import static org.xcsp.common.Types.TypeFramework.COP;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -38,6 +41,7 @@ import interfaces.Observers.ObserverOnConstruction;
 import main.Head;
 import problem.Problem;
 import problem.XCSP3;
+import solver.AceBuilder;
 import solver.Solver.Stopping;
 
 /**
@@ -49,14 +53,19 @@ import solver.Solver.Stopping;
  * @version 0.1.0
  */
 class AceHead extends Head {
-
+    private final AceBuilder builder;
     AceXCSP3 xcsp3;
     private volatile boolean interrupted;
 
     public AceHead() {
         xcsp3 = new AceXCSP3(this);
+        this.builder=new AceBuilder(this);
     }
 
+    @Override
+    public AceBuilder getBuilder() {
+        return builder;
+    }
     /*
      * (non-Javadoc)
      *
@@ -152,8 +161,9 @@ class AceHead extends Head {
         }
 
         public Var getVariable(String k) {
-            return mapping.get(k);
+            return Objects.requireNonNull(mapping.get(k));
         }
     }
-
+    
+    
 }

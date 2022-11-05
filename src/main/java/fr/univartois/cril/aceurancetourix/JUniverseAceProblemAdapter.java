@@ -18,7 +18,7 @@
  * If not, see {@link http://www.gnu.org/licenses}.
  */
 
-package fr.univartois.cril.assurancetourix;
+package fr.univartois.cril.aceurancetourix;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -47,10 +47,12 @@ import fr.univartois.cril.juniverse.core.UniverseContradictionException;
 import fr.univartois.cril.juniverse.core.UniverseSolverResult;
 import fr.univartois.cril.juniverse.csp.IUniverseCSPSolver;
 import fr.univartois.cril.juniverse.csp.intension.IIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.IntensionConstraintFactory;
 import fr.univartois.cril.juniverse.csp.operator.UniverseArithmeticOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseBooleanOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator;
+import solver.AceBuilder;
 import variables.Variable;
 
 /**
@@ -69,9 +71,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver {
      * Creates a new JUniverseAceProblemAdapter.
      */
     public JUniverseAceProblemAdapter() {
-
     }
-
+    
     private AceHead getHead() {
         if (head == null) {
             head = new AceHead();
@@ -79,13 +80,17 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver {
         return head;
     }
 
+    
+    public AceBuilder getBuilder() {
+        return getHead().getBuilder();
+    }
+    
     public static void main(String[] args) throws UniverseContradictionException {
-        Input.argsForSolving.put("ev", "1");
-        IUniverseCSPSolver h = AceSolverFactory.newDefault();
-        h.setVerbosity(-1);
-        h.newVariable("x", 0, 0);
-        h.newVariable("y", 0, 0);
-        h.addAllDifferent(List.of("x", "y"));
+        var h = new JUniverseAceProblemAdapter();
+        h.getBuilder().getOptionsGeneralBuilder().setVerbose(-1);
+        h.newVariable("x", 0, 10);
+        h.newVariable("y", 0, 10);
+        h.addIntension(IntensionConstraintFactory.neq(IntensionConstraintFactory.variable("x"), IntensionConstraintFactory.variable("y")));
         System.out.println(h.solve());
         System.out.println(h.solution());
 
@@ -187,12 +192,12 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver {
 
     @Override
     public void setTimeoutMs(long arg0) {
-        getHead().control.general.timeout = arg0;
+        getBuilder().getOptionsGeneralBuilder().setTimeout(arg0);
     }
 
     @Override
     public void setVerbosity(int arg0) {
-        Input.argsForSolving.put("v", Integer.toString(arg0));
+        getBuilder().getOptionsGeneralBuilder().setVerbose(arg0);
     }
 
     @Override
@@ -679,8 +684,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver {
 
     @Override
     public void addIntension(IIntensionConstraint arg0) throws UniverseContradictionException {
-        var tree = toXnode(arg0);
-        getHead().xcsp3.addConstraintsToAdd(p->p.intension(tree));
+        getHead().xcsp3.addConstraintsToAdd(p->p.intension(toXnode(arg0)));
 
     }
 

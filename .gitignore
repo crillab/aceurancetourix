@@ -32,6 +32,7 @@ gradle-app.setting
 .mtj.tmp/
 
 # Package Files #
+!lib/ACE.jar
 *.jar
 *.war
 *.nar
