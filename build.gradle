@@ -1,5 +1,5 @@
 /*
- * This is the build.gradle configuration file of assurancetourix.
+ * This is the build.gradle configuration file of aceurancetourix.
  */
 
 /************************
@@ -14,12 +14,11 @@ apply plugin: "jacoco"
  * Main Configuration *
  **********************/
 
+def outDir = "${rootDir}/dist"
+def jarDir = "${outDir}/home"
+
 sourceCompatibility = "10"
 targetCompatibility = "10"
-
-/****************
- * Dependencies *
- ****************/
 
 repositories {
     mavenCentral()
@@ -68,14 +67,35 @@ jacocoTestReport {
  * Packaging *
  *************/
 
-jar {
-    manifest {
-        attributes 'Main-Class': 'fr.univartois.cril.aceurancetourix.AceLauncher'
-    }
-
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
+// Putting the generated jars in the output directory.
+tasks.withType(Jar) {
+    destinationDirectory = file("${jarDir}")
 }
 
+// Collects external dependencies of Aceurancetourix into the output directory.
+task collectExternalDependencies(type: Copy) {
+    from configurations.runtimeClasspath.collect {
+        it
+    }
+    into "${jarDir}"
+}
+
+// Creating a gzipped-tarball with Aceurancetourix and its dependencies.
+task aceurancetourix(type: Tar) {
+    dependsOn jar
+    dependsOn collectExternalDependencies
+
+    from file("${jarDir}")
+    destinationDirectory = file("${outDir}")
+    archiveBaseName = "aceurancetourix"
+    archiveExtension = "tgz"
+
+    compression = Compression.GZIP
+}
+
+// Removes the binary files of Aceurancetourix when cleaning.
+task removeBinaries(type: Delete) {
+    delete "dist"
+}
+clean.dependsOn removeBinaries
 
