@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.xcsp.common.Condition;
 import org.xcsp.common.Condition.ConditionVal;
@@ -128,43 +129,43 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver {
 
     @Override
     public void addAtLeast(List<Integer> arg0, List<Integer> arg1, int arg2) {
-        addSum(arg0.stream().map(String::valueOf).toList(),
-                arg0.stream().map(BigInteger::valueOf).toList(), UniverseRelationalOperator.GE,
+        addSum(arg0.stream().map(String::valueOf).collect(Collectors.toList()),
+                arg0.stream().map(BigInteger::valueOf).collect(Collectors.toList()), UniverseRelationalOperator.GE,
                 BigInteger.valueOf(arg2));
     }
 
     @Override
     public void addAtLeast(List<Integer> arg0, List<BigInteger> arg1, BigInteger arg2) {
-        addSum(arg0.stream().map(String::valueOf).toList(), arg1, UniverseRelationalOperator.GE,
+        addSum(arg0.stream().map(String::valueOf).collect(Collectors.toList()), arg1, UniverseRelationalOperator.GE,
                 arg2);
     }
 
     @Override
     public void addAtMost(List<Integer> arg0, List<Integer> arg1, int arg2) {
-        addSum(arg0.stream().map(String::valueOf).toList(),
-                arg0.stream().map(BigInteger::valueOf).toList(), UniverseRelationalOperator.LE,
+        addSum(arg0.stream().map(String::valueOf).collect(Collectors.toList()),
+                arg0.stream().map(BigInteger::valueOf).collect(Collectors.toList()), UniverseRelationalOperator.LE,
                 BigInteger.valueOf(arg2));
 
     }
 
     @Override
     public void addAtMost(List<Integer> arg0, List<BigInteger> arg1, BigInteger arg2) {
-        addSum(arg0.stream().map(String::valueOf).toList(), arg1, UniverseRelationalOperator.LE,
+        addSum(arg0.stream().map(String::valueOf).collect(Collectors.toList()), arg1, UniverseRelationalOperator.LE,
                 arg2);
 
     }
 
     @Override
     public void addExactly(List<Integer> arg0, List<Integer> arg1, int arg2) {
-        addSum(arg0.stream().map(String::valueOf).toList(),
-                arg0.stream().map(BigInteger::valueOf).toList(), UniverseRelationalOperator.EQ,
+        addSum(arg0.stream().map(String::valueOf).collect(Collectors.toList()),
+                arg0.stream().map(BigInteger::valueOf).collect(Collectors.toList()), UniverseRelationalOperator.EQ,
                 BigInteger.valueOf(arg2));
 
     }
 
     @Override
     public void addExactly(List<Integer> arg0, List<BigInteger> arg1, BigInteger arg2) {
-        addSum(arg0.stream().map(String::valueOf).toList(), arg1, UniverseRelationalOperator.EQ,
+        addSum(arg0.stream().map(String::valueOf).collect(Collectors.toList()), arg1, UniverseRelationalOperator.EQ,
                 arg2);
 
     }
@@ -172,7 +173,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver {
     @Override
     public void addPseudoBoolean(List<Integer> arg0, List<BigInteger> arg1, boolean arg2,
             BigInteger arg3) {
-        addSum(arg0.stream().map(String::valueOf).toList(), arg1,
+        addSum(arg0.stream().map(String::valueOf).collect(Collectors.toList()), arg1,
                 arg2 ? UniverseRelationalOperator.LE : UniverseRelationalOperator.GE, arg3);
 
     }
@@ -829,7 +830,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver {
     public void addLogical(UniverseBooleanOperator arg0, List<String> arg1)
             throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.intension(
-                toXnode(nary(arg0, arg1.stream().map(s -> variable(s)).toList()))));
+                toXnode(nary(arg0, arg1.stream().map(s -> variable(s)).collect(Collectors.toList())))));
 
     }
 
@@ -838,10 +839,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver {
             List<String> arg3) throws UniverseContradictionException {
         if (arg1) {
             getHead().xcsp3.addConstraintsToAdd(p -> p.intension(toXnode(equiv(variable(arg0),
-                    nary(arg2, arg3.stream().map(s -> variable(s)).toList())))));
+                    nary(arg2, arg3.stream().map(s -> variable(s)).collect(Collectors.toList()))))));
         } else {
             getHead().xcsp3.addConstraintsToAdd(p -> p.intension(toXnode(neq(variable(arg0),
-                    nary(arg2, arg3.stream().map(s -> variable(s)).toList())))));
+                    nary(arg2, arg3.stream().map(s -> variable(s)).collect(Collectors.toList()))))));
         }
     }
 
@@ -1074,10 +1075,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver {
         getHead().xcsp3.addConstraintsToAdd(p -> {
             if (arg1 == UniverseSetBelongingOperator.IN) {
                 p.intension(XNodeParent.in(toVar(arg0),
-                        arg2.stream().map(BigInteger::intValue).toList()));
+                        arg2.stream().map(BigInteger::intValue).collect(Collectors.toList())));
             } else {
                 p.intension(XNodeParent.notin(toVar(arg0),
-                        arg2.stream().map(BigInteger::intValue).toList()));
+                        arg2.stream().map(BigInteger::intValue).collect(Collectors.toList())));
             }
         });
     }
