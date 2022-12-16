@@ -1,0 +1,192 @@
+/*
+ * This is the build.gradle configuration file of aceurancetourix.
+ */
+
+/************************
+ * Plugin Configuration *
+ ************************/
+
+apply plugin: "eclipse"
+apply plugin: "java"
+apply plugin: "jacoco"
+apply plugin: "maven-publish"
+
+/**********************
+ * Main Configuration *
+ **********************/
+
+def outDir = "${rootDir}/dist"
+def jarDir = "${outDir}/home"
+
+sourceCompatibility = "10"
+targetCompatibility = "10"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation files("lib/ACE.jar")
+    implementation files("lib/juniverse.jar")
+	implementation group: "org.xcsp", name: "xcsp3-tools", version: "2.0.3"
+    
+    testImplementation group: "org.junit.jupiter", name: "junit-jupiter-engine", version: "5.6.0"
+    testImplementation group: "org.junit.jupiter", name: "junit-jupiter-params", version: "5.6.0"
+    testImplementation group: "org.junit.platform", name: "junit-platform-launcher", version: "1.6.0"
+    testImplementation group: "org.junit.platform", name: "junit-platform-runner", version: "1.6.0"
+}
+
+/**********************
+ * Test Configuration *
+ **********************/
+
+// Making test resources available during test execution.
+task copyTestResources(type: Copy) {
+    from "${projectDir}/src/test/resources"
+    into "${buildDir}/classes/java/test"
+}
+processTestResources.dependsOn copyTestResources
+
+// Configuring the use of JUnit 5.
+test {
+    useJUnitPlatform()
+}
+
+// Configuring the version of JaCoCo to use.
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+// Asking for an XML output for JaCoCo.
+jacocoTestReport {
+    reports {
+        xml.required = true
+    }
+}
+
+
+/*************************
+ * Javadoc Configuration *
+ *************************/
+
+tasks.withType(Javadoc) {
+    // Adding the classpath to the module path.
+    doFirst {
+        options.modulePath = [] + classpath.files
+        options.classpath = []
+    }
+
+    // Specifying how to deal with '@implSpec' tags.
+    configure(options) {
+        tags('implSpec:a:Implementation Requirements:')
+    }
+}
+
+/****************
+ * Distribution *
+ ****************/
+
+// Adding the Javadoc and source JARs to the generated artifacts.
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+// Configuring the POM file to publish.
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            versionMapping {
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+                usage("java-runtime") {
+                    fromResolutionResult()
+                }
+            }
+
+            pom {
+                name = "Aceurancetourix"
+                description = "The JUniverse adapter for ACE."
+                url = "https://github.com/crillab/aceurancetourix"
+
+                licenses {
+                    license {
+                        name = "GNU Lesser General Public License, Version 3"
+                        url = "https://www.gnu.org/licenses/lgpl-3.0.html"
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = "thibaultfalque"
+                        name = "Thibault Falque"
+                        email = "falque@cril.fr"
+                    }
+
+                    developer {
+                        id = "romainwallon"
+                        name = "Romain Wallon"
+                        email = "wallon@cril.fr"
+                    }
+                }
+
+                scm {
+                    connection = "scm:git:https://github.com/crillab/aceurancetourix"
+                    developerConnection = "scm:git:https://github.com/crillab/aceurancetourix"
+                    url = "https://github.com/crillab/aceurancetourix"
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/crillab/aceurancetourix")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+
+/*************
+ * Packaging *
+ *************/
+
+// Putting the generated jars in the output directory.
+tasks.withType(Jar) {
+    destinationDirectory = file("${jarDir}")
+}
+
+// Collects external dependencies of Aceurancetourix into the output directory.
+task collectExternalDependencies(type: Copy) {
+    from configurations.runtimeClasspath.collect {
+        it
+    }
+    into "${jarDir}"
+}
+
+// Creating a gzipped-tarball with Aceurancetourix and its dependencies.
+task aceurancetourix(type: Tar) {
+    dependsOn jar
+    dependsOn collectExternalDependencies
+
+    from file("${jarDir}")
+    destinationDirectory = file("${outDir}")
+    archiveBaseName = "aceurancetourix"
+    archiveExtension = "tgz"
+
+    compression = Compression.GZIP
+}
+
+// Removes the binary files of Aceurancetourix when cleaning.
+task removeBinaries(type: Delete) {
+    delete "dist"
+}
+clean.dependsOn removeBinaries
+
