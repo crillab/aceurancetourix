@@ -61,6 +61,7 @@ import dashboard.Control;
 import fr.univartois.cril.juniverse.core.UniverseAssumption;
 import fr.univartois.cril.juniverse.core.UniverseContradictionException;
 import fr.univartois.cril.juniverse.core.UniverseSolverResult;
+import fr.univartois.cril.juniverse.core.problem.IUniverseVariable;
 import fr.univartois.cril.juniverse.csp.IUniverseCSPSolver;
 import fr.univartois.cril.juniverse.csp.intension.IIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.intension.IntensionConstraintFactory;
@@ -272,7 +273,6 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver {
         return mapSolution(false);
     }
 
-    @Override
     public Map<String, BigInteger> mapSolution(boolean excludeAux) {
         if (getHead().solver.solutions.found == 0) {
             throw new IllegalStateException("No solution found !");
@@ -1809,6 +1809,104 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver {
      */
     private TypeOperatorRel toOperatorRel(UniverseRelationalOperator op) {
         return TypeOperatorRel.valueOf(op.toString());
+    }
+
+    @Override
+    public Map<String, IUniverseVariable> getVariablesMapping() {
+        getHead().buildProblem(0);
+        var map = new HashMap<String, IUniverseVariable>();
+        for (var variable : getHead().problem.variables) {
+            map.put(variable.id(), new JUniverseVariableAceAdapter(variable));
+        }
+        return map;
+    }
+
+    @Override
+    public void addSum(List<String> variables, UniverseSetBelongingOperator operator,
+            BigInteger min, BigInteger max) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void addSum(List<String> variables, List<BigInteger> coefficients,
+            UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void addSum(List<String> variables, UniverseSetBelongingOperator operator,
+            List<BigInteger> values) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void addSum(List<String> variables, List<BigInteger> coefficients,
+            UniverseSetBelongingOperator operator, List<BigInteger> values) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void addSumIntension(List<IIntensionConstraint> intensionConstraints,
+            UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void addSumIntension(List<IIntensionConstraint> intensionConstraints,
+            List<BigInteger> coefficients, UniverseSetBelongingOperator operator, BigInteger min,
+            BigInteger max) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void addSumIntension(List<IIntensionConstraint> intensionConstraints,
+            UniverseSetBelongingOperator operator, List<BigInteger> values) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void addSumIntension(List<IIntensionConstraint> intensionConstraints,
+            List<BigInteger> coefficients, UniverseSetBelongingOperator operator,
+            List<BigInteger> values) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void addSumWithVariableCoefficients(List<String> variables, List<String> coefficients,
+            UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void addSumWithVariableCoefficients(List<String> variables, List<String> coefficients,
+            UniverseSetBelongingOperator operator, List<BigInteger> values) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void addSumIntensionWithVariableCoefficients(
+            List<IIntensionConstraint> intensionConstraints, List<String> coefficients,
+            UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void addSumIntensionWithVariableCoefficients(
+            List<IIntensionConstraint> intensionConstraints, List<String> coefficients,
+            UniverseSetBelongingOperator operator, List<BigInteger> values) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

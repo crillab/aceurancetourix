@@ -173,11 +173,13 @@ class AceHead extends Head {
      */
     @Override
     public Problem buildProblem(int i) {
-        problem = new Problem(xcsp3, "", "", "", false, new String[0], this);
-        problem.priorityArrays = new VarArray[0];
-        for (ObserverOnConstruction obs : observersConstruction)
-            obs.afterProblemConstruction(this.problem.variables.length);
-        problemBuilt = true;
+        if (!problemBuilt) {
+            problem = new Problem(xcsp3, "", "", "", false, new String[0], this);
+            problem.priorityArrays = new VarArray[0];
+            for (ObserverOnConstruction obs : observersConstruction)
+                obs.afterProblemConstruction(this.problem.variables.length);
+            problemBuilt = true;
+        }
         return problem;
     }
 
@@ -204,7 +206,8 @@ class AceHead extends Head {
         private List<String> variables;
 
         /**
-         * The mapping associating the name of a variable to ACE's representation of this variable.
+         * The mapping associating the name of a variable to ACE's representation of this
+         * variable.
          */
         private Map<String, Variable> mapping;
 
@@ -255,7 +258,7 @@ class AceHead extends Head {
 
         /**
          * Adds a variable to the solver.
-
+         * 
          * @param name The name of the variable.
          * @param v The function to invoke to add the variable.
          */
