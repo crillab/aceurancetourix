@@ -53,7 +53,7 @@ import variables.Variable;
  *
  * @version 0.1.0
  */
-class AceHead extends Head {
+public class AceHead extends Head {
 
     /**
      * The builder used to initialize the structures of ACE.
