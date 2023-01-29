@@ -284,7 +284,15 @@ public class AceHead extends Head {
          * @param c The function to invoke to add the constraint.
          */
         public void addConstraintsToAdd(Consumer<Problem> c) {
-            this.constraintsToAdd.add(c);
+            int group = JUniverseAceProblemAdapter.inGroup ? JUniverseAceProblemAdapter.currentGroup : 0;
+
+            this.constraintsToAdd.add(p -> {
+                int before = head.problem.features.collecting.constraints.size();
+                c.accept(p);
+                for (int i = before; i < head.problem.features.collecting.constraints.size(); i++) {
+                    head.problem.features.collecting.constraints.get(i).group = group;
+                }
+            });
         }
     }
 
