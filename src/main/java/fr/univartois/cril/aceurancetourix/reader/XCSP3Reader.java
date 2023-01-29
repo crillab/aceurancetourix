@@ -21,7 +21,6 @@
 package fr.univartois.cril.aceurancetourix.reader;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -33,7 +32,7 @@ import fr.univartois.cril.juniverse.csp.IUniverseCSPSolver;
 
 /**
  * The XCSP3Reader is a {@link Reader} that allows to feed an XCSP3 instance to
- * an {@link ICSPSolver}.
+ * an {@link IUniverseCSPSolver}.
  *
  * @author Thibault Falque
  * @author Romain Wallon

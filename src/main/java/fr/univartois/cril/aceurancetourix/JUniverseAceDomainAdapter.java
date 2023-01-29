@@ -42,10 +42,11 @@ public class JUniverseAceDomainAdapter implements IUniverseDomain {
 
     private Domain dom;
 
+
     /**
      * Creates a new JUniverseAceDomainAdapter.
+     * @param dom The ACE domain
      */
-
     public JUniverseAceDomainAdapter(Domain dom) {
         this.dom = dom;
     }

@@ -37,7 +37,9 @@ public class JUniverseVariableAceAdapter implements IUniverseVariable {
 
     private Variable x;
     /**
+     * 
      * Creates a new JUniverseVariableAceAdapter.
+     * @param x The ACE Variable
      */
     public JUniverseVariableAceAdapter(Variable x) {
         this.x=x;
