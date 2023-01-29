@@ -42,6 +42,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.xcsp.common.Condition;
+import org.xcsp.common.Condition.ConditionIntset;
+import org.xcsp.common.Condition.ConditionIntvl;
 import org.xcsp.common.Condition.ConditionVal;
 import org.xcsp.common.Condition.ConditionVar;
 import org.xcsp.common.Constants;
@@ -49,6 +51,7 @@ import org.xcsp.common.IVar;
 import org.xcsp.common.IVar.Var;
 import org.xcsp.common.Range;
 import org.xcsp.common.Types.TypeConditionOperatorRel;
+import org.xcsp.common.Types.TypeConditionOperatorSet;
 import org.xcsp.common.Types.TypeObjective;
 import org.xcsp.common.Types.TypeOperatorRel;
 import org.xcsp.common.Types.TypeRank;
@@ -1810,7 +1813,48 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver {
     private TypeOperatorRel toOperatorRel(UniverseRelationalOperator op) {
         return TypeOperatorRel.valueOf(op.toString());
     }
+    
+    
+    /**
+     * Creates a {@link Condition} from universe types.
+     *
+     * @param op The operator of the condition.
+     * @param value The value of the condition.
+     * 
+     * @return The created condition.
+     */
+    private Condition toCondition(UniverseSetBelongingOperator op, int min, int max) {
+        return new ConditionIntvl(toOperator(op), min, max);
+    }
 
+    /**
+     * Creates a {@link Condition} from universe types.
+     *
+     * @param op The operator of the condition.
+     * @param variable The variable of the condition.
+     * 
+     * @return The created condition.
+     */
+    private Condition toCondition(UniverseSetBelongingOperator op, List<BigInteger> values) {
+        return new ConditionIntset(toOperator(op), toIntArray(values));
+    }
+
+    /**
+     * Gives the {@link TypeConditionOperatorRel} corresponding to the given operator.
+     * 
+     * @param op The operator to convert.
+     *
+     * @return The {@link TypeConditionOperatorRel} corresponding to the given operator.
+     */
+    private TypeConditionOperatorSet toOperator(UniverseSetBelongingOperator op) {
+        if (op == UniverseSetBelongingOperator.NOT_IN) {
+            return TypeConditionOperatorSet.NOTIN;
+        } else {
+            return TypeConditionOperatorSet.IN;
+        }
+    }
+
+    
     @Override
     public Map<String, IUniverseVariable> getVariablesMapping() {
         getHead().buildProblem(0);
@@ -1831,7 +1875,12 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver {
     @Override
     public void addSum(List<String> variables, List<BigInteger> coefficients,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
-        // TODO Auto-generated method stub
+        List<String> vars = new ArrayList<>(variables);
+        int[] coeffs = coefficients.stream().mapToInt(x -> x.intValue()).toArray();
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.sum(toVarArray(vars), coeffs, toCondition(operator, min.intValue(), max.intValue())));
+
+
         
     }
 
