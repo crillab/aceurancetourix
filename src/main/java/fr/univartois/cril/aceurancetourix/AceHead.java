@@ -204,7 +204,8 @@ class AceHead extends Head {
         private List<String> variables;
 
         /**
-         * The mapping associating the name of a variable to ACE's representation of this variable.
+         * The mapping associating the name of a variable to ACE's representation of this
+         * variable.
          */
         private Map<String, Variable> mapping;
 
@@ -255,7 +256,7 @@ class AceHead extends Head {
 
         /**
          * Adds a variable to the solver.
-
+         * 
          * @param name The name of the variable.
          * @param v The function to invoke to add the variable.
          */
@@ -281,7 +282,15 @@ class AceHead extends Head {
          * @param c The function to invoke to add the constraint.
          */
         public void addConstraintsToAdd(Consumer<Problem> c) {
-            this.constraintsToAdd.add(c);
+            int group = JUniverseAceProblemAdapter.inGroup ? JUniverseAceProblemAdapter.currentGroup : 0;
+
+            this.constraintsToAdd.add(p -> {
+                int before = head.problem.features.collecting.constraints.size();
+                c.accept(p);
+                for (int i = before; i < head.problem.features.collecting.constraints.size(); i++) {
+                    head.problem.features.collecting.constraints.get(i).group = group;
+                }
+            });
         }
     }
 
