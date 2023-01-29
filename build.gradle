@@ -16,7 +16,7 @@ apply plugin: "maven-publish"
  **********************/
 
 group = "fr.cril"
-version = "0.1.1"
+version = "0.1.2"
 
 def outDir = "${rootDir}/dist"
 def jarDir = "${outDir}/home"
