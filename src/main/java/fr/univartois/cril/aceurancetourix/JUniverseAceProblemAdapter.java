@@ -74,6 +74,7 @@ import fr.univartois.cril.juniverse.csp.operator.UniverseArithmeticOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseBooleanOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator;
+import fr.univartois.cril.juniverse.optim.IOptimizationSolver;
 import main.Head;
 import problem.Problem;
 import solver.AceBuilder;
@@ -89,7 +90,7 @@ import variables.Variable;
  *
  * @version 0.1.0
  */
-public class JUniverseAceProblemAdapter implements IUniverseCSPSolver {
+public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizationSolver {
 
     /**
      * The adapted {@link Head}.
@@ -1985,6 +1986,42 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver {
             UniverseSetBelongingOperator operator, List<BigInteger> values) {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    public void setLowerBound(BigInteger lb) {
+        getHead().solver.problem.optimizer.setAsyncMinBound(lb.longValue());
+    }
+
+    @Override
+    public void setUpperBound(BigInteger ub) {
+        getHead().solver.problem.optimizer.setAsyncMaxBound(ub.longValue());
+    }
+
+    @Override
+    public void setBounds(BigInteger lb, BigInteger ub) {
+        setLowerBound(lb);
+        setUpperBound(ub);
+    }
+
+    @Override
+    public BigInteger getCurrentBound() {
+        return BigInteger.valueOf(getHead().solver.problem.optimizer.value());
+    }
+
+    @Override
+    public boolean isMinimization() {
+        return getHead().solver.problem.optimizer.minimization;
+    }
+
+    @Override
+    public BigInteger getLowerBound() {
+        return BigInteger.valueOf(getHead().solver.problem.optimizer.clb.limit());
+    }
+
+    @Override
+    public BigInteger getUpperBound() {
+        return BigInteger.valueOf(getHead().solver.problem.optimizer.cub.limit());
     }
 
 }
