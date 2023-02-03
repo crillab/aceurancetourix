@@ -40,6 +40,7 @@ import problem.Problem;
 import problem.XCSP3;
 import solver.AceBuilder;
 import solver.Assumption;
+import solver.Solver;
 import solver.Solver.Stopping;
 import variables.Variable;
 
@@ -136,16 +137,9 @@ public class AceHead extends Head {
      */
     public UniverseSolverResult isSatisfiable(List<Assumption> assumpts) {
         interrupted = false;
-        if (!problemBuilt) {
-            structureSharing.clear();
-            problem = buildProblem(0);
-            structureSharing.clear();
-        }
+        
         if (control.solving.enablePrepro || control.solving.enableSearch) {
-            if (!solverBuilt) {
-                solver = buildSolver(problem);
-                solverBuilt = true;
-            }
+            buildProblemAndSolver();
             solver.solve(assumpts);
             boolean fullExploration = solver.stopping == Stopping.FULL_EXPLORATION;
             TypeFramework framework = solver.problem.framework;
@@ -166,6 +160,26 @@ public class AceHead extends Head {
         return UniverseSolverResult.UNKNOWN;
     }
 
+    /**
+     * 
+     */
+    protected void buildProblemAndSolver() {
+        if (!problemBuilt) {
+            structureSharing.clear();
+            problem = buildProblem(0);
+            structureSharing.clear();
+        }
+        if (!solverBuilt) {
+            solver = buildSolver(problem);
+            solverBuilt = true;
+        }
+    }
+
+    public Solver getSolver() {
+        buildProblemAndSolver();
+        return solver;
+    }
+    
     /*
      * (non-Javadoc)
      *

@@ -79,6 +79,7 @@ import main.Head;
 import problem.Problem;
 import solver.AceBuilder;
 import solver.Assumption;
+import solver.Solver;
 import variables.Variable;
 
 /**
@@ -239,10 +240,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
 
     @Override
     public void reset() {
-    	getHead().solver.restoreProblem();
-        getHead().solver.stopping=null;
-        getHead().solver.solutions.found=0;
-        getHead().solver.solutions.last=null;
+    	Solver solver = getHead().getSolver();
+        solver.restoreProblem();
+        solver.stopping=null;
+        solver.solutions.found=0;
+        solver.solutions.last=null;
     }
 
     @Override
@@ -273,11 +275,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
 
     @Override
     public List<BigInteger> solution() {
-        if (getHead().solver.solutions.found == 0) {
+        if (getHead().getSolver().solutions.found == 0) {
             throw new IllegalStateException("No solution found !");
         }
         List<BigInteger> sol = new ArrayList<>();
-        for (int v : getHead().solver.solutions.last) {
+        for (int v : getHead().getSolver().solutions.last) {
             sol.add(BigInteger.valueOf(v));
         }
         return sol;
@@ -289,7 +291,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
     }
 
     public Map<String, BigInteger> mapSolution(boolean excludeAux) {
-        if (getHead().solver.solutions.found == 0) {
+        if (getHead().getSolver().solutions.found == 0) {
             throw new IllegalStateException("No solution found !");
         }
         Map<String, BigInteger> sol = new HashMap<>();
@@ -303,7 +305,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
                 Variable x = (Variable) ((VarAlone) va).var;
                 if (getHead().problem.features.collecting.variables.contains(x))
                     sol.put(x.id(), BigInteger.valueOf(
-                            x.dom.toVal(getHead().solver.solutions.last[x.num])));
+                            x.dom.toVal(getHead().getSolver().solutions.last[x.num])));
             }
 
         }
@@ -1990,12 +1992,12 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
 
     @Override
     public void setLowerBound(BigInteger lb) {
-        getHead().solver.problem.optimizer.setAsyncMinBound(lb.longValue());
+        getHead().getSolver().problem.optimizer.setAsyncMinBound(lb.longValue());
     }
 
     @Override
     public void setUpperBound(BigInteger ub) {
-        getHead().solver.problem.optimizer.setAsyncMaxBound(ub.longValue());
+        getHead().getSolver().problem.optimizer.setAsyncMaxBound(ub.longValue());
     }
 
     @Override
@@ -2006,22 +2008,22 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
 
     @Override
     public BigInteger getCurrentBound() {
-        return BigInteger.valueOf(getHead().solver.problem.optimizer.value());
+        return BigInteger.valueOf(getHead().getSolver().problem.optimizer.value());
     }
 
     @Override
     public boolean isMinimization() {
-        return getHead().solver.problem.optimizer.minimization;
+        return getHead().getSolver().problem.optimizer.minimization;
     }
 
     @Override
     public BigInteger getLowerBound() {
-        return BigInteger.valueOf(getHead().solver.problem.optimizer.clb.limit());
+        return BigInteger.valueOf(getHead().getSolver().problem.optimizer.clb.limit());
     }
 
     @Override
     public BigInteger getUpperBound() {
-        return BigInteger.valueOf(getHead().solver.problem.optimizer.cub.limit());
+        return BigInteger.valueOf(getHead().getSolver().problem.optimizer.cub.limit());
     }
 
 }
