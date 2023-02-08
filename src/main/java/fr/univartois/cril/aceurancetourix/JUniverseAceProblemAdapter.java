@@ -80,7 +80,9 @@ import problem.Problem;
 import solver.AceBuilder;
 import solver.Assumption;
 import solver.Solver;
+import solver.Solver.Stopping;
 import variables.Variable;
+import variables.Variable.VariableInteger;
 
 /**
  * The JUniverseAceProblemAdapter adapts a {@link Head} (and a {@link Problem}) from ACE
@@ -1701,11 +1703,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
      * @return The created matrix.
      */
     private Var[][] toVarMatrix(List<List<String>> variables) {
-        Var[][] vars = new Var[variables.size()][];
+        Variable[][] vars = new VariableInteger[variables.size()][];
         for (int i = 0; i < variables.size(); i++) {
-            vars[i] = toVarArray(variables.get(i));
+            vars[i] = toVariableArray(variables.get(i));
         }
-        return vars;
+        return (Var[][])vars;
     }
 
     /**
@@ -1717,7 +1719,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
      * @return The created array.
      */
     private Variable[] toVariableArray(List<String> variables) {
-        Variable[] vars = new Variable[variables.size()];
+        Variable[] vars = new VariableInteger[variables.size()];
         for (int i = 0; i < variables.size(); i++) {
             vars[i] = getHead().xcsp3.getVariable(variables.get(i));
         }
@@ -1993,6 +1995,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
     @Override
     public void setLowerBound(BigInteger lb) {
         getHead().getSolver().problem.optimizer.setAsyncMinBound(lb.longValue());
+        if(getHead().getSolver().stopping==Stopping.FULL_EXPLORATION) {
+            reset();
+        }
     }
 
     @Override

@@ -43,12 +43,9 @@ public class Main {
     }
     
     public static void main(String[] args) {
-        var factory = new PreprocAceSolverFactory();
+        var factory = new AceSolverFactory();
         JUniverseAceProblemAdapter solver=(JUniverseAceProblemAdapter)factory.createCspSolver();
-        solver.newVariable("x", 0, 5);
-        solver.newVariable("y", 0, 5);
-        solver.addAllDifferent(List.of("x","y"));
-        System.out.println(solver.solve(List.of(new UniverseAssumption<>(0, true, BigInteger.ZERO),new UniverseAssumption<>(1, true, BigInteger.ONE))));
+        System.out.println(solver.solve(args[0]));
         
         
     }

@@ -137,7 +137,6 @@ public class AceHead extends Head {
      */
     public UniverseSolverResult isSatisfiable(List<Assumption> assumpts) {
         interrupted = false;
-        
         if (control.solving.enablePrepro || control.solving.enableSearch) {
             buildProblemAndSolver();
             solver.solve(assumpts);
