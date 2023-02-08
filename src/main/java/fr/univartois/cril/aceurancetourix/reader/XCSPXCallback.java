@@ -1402,6 +1402,10 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addSum(
                         toVariableIdentifiers(list), toBigInteger(coeffs), op, rhs),
                 (op, rhs) -> listener.addSum(
+                        toVariableIdentifiers(list), toBigInteger(coeffs), op, rhs),
+                (op, rhs) -> listener.addSum(
+                        toVariableIdentifiers(list), toBigInteger(coeffs), op, rhs[0],rhs[1]),
+                (op, rhs) -> listener.addSum(
                         toVariableIdentifiers(list), toBigInteger(coeffs), op, rhs));
     }
 
