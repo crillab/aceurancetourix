@@ -46,7 +46,7 @@ public class Main {
         var factory = new AceSolverFactory();
         JUniverseAceProblemAdapter solver=(JUniverseAceProblemAdapter)factory.createCspSolver();
         System.out.println(solver.solve(args[0]));
-        
+        solver.getHead().solver.solutions.displayFinalResults();
         
     }
 
