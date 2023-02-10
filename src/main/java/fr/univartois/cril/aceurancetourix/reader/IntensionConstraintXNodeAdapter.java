@@ -34,6 +34,7 @@ import fr.univartois.cril.juniverse.csp.intension.BinaryIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.intension.ConstantIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.intension.IIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor;
+import fr.univartois.cril.juniverse.csp.intension.IfThenElseIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.intension.NaryIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.intension.UnaryIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.intension.VariableIntensionConstraint;
@@ -126,6 +127,16 @@ final class IntensionConstraintXNodeAdapter implements IIntensionConstraint {
         if (type == TypeExpr.VAR) {
             // The adapted node is a variable.
             var self = new VariableIntensionConstraint(adaptee.var(0).id());
+            self.accept(visitor);
+            return;
+        }
+        
+        if (type == TypeExpr.IF) {
+            // The adapted node is an alternative.
+            var adaptedCondition = new IntensionConstraintXNodeAdapter(adaptee.sons[0]);
+            var adaptedIfTrue = new IntensionConstraintXNodeAdapter(adaptee.sons[1]);
+            var adaptedIfFalse = new IntensionConstraintXNodeAdapter(adaptee.sons[2]);
+            var self = new IfThenElseIntensionConstraint(adaptedCondition, adaptedIfTrue, adaptedIfFalse);
             self.accept(visitor);
             return;
         }
