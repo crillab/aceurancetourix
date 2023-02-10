@@ -93,16 +93,17 @@ import variables.Variable.VariableInteger;
  *
  * @version 0.1.0
  */
-public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizationSolver {
+public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimizationSolver {
 
     /**
      * The adapted {@link Head}.
      */
     private AceHead head;
-    
+
     public static int currentGroup;
+
     public static boolean inGroup;
-    
+
     /**
      * Creates a new JUniverseAceProblemAdapter.
      */
@@ -242,11 +243,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
 
     @Override
     public void reset() {
-    	Solver solver = getHead().getSolver();
+        Solver solver = getHead().getSolver();
         solver.restoreProblem();
-        solver.stopping=null;
-        solver.solutions.found=0;
-        solver.solutions.last=null;
+        solver.stopping = null;
+        solver.solutions.found = 0;
+        solver.solutions.last = null;
     }
 
     @Override
@@ -1637,18 +1638,30 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
             vals[i] = arg1.get(i).intValue();
         }
 
-        getHead().xcsp3.addVariableToAdd(arg0, (p, s) -> p.buildVarInteger(s, new Dom(vals)));
+        getHead().xcsp3.addVariableToAdd(arg0, (p, s) -> {
+            var x = p.buildVarInteger(s, new Dom(vals));
+            getHead().xcsp3.imp().varEntities.newVarAloneEntity(s, x, null);
+            return x;
+        });
     }
 
     @Override
     public void newVariable(String arg0, int arg1, int arg2) {
-        getHead().xcsp3.addVariableToAdd(arg0, (p, s) -> p.buildVarInteger(s, new Dom(arg1, arg2)));
+        getHead().xcsp3.addVariableToAdd(arg0, (p, s) -> {
+            var x = p.buildVarInteger(s, new Dom(arg1, arg2));
+            getHead().xcsp3.imp().varEntities.newVarAloneEntity(s, x, null);
+            return x;
+        });
     }
 
     @Override
     public void newVariable(String arg0, BigInteger arg1, BigInteger arg2) {
         getHead().xcsp3.addVariableToAdd(arg0,
-                (p, s) -> p.buildVarInteger(s, new Dom(arg1.intValue(), arg2.intValue())));
+                (p, s) -> {
+                    var x=p.buildVarInteger(s, new Dom(arg1.intValue(), arg2.intValue()));
+                    getHead().xcsp3.imp().varEntities.newVarAloneEntity(s, x, null);
+                    return x;
+                });
 
     }
 
@@ -1707,7 +1720,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
         for (int i = 0; i < variables.size(); i++) {
             vars[i] = toVariableArray(variables.get(i));
         }
-        return (Var[][])vars;
+        return (Var[][]) vars;
     }
 
     /**
@@ -1847,8 +1860,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
     private TypeOperatorRel toOperatorRel(UniverseRelationalOperator op) {
         return TypeOperatorRel.valueOf(op.toString());
     }
-    
-    
+
     /**
      * Creates a {@link Condition} from universe types.
      *
@@ -1888,7 +1900,6 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
         }
     }
 
-    
     @Override
     public Map<String, IUniverseVariable> getVariablesMapping() {
         getHead().buildProblem(0);
@@ -1903,7 +1914,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
     public void addSum(List<String> variables, UniverseSetBelongingOperator operator,
             BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -1912,31 +1923,30 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
         List<String> vars = new ArrayList<>(variables);
         int[] coeffs = coefficients.stream().mapToInt(x -> x.intValue()).toArray();
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.sum(toVarArray(vars), coeffs, toCondition(operator, min.intValue(), max.intValue())));
+                p -> p.sum(toVarArray(vars), coeffs,
+                        toCondition(operator, min.intValue(), max.intValue())));
 
-
-        
     }
 
     @Override
     public void addSum(List<String> variables, UniverseSetBelongingOperator operator,
             List<BigInteger> values) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void addSum(List<String> variables, List<BigInteger> coefficients,
             UniverseSetBelongingOperator operator, List<BigInteger> values) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void addSumIntension(List<IIntensionConstraint> intensionConstraints,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -1944,14 +1954,14 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
             List<BigInteger> coefficients, UniverseSetBelongingOperator operator, BigInteger min,
             BigInteger max) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void addSumIntension(List<IIntensionConstraint> intensionConstraints,
             UniverseSetBelongingOperator operator, List<BigInteger> values) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -1959,21 +1969,21 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
             List<BigInteger> coefficients, UniverseSetBelongingOperator operator,
             List<BigInteger> values) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void addSumWithVariableCoefficients(List<String> variables, List<String> coefficients,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void addSumWithVariableCoefficients(List<String> variables, List<String> coefficients,
             UniverseSetBelongingOperator operator, List<BigInteger> values) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -1981,7 +1991,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
             List<IIntensionConstraint> intensionConstraints, List<String> coefficients,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -1989,13 +1999,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver,IOptimizat
             List<IIntensionConstraint> intensionConstraints, List<String> coefficients,
             UniverseSetBelongingOperator operator, List<BigInteger> values) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void setLowerBound(BigInteger lb) {
         getHead().getSolver().problem.optimizer.setAsyncMinBound(lb.longValue());
-        if(getHead().getSolver().stopping==Stopping.FULL_EXPLORATION) {
+        if (getHead().getSolver().stopping == Stopping.FULL_EXPLORATION) {
             reset();
         }
     }
