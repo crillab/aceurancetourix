@@ -20,10 +20,14 @@
 
 package fr.univartois.cril.aceurancetourix;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
+import fr.univartois.cril.aceurancetourix.reader.XCSP3Reader;
 import fr.univartois.cril.juniverse.core.UniverseAssumption;
+import fr.univartois.cril.juniverse.core.UniverseContradictionException;
 
 /**
  * The Main
@@ -43,10 +47,27 @@ public class Main {
     }
     
     public static void main(String[] args) {
-        var factory = new AceSolverFactory();
+        var factory = new PreprocAceSolverFactory();
         JUniverseAceProblemAdapter solver=(JUniverseAceProblemAdapter)factory.createCspSolver();
-        System.out.println(solver.solve(args[0]));
-        solver.getHead().solver.solutions.displayFinalResults();
+        
+        XCSP3Reader reader = new XCSP3Reader(solver);
+        try {
+            reader.parseInstance(args[0]);
+        } catch (UniverseContradictionException | IOException e) {
+            e.printStackTrace();
+        }
+        
+        List<UniverseAssumption<BigInteger>> assumpts = new ArrayList<>();
+        
+        assumpts.add(new UniverseAssumption<BigInteger>(0, true, BigInteger.ZERO));
+        assumpts.add(new UniverseAssumption<BigInteger>(100, true, BigInteger.ZERO));
+        assumpts.add(new UniverseAssumption<BigInteger>(101, true, BigInteger.ZERO));
+        assumpts.add(new UniverseAssumption<BigInteger>(101, true, BigInteger.ZERO));
+        
+        
+        
+        System.out.println(solver.solve(assumpts));
+        solver.reset();
         
     }
 

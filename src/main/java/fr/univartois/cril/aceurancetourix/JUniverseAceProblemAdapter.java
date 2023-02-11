@@ -81,6 +81,7 @@ import solver.AceBuilder;
 import solver.Assumption;
 import solver.Solver;
 import solver.Solver.Stopping;
+import solver.Solver.WarmStarter;
 import variables.Variable;
 import variables.Variable.VariableInteger;
 
@@ -248,6 +249,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
         solver.stopping = null;
         solver.solutions.found = 0;
         solver.solutions.last = null;
+        solver.nRecursiveRuns=0;
     }
 
     @Override
@@ -334,6 +336,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
 
     @Override
     public UniverseSolverResult solve(List<UniverseAssumption<BigInteger>> arg0) {
+
         List<Assumption> assumpts = new ArrayList<>();
         for (UniverseAssumption<BigInteger> assumpt : arg0) {
             assumpts.add(new Assumption(assumpt.getVariableId(), assumpt.isEqual(),
@@ -511,10 +514,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
             throws UniverseContradictionException {
         var t = new int[arg1.size()];
         boolean starred = toTuples(arg1, t);
-        if (starred) {
-            throw new UnsupportedOperationException();
-        }
-        getHead().xcsp3.addConstraintsToAdd(p -> p.extension((Variable) toVar(arg0), t, false));
+
+        getHead().xcsp3.addConstraintsToAdd(p -> p.extension((Variable) toVar(arg0), t, starred));
 
     }
 
@@ -523,10 +524,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
             throws UniverseContradictionException {
         int[][] t = new int[arg1.size()][arg1.get(0).size()];
         boolean starred = toTuples(arg1, t);
-        if (starred) {
-            throw new UnsupportedOperationException();
-        }
-        getHead().xcsp3.addConstraintsToAdd(p -> p.extension(toVarArray(arg0), t, false));
+        getHead().xcsp3.addConstraintsToAdd(p -> p.extension(toVarArray(arg0), t, starred));
 
     }
 
@@ -1301,10 +1299,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
             throws UniverseContradictionException {
         var t = new int[arg1.size()];
         boolean starred = toTuples(arg1, t);
-        if (starred) {
-            throw new UnsupportedOperationException();
-        }
-        getHead().xcsp3.addConstraintsToAdd(p -> p.extension((Variable) toVar(arg0), t, true));
+
+        getHead().xcsp3.addConstraintsToAdd(p -> p.extension((Variable) toVar(arg0), t, starred));
     }
 
     @Override
@@ -1312,10 +1308,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
             throws UniverseContradictionException {
         int[][] t = new int[arg1.size()][arg1.get(0).size()];
         boolean starred = toTuples(arg1, t);
-        if (starred) {
-            throw new UnsupportedOperationException();
-        }
-        getHead().xcsp3.addConstraintsToAdd(p -> p.extension(toVarArray(arg0), t, true));
+
+        getHead().xcsp3.addConstraintsToAdd(p -> p.extension(toVarArray(arg0), t, starred));
 
     }
 
@@ -1658,7 +1652,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     public void newVariable(String arg0, BigInteger arg1, BigInteger arg2) {
         getHead().xcsp3.addVariableToAdd(arg0,
                 (p, s) -> {
-                    var x=p.buildVarInteger(s, new Dom(arg1.intValue(), arg2.intValue()));
+                    var x = p.buildVarInteger(s, new Dom(arg1.intValue(), arg2.intValue()));
                     getHead().xcsp3.imp().varEntities.newVarAloneEntity(s, x, null);
                     return x;
                 });
@@ -2005,14 +1999,23 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     @Override
     public void setLowerBound(BigInteger lb) {
         getHead().getSolver().problem.optimizer.setAsyncMinBound(lb.longValue());
-        if (getHead().getSolver().stopping == Stopping.FULL_EXPLORATION) {
-            reset();
+        if(getHead().getSolver().solutions.found>0) {
+            var solution = solution();
+            String stringSolution = solution.stream().map(i -> i.toString()).collect(
+                    Collectors.joining(" "));
+            getHead().getSolver().warmStarter = new WarmStarter(stringSolution, head.solver);
         }
     }
 
     @Override
     public void setUpperBound(BigInteger ub) {
         getHead().getSolver().problem.optimizer.setAsyncMaxBound(ub.longValue());
+        if(getHead().getSolver().solutions.found>0) {
+            var solution = solution();
+            String stringSolution = solution.stream().map(i -> i.toString()).collect(
+                    Collectors.joining(" "));
+            getHead().getSolver().warmStarter = new WarmStarter(stringSolution, head.solver);
+        }
     }
 
     @Override
