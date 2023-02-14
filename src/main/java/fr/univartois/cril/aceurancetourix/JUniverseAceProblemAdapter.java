@@ -58,6 +58,8 @@ import org.xcsp.common.Types.TypeOperatorRel;
 import org.xcsp.common.Types.TypeRank;
 import org.xcsp.common.domains.Domains.Dom;
 import org.xcsp.common.predicates.XNodeParent;
+import org.xcsp.common.structures.Automaton;
+import org.xcsp.common.structures.Transition;
 import org.xcsp.modeler.entities.VarEntities.VarAlone;
 import org.xcsp.modeler.entities.VarEntities.VarEntity;
 
@@ -68,6 +70,7 @@ import fr.univartois.cril.juniverse.core.UniverseContradictionException;
 import fr.univartois.cril.juniverse.core.UniverseSolverResult;
 import fr.univartois.cril.juniverse.core.problem.IUniverseVariable;
 import fr.univartois.cril.juniverse.csp.IUniverseCSPSolver;
+import fr.univartois.cril.juniverse.csp.UniverseTransition;
 import fr.univartois.cril.juniverse.csp.intension.IIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.intension.IntensionConstraintFactory;
 import fr.univartois.cril.juniverse.csp.operator.UniverseArithmeticOperator;
@@ -1994,6 +1997,67 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
             UniverseSetBelongingOperator operator, List<BigInteger> values) {
         // TODO Auto-generated method stub
 
+    }
+    
+    
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addRegular(java.lang.String, java.util.List, java.util.List, java.lang.String, java.util.List)
+     */
+    @Override
+    public void addRegular(List<String> list, List<UniverseTransition> transitions,
+            String startState, List<String> finalStates) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.regular(toVarArray(list),new Automaton(startState, toTransition(transitions), finalStates.toArray(new String[finalStates.size()]))));
+        
+    }
+
+    private Transition[] toTransition(List<UniverseTransition> transitions) {
+        return transitions.stream().map(t->new Transition(t.getStart(),t.getValue(),t.getEnd())).collect(Collectors.toList()).toArray(new Transition[transitions.size()]);
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMDD(java.lang.String, java.util.List, java.util.List)
+     */
+    @Override
+    public void addMDD(List<String> list, List<UniverseTransition> transitions) {
+        getHead().xcsp3.addConstraintsToAdd(p->p.mdd(toVarArray(list), toTransition(transitions)));
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCircuit(java.lang.String, java.util.List, int)
+     */
+    @Override
+    public void addCircuit(List<String> list, int startIndex) {
+        getHead().xcsp3.addConstraintsToAdd(p->p.circuit(toVarArray(list), startIndex));
+        
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCircuit(java.lang.String, java.util.List, int, int)
+     */
+    @Override
+    public void addCircuit(List<String> list, int startIndex, int size) {
+        getHead().xcsp3.addConstraintsToAdd(p->p.circuit(toVarArray(list), startIndex,size));
+        
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCircuit(java.lang.String, java.util.List, int, java.lang.String)
+     */
+    @Override
+    public void addCircuit(List<String> list, int startIndex, String size) {
+        getHead().xcsp3.addConstraintsToAdd(p->p.circuit(toVarArray(list), startIndex,toVar(size)));        
     }
 
     @Override

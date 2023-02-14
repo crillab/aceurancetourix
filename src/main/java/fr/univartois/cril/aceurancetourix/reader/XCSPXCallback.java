@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.xcsp.common.Condition;
 import org.xcsp.common.Condition.ConditionIntset;
@@ -45,6 +46,7 @@ import org.xcsp.common.Types.TypeRank;
 import org.xcsp.common.Types.TypeUnaryArithmeticOperator;
 import org.xcsp.common.predicates.XNode;
 import org.xcsp.common.predicates.XNodeParent;
+import org.xcsp.common.structures.Transition;
 import org.xcsp.parser.callbacks.XCallbacks2;
 import org.xcsp.parser.entries.XConstraints.XGroup;
 import org.xcsp.parser.entries.XVariables.XVarInteger;
@@ -52,6 +54,7 @@ import org.xcsp.parser.entries.XVariables.XVarInteger;
 import fr.univartois.cril.aceurancetourix.JUniverseAceProblemAdapter;
 import fr.univartois.cril.juniverse.core.UniverseContradictionException;
 import fr.univartois.cril.juniverse.csp.IUniverseCSPSolver;
+import fr.univartois.cril.juniverse.csp.UniverseTransition;
 import fr.univartois.cril.juniverse.csp.intension.IIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.operator.UniverseArithmeticOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseBooleanOperator;
@@ -1470,6 +1473,66 @@ final class XCSPXCallback implements XCallbacks2 {
                         toIntensionConstraints(trees), toVariableIdentifiers(coeffs), op, rhs),
                 (op, rhs) -> listener.addSumIntensionWithVariableCoefficients(
                         toIntensionConstraints(trees), toVariableIdentifiers(coeffs), op, rhs));
+    }
+    
+    
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.xcsp.parser.callbacks.XCallbacks2#buildCtrRegular(java.lang.String, org.xcsp.parser.entries.XVariables.XVarInteger[], org.xcsp.common.structures.Transition[], java.lang.String, java.lang.String[])
+     */
+    @Override
+    public void buildCtrRegular(String id, XVarInteger[] list, Transition[] transitions,
+            String startState, String[] finalStates) {
+        listener.addRegular(toVariableIdentifiers(list), toUniverseTransition(transitions), startState, List.of(finalStates));
+    }
+
+    private List<UniverseTransition> toUniverseTransition(Transition[] transitions) {
+        return Stream.of(transitions).map(t->new UniverseTransition(t.start, (int)t.value, t.end)).collect(Collectors.toList());
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.xcsp.parser.callbacks.XCallbacks2#buildCtrCircuit(java.lang.String, org.xcsp.parser.entries.XVariables.XVarInteger[], int)
+     */
+    @Override
+    public void buildCtrCircuit(String id, XVarInteger[] list, int startIndex) {
+        listener.addCircuit(toVariableIdentifiers(list), startIndex);
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.xcsp.parser.callbacks.XCallbacks2#buildCtrCircuit(java.lang.String, org.xcsp.parser.entries.XVariables.XVarInteger[], int, int)
+     */
+    @Override
+    public void buildCtrCircuit(String id, XVarInteger[] list, int startIndex, int size) {
+        listener.addCircuit(toVariableIdentifiers(list), startIndex, size);
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.xcsp.parser.callbacks.XCallbacks2#buildCtrCircuit(java.lang.String, org.xcsp.parser.entries.XVariables.XVarInteger[], int, org.xcsp.parser.entries.XVariables.XVarInteger)
+     */
+    @Override
+    public void buildCtrCircuit(String id, XVarInteger[] list, int startIndex, XVarInteger size) {
+       listener.addCircuit(toVariableIdentifiers(list), startIndex,size.id());
+    }
+
+    
+    
+    
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.xcsp.parser.callbacks.XCallbacks2#buildCtrMDD(java.lang.String, org.xcsp.parser.entries.XVariables.XVarInteger[], org.xcsp.common.structures.Transition[])
+     */
+    @Override
+    public void buildCtrMDD(String id, XVarInteger[] list, Transition[] transitions) {
+        listener.addMDD(toVariableIdentifiers(list), toUniverseTransition(transitions));
     }
 
     /*
