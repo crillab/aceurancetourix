@@ -53,6 +53,7 @@ import org.xcsp.common.IVar.Var;
 import org.xcsp.common.Range;
 import org.xcsp.common.Types.TypeConditionOperatorRel;
 import org.xcsp.common.Types.TypeConditionOperatorSet;
+import org.xcsp.common.Types.TypeFramework;
 import org.xcsp.common.Types.TypeObjective;
 import org.xcsp.common.Types.TypeOperatorRel;
 import org.xcsp.common.Types.TypeRank;
@@ -83,7 +84,6 @@ import problem.Problem;
 import solver.AceBuilder;
 import solver.Assumption;
 import solver.Solver;
-import solver.Solver.Stopping;
 import solver.Solver.WarmStarter;
 import variables.Variable;
 import variables.Variable.VariableInteger;
@@ -328,13 +328,21 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
 
     @Override
     public UniverseSolverResult solve(String arg0) {
+        loadInstance(arg0);
+        return solve();
+    }
+
+    /**
+     * @param filename
+     */
+    @Override
+    public void loadInstance(String filename) {
         XCSP3Reader reader = new XCSP3Reader(this);
         try {
-            reader.parseInstance(arg0);
+            reader.parseInstance(filename);
         } catch (UniverseContradictionException | IOException e) {
             e.printStackTrace();
         }
-        return solve();
     }
 
     @Override
@@ -2106,6 +2114,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     @Override
     public BigInteger getUpperBound() {
         return BigInteger.valueOf(getHead().getSolver().problem.optimizer.cub.limit());
+    }
+
+    @Override
+    public boolean isOptimization() {
+        return getHead().getSolver().problem.framework==TypeFramework.COP;
     }
 
 }
