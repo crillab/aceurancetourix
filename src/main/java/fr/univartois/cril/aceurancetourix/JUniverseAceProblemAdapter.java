@@ -521,25 +521,6 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     }
 
     @Override
-    public void addConflicts(String arg0, List<BigInteger> arg1)
-            throws UniverseContradictionException {
-        var t = new int[arg1.size()];
-        boolean starred = toTuples(arg1, t);
-
-        getHead().xcsp3.addConstraintsToAdd(p -> p.extension((Variable) toVar(arg0), t, starred));
-
-    }
-
-    @Override
-    public void addConflicts(List<String> arg0, List<List<BigInteger>> arg1)
-            throws UniverseContradictionException {
-        int[][] t = new int[arg1.size()][arg1.get(0).size()];
-        boolean starred = toTuples(arg1, t);
-        getHead().xcsp3.addConstraintsToAdd(p -> p.extension(toVarArray(arg0), t, starred));
-
-    }
-
-    @Override
     public void addCountIntensionWithConstantValues(List<IIntensionConstraint> arg0,
             List<BigInteger> arg1, UniverseRelationalOperator arg2, BigInteger arg3)
             throws UniverseContradictionException {
@@ -1309,9 +1290,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     public void addSupport(String arg0, List<BigInteger> arg1)
             throws UniverseContradictionException {
         var t = new int[arg1.size()];
-        boolean starred = toTuples(arg1, t);
+        toTuples(arg1, t);
 
-        getHead().xcsp3.addConstraintsToAdd(p -> p.extension((Variable) toVar(arg0), t, starred));
+        getHead().xcsp3.addConstraintsToAdd(p -> p.extension((Variable) toVar(arg0), t, true));
     }
 
     @Override
@@ -1320,7 +1301,26 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
         int[][] t = new int[arg1.size()][arg1.get(0).size()];
         boolean starred = toTuples(arg1, t);
 
-        getHead().xcsp3.addConstraintsToAdd(p -> p.extension(toVarArray(arg0), t, starred));
+        getHead().xcsp3.addConstraintsToAdd(p -> p.extension(toVarArray(arg0), t, true, starred));
+
+    }
+
+    @Override
+    public void addConflicts(String arg0, List<BigInteger> arg1)
+            throws UniverseContradictionException {
+        var t = new int[arg1.size()];
+        toTuples(arg1, t);
+
+        getHead().xcsp3.addConstraintsToAdd(p -> p.extension((Variable) toVar(arg0), t, false));
+
+    }
+
+    @Override
+    public void addConflicts(List<String> arg0, List<List<BigInteger>> arg1)
+            throws UniverseContradictionException {
+        int[][] t = new int[arg1.size()][arg1.get(0).size()];
+        boolean starred = toTuples(arg1, t);
+        getHead().xcsp3.addConstraintsToAdd(p -> p.extension(toVarArray(arg0), t, false, starred));
 
     }
 

@@ -47,27 +47,16 @@ public class Main {
     }
     
     public static void main(String[] args) {
-        var factory = new PreprocAceSolverFactory();
+        var factory = new AceSolverFactory();
         JUniverseAceProblemAdapter solver=(JUniverseAceProblemAdapter)factory.createCspSolver();
-        
+        solver.getHead().getBuilder().getOptionsGeneralBuilder().setExceptionsVisible(true);
         XCSP3Reader reader = new XCSP3Reader(solver);
         try {
             reader.parseInstance(args[0]);
         } catch (UniverseContradictionException | IOException e) {
             e.printStackTrace();
         }
-        
-        List<UniverseAssumption<BigInteger>> assumpts = new ArrayList<>();
-        
-        assumpts.add(new UniverseAssumption<BigInteger>(0, true, BigInteger.ZERO));
-        assumpts.add(new UniverseAssumption<BigInteger>(100, true, BigInteger.ZERO));
-        assumpts.add(new UniverseAssumption<BigInteger>(101, true, BigInteger.ZERO));
-        assumpts.add(new UniverseAssumption<BigInteger>(101, true, BigInteger.ZERO));
-        
-        
-        
-        System.out.println(solver.solve(assumpts));
-        solver.reset();
+        System.out.println(solver.solve());
         
     }
 
