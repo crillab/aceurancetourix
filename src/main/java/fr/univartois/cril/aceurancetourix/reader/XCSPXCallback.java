@@ -1489,7 +1489,7 @@ final class XCSPXCallback implements XCallbacks2 {
     }
 
     private List<UniverseTransition> toUniverseTransition(Transition[] transitions) {
-        return Stream.of(transitions).map(t->new UniverseTransition(t.start, (int)t.value, t.end)).collect(Collectors.toList());
+        return Stream.of(transitions).map(t->new UniverseTransition(t.start, ((Long)t.value).intValue(), t.end)).collect(Collectors.toList());
     }
 
     /*

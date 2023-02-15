@@ -2023,7 +2023,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     }
 
     private Transition[] toTransition(List<UniverseTransition> transitions) {
-        return transitions.stream().map(t->new Transition(t.getStart(),t.getValue(),t.getEnd())).collect(Collectors.toList()).toArray(new Transition[transitions.size()]);
+        return transitions.stream().map(t->new Transition(t.getStart(),(long)t.getValue(),t.getEnd())).collect(Collectors.toList()).toArray(new Transition[transitions.size()]);
     }
 
     /*
