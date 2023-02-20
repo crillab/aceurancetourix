@@ -58,6 +58,7 @@ import org.xcsp.common.Types.TypeObjective;
 import org.xcsp.common.Types.TypeOperatorRel;
 import org.xcsp.common.Types.TypeRank;
 import org.xcsp.common.domains.Domains.Dom;
+import org.xcsp.common.predicates.XNode;
 import org.xcsp.common.predicates.XNodeParent;
 import org.xcsp.common.structures.Automaton;
 import org.xcsp.common.structures.Transition;
@@ -1326,8 +1327,14 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
 
     @Override
     public void maximizeExpression(IIntensionConstraint arg0) {
-        getHead().xcsp3.addConstraintsToAdd(
-                p -> p.maximize(toXnode(arg0)));
+        var node = toXnode(arg0);
+        if (node instanceof IVar) {
+            getHead().xcsp3.addConstraintsToAdd(
+                    p -> p.maximize((IVar) node));
+        } else {
+            getHead().xcsp3.addConstraintsToAdd(
+                    p -> p.maximize((XNodeParent<IVar>) node));
+        }
     }
 
     @Override
@@ -1486,8 +1493,14 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
 
     @Override
     public void minimizeExpression(IIntensionConstraint arg0) {
-        getHead().xcsp3.addConstraintsToAdd(
-                p -> p.minimize(toXnode(arg0)));
+        var node = toXnode(arg0);
+        if (node instanceof IVar) {
+            getHead().xcsp3.addConstraintsToAdd(
+                    p -> p.minimize((IVar) node));
+        } else {
+            getHead().xcsp3.addConstraintsToAdd(
+                    p -> p.minimize((XNodeParent<IVar>) node));
+        }
     }
 
     @Override
@@ -1760,7 +1773,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
      * @param i The intension constraint to convert to an {@link XNodeParent}.
      * @return The created {@link XNodeParent}.
      */
-    private XNodeParent<IVar> toXnode(IIntensionConstraint i) {
+    private <T extends XNode<IVar>> T toXnode(IIntensionConstraint i) {
         var visitor = new AceIntensionConstraintVisitor(getHead());
         i.accept(visitor);
         return visitor.getTree();
@@ -1773,9 +1786,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
      * @param i The intension constraints to convert to an {@link XNodeParent}.
      * @return The created {@link XNodeParent} array.
      */
-    private XNodeParent<IVar>[] toXnode(List<IIntensionConstraint> list) {
+    private XNode[] toXnode(List<IIntensionConstraint> list) {
         @SuppressWarnings("unchecked")
-        XNodeParent<IVar>[] tab = new XNodeParent[list.size()];
+        XNode[] tab = new XNode[list.size()];
         for (int i = 0; i < list.size(); i++) {
             tab[i] = toXnode(list.get(i));
         }

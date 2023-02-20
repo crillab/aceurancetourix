@@ -164,8 +164,8 @@ class AceIntensionConstraintVisitor implements IIntensionConstraintVisitor {
      *
      * @return The tree representing the intension constraint encoded as an ACE object.
      */
-    XNodeParent<IVar> getTree() {
-        return (XNodeParent<IVar>) stack.getFirst();
+    <T extends XNode<IVar>> T getTree() {
+        return (T) stack.getFirst();
     }
   
     /**
