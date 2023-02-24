@@ -1327,14 +1327,14 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
 
     @Override
     public void maximizeExpression(IIntensionConstraint arg0) {
-        var node = toXnode(arg0);
-        if (node instanceof IVar) {
-            getHead().xcsp3.addConstraintsToAdd(
-                    p -> p.maximize((IVar) node));
-        } else {
-            getHead().xcsp3.addConstraintsToAdd(
-                    p -> p.maximize((XNodeParent<IVar>) node));
-        }
+        getHead().xcsp3.addConstraintsToAdd(p -> {
+            var node = toXnode(arg0);
+            if (node instanceof IVar) {
+                p.maximize((IVar) node);
+            } else {
+                p.maximize((XNodeParent<IVar>) node);
+            }
+        });
     }
 
     @Override
@@ -1493,14 +1493,14 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
 
     @Override
     public void minimizeExpression(IIntensionConstraint arg0) {
-        var node = toXnode(arg0);
-        if (node instanceof IVar) {
-            getHead().xcsp3.addConstraintsToAdd(
-                    p -> p.minimize((IVar) node));
-        } else {
-            getHead().xcsp3.addConstraintsToAdd(
-                    p -> p.minimize((XNodeParent<IVar>) node));
-        }
+        getHead().xcsp3.addConstraintsToAdd(p -> {
+            var node = toXnode(arg0);
+            if (node instanceof IVar) {
+                p.minimize((IVar) node);
+            } else {
+                p.minimize((XNodeParent<IVar>) node);
+            }
+        });
     }
 
     @Override
