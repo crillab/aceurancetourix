@@ -350,7 +350,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
 
         List<Assumption> assumpts = new ArrayList<>();
         for (UniverseAssumption<BigInteger> assumpt : arg0) {
-            assumpts.add(new Assumption(assumpt.getVariableId(), assumpt.isEqual(),
+            int id = ((Variable) toVar(assumpt.getVariableId())).num;
+            assumpts.add(new Assumption(id, assumpt.isEqual(),
                     assumpt.getValue().intValueExact()));
         }
         var v = getHead().isSatisfiable(assumpts);
@@ -721,80 +722,80 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     }
 
     @Override
-    public void addElement(List<String> arg0, BigInteger arg1)
+    public void addElement(List<String> arg0,UniverseRelationalOperator operator,  BigInteger arg1)
             throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.element(toVarArray(arg0),
-                new ConditionVal(TypeConditionOperatorRel.EQ, arg1.longValue())));
+                toCondition(operator, arg1.intValue())));
     }
 
     @Override
-    public void addElement(List<String> arg0, String arg1) throws UniverseContradictionException {
+    public void addElement(List<String> arg0,UniverseRelationalOperator operator,  String arg1) throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.element(toVarArray(arg0),
-                new ConditionVar(TypeConditionOperatorRel.EQ, toVar(arg1))));
+                toCondition(operator, arg1)));
     }
 
     @Override
-    public void addElement(List<String> arg0, int arg1, String arg2, BigInteger arg3)
+    public void addElement(List<String> arg0, int arg1, String arg2, UniverseRelationalOperator operator, BigInteger arg3)
             throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.element(toVarArray(arg0), arg1, toVar(arg2),
-                TypeRank.ANY, new ConditionVal(TypeConditionOperatorRel.EQ, arg3.longValue())));
+                TypeRank.ANY, toCondition(operator, arg3.intValue())));
     }
 
     @Override
-    public void addElement(List<String> arg0, int arg1, String arg2, String arg3)
+    public void addElement(List<String> arg0, int arg1, String arg2, UniverseRelationalOperator operator, String arg3)
             throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.element(toVarArray(arg0), arg1, toVar(arg2),
-                TypeRank.ANY, new ConditionVar(TypeConditionOperatorRel.EQ, toVar(arg3))));
+                TypeRank.ANY, toCondition(operator, arg3)));
     }
 
     @Override
     public void addElementConstantMatrix(List<List<BigInteger>> arg0, int arg1, String arg2,
-            int arg3, String arg4, BigInteger arg5) throws UniverseContradictionException {
+            int arg3, String arg4, UniverseRelationalOperator operator, BigInteger arg5) throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.element(toIntMatrix(arg0), arg1, toVar(arg2),
                 arg3,
-                toVar(arg4), new ConditionVal(TypeConditionOperatorRel.EQ, arg5.longValue())));
+                toVar(arg4), toCondition(operator, arg5.intValue())));
     }
 
     @Override
     public void addElementConstantMatrix(List<List<BigInteger>> arg0, int arg1, String arg2,
-            int arg3, String arg4, String arg5) throws UniverseContradictionException {
+            int arg3, String arg4, UniverseRelationalOperator operator, String arg5) throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.element(toIntMatrix(arg0), arg1, toVar(arg2), arg3,
-                        toVar(arg4), new ConditionVar(TypeConditionOperatorRel.EQ, toVar(arg5))));
+                        toVar(arg4), toCondition(operator, arg5)));
 
     }
 
     @Override
-    public void addElementConstantValues(List<BigInteger> arg0, int arg1, String arg2,
+    public void addElementConstantValues(List<BigInteger> arg0, int arg1, String arg2,UniverseRelationalOperator operator, 
             BigInteger arg3) throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.element(toIntArray(arg0), arg1, toVar(arg2),
-                TypeRank.ANY, new ConditionVal(TypeConditionOperatorRel.EQ, arg3.longValue())));
+                TypeRank.ANY, toCondition(operator, arg3.intValue())));
 
     }
 
     @Override
-    public void addElementConstantValues(List<BigInteger> arg0, int arg1, String arg2, String arg3)
+    public void addElementConstantValues(List<BigInteger> arg0, int arg1, String arg2, UniverseRelationalOperator operator, String arg3)
             throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.element(toIntArray(arg0), arg1, toVar(arg2),
-                TypeRank.ANY, new ConditionVar(TypeConditionOperatorRel.EQ, toVar(arg3))));
+                TypeRank.ANY, toCondition(operator, arg3)));
 
     }
 
     @Override
     public void addElementMatrix(List<List<String>> arg0, int arg1, String arg2, int arg3,
-            String arg4, BigInteger arg5) throws UniverseContradictionException {
+            String arg4,UniverseRelationalOperator operator,  BigInteger arg5) throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.element(toVarMatrix(arg0), arg1, toVar(arg2),
                 arg3,
-                toVar(arg4), new ConditionVal(TypeConditionOperatorRel.EQ, arg5.longValue())));
+                toVar(arg4), toCondition(operator, arg5.intValue())));
 
     }
 
     @Override
     public void addElementMatrix(List<List<String>> arg0, int arg1, String arg2, int arg3,
-            String arg4, String arg5) throws UniverseContradictionException {
+            String arg4, UniverseRelationalOperator operator, String arg5) throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.element(toVarMatrix(arg0), arg1, toVar(arg2), arg3,
-                        toVar(arg4), new ConditionVar(TypeConditionOperatorRel.EQ, toVar(arg5))));
+                        toVar(arg4), toCondition(operator, arg5)));
     }
 
     @Override

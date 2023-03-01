@@ -843,10 +843,10 @@ final class XCSPXCallback implements XCallbacks2 {
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addElementConstantMatrix(
                         toBigInteger(matrix), startRowIndex, rowIndex.id(), startColIndex,
-                        colIndex.id(), rhs),
+                        colIndex.id(), op, rhs),
                 (op, rhs) -> listener.addElementConstantMatrix(
                         toBigInteger(matrix), startRowIndex, rowIndex.id(), startColIndex,
-                        colIndex.id(), rhs));
+                        colIndex.id(), op, rhs));
     }
 
     /*
@@ -858,8 +858,8 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrElement(String id, XVarInteger[] list, Condition condition) {
         buildCtrWithCondition(condition,
-                (op, rhs) -> listener.addElement(toVariableIdentifiers(list), rhs),
-                (op, rhs) -> listener.addElement(toVariableIdentifiers(list), rhs));
+                (op, rhs) -> listener.addElement(toVariableIdentifiers(list), op, rhs),
+                (op, rhs) -> listener.addElement(toVariableIdentifiers(list), op, rhs));
     }
 
     /*
@@ -878,9 +878,9 @@ final class XCSPXCallback implements XCallbacks2 {
 
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addElementConstantValues(
-                        toBigInteger(list), startIndex, index.id(), rhs),
+                        toBigInteger(list), startIndex, index.id(), op, rhs),
                 (op, rhs) -> listener.addElementConstantValues(
-                        toBigInteger(list), startIndex, index.id(), rhs));
+                        toBigInteger(list), startIndex, index.id(), op, rhs));
     }
 
     /*
@@ -900,9 +900,9 @@ final class XCSPXCallback implements XCallbacks2 {
 
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addElement(
-                        toVariableIdentifiers(list), startIndex, index.id(), rhs),
+                        toVariableIdentifiers(list), startIndex, index.id(), op, rhs),
                 (op, rhs) -> listener.addElement(
-                        toVariableIdentifiers(list), startIndex, index.id(), rhs));
+                        toVariableIdentifiers(list), startIndex, index.id(), op, rhs));
     }
 
     /*
@@ -919,10 +919,10 @@ final class XCSPXCallback implements XCallbacks2 {
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addElementMatrix(
                         toVariableIdentifiers(matrix), startRowIndex, rowIndex.id(), startColIndex,
-                        colIndex.id(), rhs),
+                        colIndex.id(), op, rhs),
                 (op, rhs) -> listener.addElementMatrix(
                         toVariableIdentifiers(matrix), startRowIndex, rowIndex.id(), startColIndex,
-                        colIndex.id(), rhs));
+                        colIndex.id(), op, rhs));
     }
 
     /*
