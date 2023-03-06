@@ -126,7 +126,8 @@ final class XCSPXCallback implements XCallbacks2 {
             TypeExpr.GE, UniverseRelationalOperator.GE);
 
     /**
-     * A map for translating a {@link TypeOperatorRel} to a {@link UniverseRelationalOperator}.
+     * A map for translating a {@link TypeOperatorRel} to a
+     * {@link UniverseRelationalOperator}.
      */
     private static final Map<TypeOperatorRel, UniverseRelationalOperator> TYPE_OP_REL_TO_REL_OP = Map.of(
             TypeOperatorRel.LT, UniverseRelationalOperator.LT,
@@ -181,28 +182,31 @@ final class XCSPXCallback implements XCallbacks2 {
     public Object unimplementedCase(Object... objects) {
         throw new UnsupportedOperationException();
     }
-    
+
     /*
      * (non-Javadoc)
      *
-     * @see org.xcsp.parser.callbacks.XCallbacks2#beginGroup(org.xcsp.parser.entries.XConstraints.XGroup)
+     * @see org.xcsp.parser.callbacks.XCallbacks2#beginGroup(org.xcsp.parser.entries.
+     * XConstraints.XGroup)
      */
     @Override
     public void beginGroup(XGroup g) {
-       JUniverseAceProblemAdapter.currentGroup++;
-       JUniverseAceProblemAdapter.inGroup=true;
+        JUniverseAceProblemAdapter.currentGroup++;
+        JUniverseAceProblemAdapter.inGroup = true;
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see org.xcsp.parser.callbacks.XCallbacks2#endGroup(org.xcsp.parser.entries.XConstraints.XGroup)
+     * @see
+     * org.xcsp.parser.callbacks.XCallbacks2#endGroup(org.xcsp.parser.entries.XConstraints
+     * .XGroup)
      */
     @Override
     public void endGroup(XGroup g) {
-        JUniverseAceProblemAdapter.inGroup=false;
+        JUniverseAceProblemAdapter.inGroup = false;
     }
-    
+
     /*
      * (non-Javadoc)
      *
@@ -234,8 +238,8 @@ final class XCSPXCallback implements XCallbacks2 {
      */
     @Override
     public void buildCtrClause(String id, XVarInteger[] pos, XVarInteger[] neg) {
-       
-            listener.addClause(toVariableIdentifiers(pos), toVariableIdentifiers(neg));
+
+        listener.addClause(toVariableIdentifiers(pos), toVariableIdentifiers(neg));
 
     }
 
@@ -248,8 +252,8 @@ final class XCSPXCallback implements XCallbacks2 {
      */
     @Override
     public void buildCtrLogic(String id, TypeLogicalOperator op, XVarInteger[] vars) {
-        
-            listener.addLogical(TYPE_LOGIC_OP_TO_BOOL_OP.get(op), toVariableIdentifiers(vars));
+
+        listener.addLogical(TYPE_LOGIC_OP_TO_BOOL_OP.get(op), toVariableIdentifiers(vars));
 
     }
 
@@ -265,8 +269,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrLogic(String id, XVarInteger x, TypeEqNeOperator op,
             TypeLogicalOperator lop, XVarInteger[] vars) {
 
-            listener.addLogical(x.id(), op == TypeEqNeOperator.EQ,
-                    TYPE_LOGIC_OP_TO_BOOL_OP.get(lop), toVariableIdentifiers(vars));
+        listener.addLogical(x.id(), op == TypeEqNeOperator.EQ,
+                TYPE_LOGIC_OP_TO_BOOL_OP.get(lop), toVariableIdentifiers(vars));
 
     }
 
@@ -282,8 +286,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrLogic(String id, XVarInteger x, XVarInteger y,
             TypeConditionOperatorRel op, int k) {
 
-            listener.addLogical(x.id(),
-                    y.id(), TYPE_COND_OP_REL_TO_REL_OP.get(op), BigInteger.valueOf(k));
+        listener.addLogical(x.id(),
+                y.id(), TYPE_COND_OP_REL_TO_REL_OP.get(op), BigInteger.valueOf(k));
 
     }
 
@@ -300,8 +304,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrLogic(String id, XVarInteger x, XVarInteger y,
             TypeConditionOperatorRel op, XVarInteger z) {
 
-            listener.addLogical(x.id(),
-                    y.id(), TYPE_COND_OP_REL_TO_REL_OP.get(op), z.id());
+        listener.addLogical(x.id(),
+                y.id(), TYPE_COND_OP_REL_TO_REL_OP.get(op), z.id());
 
     }
 
@@ -314,7 +318,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrAllDifferent(String id, XVarInteger[] list) {
 
-            listener.addAllDifferent(toVariableIdentifiers(list));
+        listener.addAllDifferent(toVariableIdentifiers(list));
 
     }
 
@@ -328,7 +332,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrAllDifferentExcept(String id, XVarInteger[] list, int[] except) {
 
-            listener.addAllDifferent(toVariableIdentifiers(list), toBigInteger(except));
+        listener.addAllDifferent(toVariableIdentifiers(list), toBigInteger(except));
 
     }
 
@@ -342,7 +346,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrAllDifferentList(String id, XVarInteger[][] lists) {
 
-            listener.addAllDifferentList(toVariableIdentifiers(lists));
+        listener.addAllDifferentList(toVariableIdentifiers(lists));
 
     }
 
@@ -356,7 +360,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrAllDifferentMatrix(String id, XVarInteger[][] matrix) {
 
-            listener.addAllDifferentMatrix(toVariableIdentifiers(matrix));
+        listener.addAllDifferentMatrix(toVariableIdentifiers(matrix));
 
     }
 
@@ -370,7 +374,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrAllDifferentMatrix(String id, XVarInteger[][] matrix, int[] except) {
 
-            listener.addAllDifferentMatrix(toVariableIdentifiers(matrix), toBigInteger(except));
+        listener.addAllDifferentMatrix(toVariableIdentifiers(matrix), toBigInteger(except));
 
     }
 
@@ -383,7 +387,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrAllDifferent(String id, XNode<XVarInteger>[] trees) {
 
-            listener.addAllDifferentIntension(toIntensionConstraints(trees));
+        listener.addAllDifferentIntension(toIntensionConstraints(trees));
 
     }
 
@@ -396,7 +400,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrAllEqual(String id, XVarInteger[] list) {
 
-            listener.addAllEqual(toVariableIdentifiers(list));
+        listener.addAllEqual(toVariableIdentifiers(list));
 
     }
 
@@ -409,7 +413,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrAllEqual(String id, XNode<XVarInteger>[] trees) {
 
-            listener.addAllEqualIntension(toIntensionConstraints(trees));
+        listener.addAllEqualIntension(toIntensionConstraints(trees));
 
     }
 
@@ -422,7 +426,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrNotAllEqual(String id, XVarInteger[] list) {
 
-            listener.addNotAllEqual(toVariableIdentifiers(list));
+        listener.addNotAllEqual(toVariableIdentifiers(list));
 
     }
 
@@ -435,8 +439,8 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrAmong(String id, XVarInteger[] list, int[] values, int k) {
 
-            listener.addAmong(
-                    toVariableIdentifiers(list), toBigInteger(values), BigInteger.valueOf(k));
+        listener.addAmong(
+                toVariableIdentifiers(list), toBigInteger(values), BigInteger.valueOf(k));
 
     }
 
@@ -450,7 +454,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrAmong(String id, XVarInteger[] list, int[] values, XVarInteger k) {
 
-            listener.addAmong(toVariableIdentifiers(list), toBigInteger(values), k.id());
+        listener.addAmong(toVariableIdentifiers(list), toBigInteger(values), k.id());
 
     }
 
@@ -463,8 +467,8 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrAtLeast(String id, XVarInteger[] list, int value, int k) {
 
-            listener.addAtLeast(
-                    toVariableIdentifiers(list), BigInteger.valueOf(value), BigInteger.valueOf(k));
+        listener.addAtLeast(
+                toVariableIdentifiers(list), BigInteger.valueOf(value), BigInteger.valueOf(k));
 
     }
 
@@ -477,8 +481,8 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrAtMost(String id, XVarInteger[] list, int value, int k) {
 
-            listener.addAtMost(
-                    toVariableIdentifiers(list), BigInteger.valueOf(value), BigInteger.valueOf(k));
+        listener.addAtMost(
+                toVariableIdentifiers(list), BigInteger.valueOf(value), BigInteger.valueOf(k));
 
     }
 
@@ -492,9 +496,9 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrCardinality(String id, XVarInteger[] list, boolean closed, int[] values,
             int[] occursMin, int[] occursMax) {
 
-            listener.addCardinalityWithConstantValuesAndConstantIntervalCounts(
-                    toVariableIdentifiers(list), toBigInteger(values), toBigInteger(occursMin),
-                    toBigInteger(occursMax), closed);
+        listener.addCardinalityWithConstantValuesAndConstantIntervalCounts(
+                toVariableIdentifiers(list), toBigInteger(values), toBigInteger(occursMin),
+                toBigInteger(occursMax), closed);
 
     }
 
@@ -508,8 +512,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrCardinality(String id, XVarInteger[] list, boolean closed, int[] values,
             int[] occurs) {
 
-            listener.addCardinalityWithConstantValuesAndConstantCounts(toVariableIdentifiers(list),
-                    toBigInteger(values), toBigInteger(occurs), closed);
+        listener.addCardinalityWithConstantValuesAndConstantCounts(toVariableIdentifiers(list),
+                toBigInteger(values), toBigInteger(occurs), closed);
 
     }
 
@@ -524,9 +528,9 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrCardinality(String id, XVarInteger[] list, boolean closed, int[] values,
             XVarInteger[] occurs) {
 
-            listener.addCardinalityWithConstantValuesAndVariableCounts(
-                    toVariableIdentifiers(list), toBigInteger(values),
-                    toVariableIdentifiers(occurs), closed);
+        listener.addCardinalityWithConstantValuesAndVariableCounts(
+                toVariableIdentifiers(list), toBigInteger(values),
+                toVariableIdentifiers(occurs), closed);
 
     }
 
@@ -541,9 +545,9 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrCardinality(String id, XVarInteger[] list, boolean closed,
             XVarInteger[] values, int[] occursMin, int[] occursMax) {
 
-            listener.addCardinalityWithVariableValuesAndConstantIntervalCounts(
-                    toVariableIdentifiers(list), toVariableIdentifiers(values),
-                    toBigInteger(occursMin), toBigInteger(occursMax), closed);
+        listener.addCardinalityWithVariableValuesAndConstantIntervalCounts(
+                toVariableIdentifiers(list), toVariableIdentifiers(values),
+                toBigInteger(occursMin), toBigInteger(occursMax), closed);
 
     }
 
@@ -558,9 +562,9 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrCardinality(String id, XVarInteger[] list, boolean closed,
             XVarInteger[] values, int[] occurs) {
 
-            listener.addCardinalityWithVariableValuesAndConstantCounts(
-                    toVariableIdentifiers(list), toVariableIdentifiers(values),
-                    toBigInteger(occurs), closed);
+        listener.addCardinalityWithVariableValuesAndConstantCounts(
+                toVariableIdentifiers(list), toVariableIdentifiers(values),
+                toBigInteger(occurs), closed);
 
     }
 
@@ -576,9 +580,9 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrCardinality(String id, XVarInteger[] list, boolean closed,
             XVarInteger[] values, XVarInteger[] occurs) {
 
-            listener.addCardinalityWithVariableValuesAndVariableCounts(
-                    toVariableIdentifiers(list), toVariableIdentifiers(values),
-                    toVariableIdentifiers(occurs), closed);
+        listener.addCardinalityWithVariableValuesAndVariableCounts(
+                toVariableIdentifiers(list), toVariableIdentifiers(values),
+                toVariableIdentifiers(occurs), closed);
 
     }
 
@@ -592,7 +596,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrChannel(String id, XVarInteger[] list, int startIndex, XVarInteger value) {
 
-            listener.addChannel(toVariableIdentifiers(list), startIndex, value.id());
+        listener.addChannel(toVariableIdentifiers(list), startIndex, value.id());
 
     }
 
@@ -607,8 +611,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrChannel(String id, XVarInteger[] list1, int startIndex1,
             XVarInteger[] list2, int startIndex2) {
 
-            listener.addChannel(toVariableIdentifiers(list1), startIndex1,
-                    toVariableIdentifiers(list2), startIndex2);
+        listener.addChannel(toVariableIdentifiers(list1), startIndex1,
+                toVariableIdentifiers(list2), startIndex2);
 
     }
 
@@ -621,7 +625,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrChannel(String id, XVarInteger[] list, int startIndex) {
 
-            listener.addChannel(toVariableIdentifiers(list), startIndex);
+        listener.addChannel(toVariableIdentifiers(list), startIndex);
 
     }
 
@@ -934,8 +938,8 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrExactly(String id, XVarInteger[] list, int value, int k) {
 
-            listener.addExactly(
-                    toVariableIdentifiers(list), BigInteger.valueOf(value), BigInteger.valueOf(k));
+        listener.addExactly(
+                toVariableIdentifiers(list), BigInteger.valueOf(value), BigInteger.valueOf(k));
 
     }
 
@@ -949,7 +953,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrExactly(String id, XVarInteger[] list, int value, XVarInteger k) {
 
-            listener.addExactly(toVariableIdentifiers(list), BigInteger.valueOf(value), k.id());
+        listener.addExactly(toVariableIdentifiers(list), BigInteger.valueOf(value), k.id());
 
     }
 
@@ -963,11 +967,11 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrExtension(String id, XVarInteger x, int[] values, boolean positive,
             Set<TypeFlag> flags) {
 
-            if (positive) {
-                listener.addSupport(x.id(), toBigInteger(values));
-            } else {
-                listener.addConflicts(x.id(), toBigInteger(values));
-            }
+        if (positive) {
+            listener.addSupport(x.id(), toBigInteger(values));
+        } else {
+            listener.addConflicts(x.id(), toBigInteger(values));
+        }
 
     }
 
@@ -981,13 +985,13 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrExtension(String id, XVarInteger[] list, int[][] tuples, boolean positive,
             Set<TypeFlag> flags) {
 
-            if (positive) {
-                listener.addSupport(toVariableIdentifiers(list),
-                        toBigInteger(tuples, flags.contains(TypeFlag.STARRED_TUPLES)));
-            } else {
-                listener.addConflicts(toVariableIdentifiers(list),
-                        toBigInteger(tuples, flags.contains(TypeFlag.STARRED_TUPLES)));
-            }
+        if (positive) {
+            listener.addSupport(toVariableIdentifiers(list),
+                    toBigInteger(tuples, flags.contains(TypeFlag.STARRED_TUPLES)));
+        } else {
+            listener.addConflicts(toVariableIdentifiers(list),
+                    toBigInteger(tuples, flags.contains(TypeFlag.STARRED_TUPLES)));
+        }
 
     }
 
@@ -1000,7 +1004,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrInstantiation(String id, XVarInteger[] list, int[] values) {
 
-            listener.addInstantiation(toVariableIdentifiers(list), toBigInteger(values));
+        listener.addInstantiation(toVariableIdentifiers(list), toBigInteger(values));
 
     }
 
@@ -1014,7 +1018,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrIntension(String id, XVarInteger[] scope, XNodeParent<XVarInteger> tree) {
 
-            listener.addIntension(new IntensionConstraintXNodeAdapter(tree));
+        listener.addIntension(new IntensionConstraintXNodeAdapter(tree));
 
     }
 
@@ -1028,7 +1032,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrLex(String id, XVarInteger[][] lists, TypeOperatorRel operator) {
 
-            listener.addLex(toVariableIdentifiers(lists), TYPE_OP_REL_TO_REL_OP.get(operator));
+        listener.addLex(toVariableIdentifiers(lists), TYPE_OP_REL_TO_REL_OP.get(operator));
 
     }
 
@@ -1042,8 +1046,8 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrLexMatrix(String id, XVarInteger[][] matrix, TypeOperatorRel operator) {
 
-            listener.addLexMatrix(
-                    toVariableIdentifiers(matrix), TYPE_OP_REL_TO_REL_OP.get(operator));
+        listener.addLexMatrix(
+                toVariableIdentifiers(matrix), TYPE_OP_REL_TO_REL_OP.get(operator));
 
     }
 
@@ -1151,8 +1155,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrNoOverlap(String id, XVarInteger[] origins, int[] lengths,
             boolean zeroIgnored) {
 
-            listener.addNoOverlap(
-                    toVariableIdentifiers(origins), toBigInteger(lengths), zeroIgnored);
+        listener.addNoOverlap(
+                toVariableIdentifiers(origins), toBigInteger(lengths), zeroIgnored);
 
     }
 
@@ -1167,8 +1171,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrNoOverlap(String id, XVarInteger[] origins, XVarInteger[] lengths,
             boolean zeroIgnored) {
 
-            listener.addNoOverlapVariableLength(
-                    toVariableIdentifiers(origins), toVariableIdentifiers(lengths), zeroIgnored);
+        listener.addNoOverlapVariableLength(
+                toVariableIdentifiers(origins), toVariableIdentifiers(lengths), zeroIgnored);
 
     }
 
@@ -1182,8 +1186,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrNoOverlap(String id, XVarInteger[][] origins, int[][] lengths,
             boolean zeroIgnored) {
 
-            listener.addMultiDimensionalNoOverlap(
-                    toVariableIdentifiers(origins), toBigInteger(lengths), zeroIgnored);
+        listener.addMultiDimensionalNoOverlap(
+                toVariableIdentifiers(origins), toBigInteger(lengths), zeroIgnored);
 
     }
 
@@ -1198,9 +1202,59 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrNoOverlap(String id, XVarInteger[][] origins, XVarInteger[][] lengths,
             boolean zeroIgnored) {
 
-            listener.addMultiDimensionalNoOverlapVariableLength(
-                    toVariableIdentifiers(origins), toVariableIdentifiers(lengths), zeroIgnored);
+        listener.addMultiDimensionalNoOverlapVariableLength(
+                toVariableIdentifiers(origins), toVariableIdentifiers(lengths), zeroIgnored);
 
+    }
+
+    @Override
+    public void buildCtrNoOverlap(String id, XVarInteger[] xs, XVarInteger[] ys, XVarInteger[] lx,
+            int[] ly, boolean zeroIgnored) {
+        listener.addBiDimensionalNoOverlap(toVariableIdentifiers(xs), toVariableIdentifiers(ys),
+                toVariableIdentifiers(lx), toBigInteger(ly), zeroIgnored);
+    }
+
+    @Override
+    public void buildCtrFlow(String id, XVarInteger[] list, int[] balance, int[][] arcs) {
+        listener.addFlow(toVariableIdentifiers(list), toBigInteger(balance), toBigInteger(arcs));
+    }
+
+    @Override
+    public void buildCtrFlow(String id, XVarInteger[] list, int[] balance, int[][] arcs,
+            int[] weights, Condition condition) {
+        buildCtrWithCondition(condition,
+                (op, rhs) -> listener.addFlow(toVariableIdentifiers(list), toBigInteger(balance),
+                        toBigInteger(arcs), toBigInteger(weights), op, rhs),
+                (op, rhs) -> listener.addFlow(toVariableIdentifiers(list), toBigInteger(balance),
+                        toBigInteger(arcs), toBigInteger(weights), op, rhs));
+    }
+
+    @Override
+    public void buildCtrKnapsack(String id, XVarInteger[] list, int[] weights, Condition wcondition,
+            int[] profits, Condition pcondition) {
+        buildCtrWithCondition(wcondition,
+                (wOp, wRhs) -> buildCtrWithCondition(pcondition,
+                        (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
+                                toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp, pRhs),
+                        (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
+                                toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp,
+                                pRhs)),
+                (wOp, wRhs) -> buildCtrWithCondition(pcondition,
+                        (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
+                                toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp, pRhs),
+                        (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
+                                toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp,
+                                pRhs)));
+    }
+
+    @Override
+    public void buildCtrPrecedence(String id, XVarInteger[] list) {
+        listener.addPrecedence(toVariableIdentifiers(list));
+    }
+
+    @Override
+    public void buildCtrPrecedence(String id, XVarInteger[] list, int[] values, boolean covered) {
+        listener.addPrecedence(toVariableIdentifiers(list), toBigInteger(values), covered);
     }
 
     /*
@@ -1213,8 +1267,8 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrOrdered(String id, XVarInteger[] list, int[] lengths,
             TypeOperatorRel operator) {
-            listener.addOrderedWithConstantLength(toVariableIdentifiers(list),
-                    toBigInteger(lengths), TYPE_OP_REL_TO_REL_OP.get(operator));
+        listener.addOrderedWithConstantLength(toVariableIdentifiers(list),
+                toBigInteger(lengths), TYPE_OP_REL_TO_REL_OP.get(operator));
 
     }
 
@@ -1228,7 +1282,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrOrdered(String id, XVarInteger[] list, TypeOperatorRel operator) {
 
-            listener.addOrdered(toVariableIdentifiers(list), TYPE_OP_REL_TO_REL_OP.get(operator));
+        listener.addOrdered(toVariableIdentifiers(list), TYPE_OP_REL_TO_REL_OP.get(operator));
 
     }
 
@@ -1244,8 +1298,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrOrdered(String id, XVarInteger[] list, XVarInteger[] lengths,
             TypeOperatorRel operator) {
 
-            listener.addOrderedWithVariableLength(toVariableIdentifiers(list),
-                    toVariableIdentifiers(lengths), TYPE_OP_REL_TO_REL_OP.get(operator));
+        listener.addOrderedWithVariableLength(toVariableIdentifiers(list),
+                toVariableIdentifiers(lengths), TYPE_OP_REL_TO_REL_OP.get(operator));
 
     }
 
@@ -1259,8 +1313,8 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrPrimitive(String id, XVarInteger x, TypeConditionOperatorRel op, int k) {
 
-            listener.addPrimitive(
-                    x.id(), TYPE_COND_OP_REL_TO_REL_OP.get(op), BigInteger.valueOf(k));
+        listener.addPrimitive(
+                x.id(), TYPE_COND_OP_REL_TO_REL_OP.get(op), BigInteger.valueOf(k));
 
     }
 
@@ -1276,8 +1330,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrPrimitive(String id, XVarInteger x, TypeArithmeticOperator aop, int p,
             TypeConditionOperatorRel op, int k) {
 
-            listener.addPrimitive(x.id(), TYPE_ARITH_OP_TO_ARITH_OP.get(aop), BigInteger.valueOf(p),
-                    TYPE_COND_OP_REL_TO_REL_OP.get(op), BigInteger.valueOf(k));
+        listener.addPrimitive(x.id(), TYPE_ARITH_OP_TO_ARITH_OP.get(aop), BigInteger.valueOf(p),
+                TYPE_COND_OP_REL_TO_REL_OP.get(op), BigInteger.valueOf(k));
 
     }
 
@@ -1293,8 +1347,8 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrPrimitive(String id, XVarInteger x, TypeArithmeticOperator aop, int p,
             TypeConditionOperatorRel op, XVarInteger y) {
-            listener.addPrimitive(x.id(), TYPE_ARITH_OP_TO_ARITH_OP.get(aop), BigInteger.valueOf(p),
-                    TYPE_COND_OP_REL_TO_REL_OP.get(op), y.id());
+        listener.addPrimitive(x.id(), TYPE_ARITH_OP_TO_ARITH_OP.get(aop), BigInteger.valueOf(p),
+                TYPE_COND_OP_REL_TO_REL_OP.get(op), y.id());
 
     }
 
@@ -1310,8 +1364,8 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrPrimitive(String id, XVarInteger x, TypeArithmeticOperator aop,
             XVarInteger y, TypeConditionOperatorRel op, int k) {
-            listener.addPrimitive(x.id(), TYPE_ARITH_OP_TO_ARITH_OP.get(aop), y.id(),
-                    TYPE_COND_OP_REL_TO_REL_OP.get(op), BigInteger.valueOf(k));
+        listener.addPrimitive(x.id(), TYPE_ARITH_OP_TO_ARITH_OP.get(aop), y.id(),
+                TYPE_COND_OP_REL_TO_REL_OP.get(op), BigInteger.valueOf(k));
 
     }
 
@@ -1329,8 +1383,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrPrimitive(String id, XVarInteger x, TypeArithmeticOperator aop,
             XVarInteger y, TypeConditionOperatorRel op, XVarInteger z) {
 
-            listener.addPrimitive(x.id(), TYPE_ARITH_OP_TO_ARITH_OP.get(aop), y.id(),
-                    TYPE_COND_OP_REL_TO_REL_OP.get(op), z.id());
+        listener.addPrimitive(x.id(), TYPE_ARITH_OP_TO_ARITH_OP.get(aop), y.id(),
+                TYPE_COND_OP_REL_TO_REL_OP.get(op), z.id());
 
     }
 
@@ -1346,7 +1400,7 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrPrimitive(String id, XVarInteger x, TypeUnaryArithmeticOperator aop,
             XVarInteger y) {
 
-            listener.addPrimitive(TYPE_UNARY_ARITH_OP_TO_ARITH_OP.get(aop), y.id(), x.id());
+        listener.addPrimitive(TYPE_UNARY_ARITH_OP_TO_ARITH_OP.get(aop), y.id(), x.id());
 
     }
 
@@ -1360,7 +1414,7 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrPrimitive(String id, XVarInteger x, TypeConditionOperatorSet op, int[] t) {
 
-            listener.addPrimitive(x.id(), TYPE_COND_OP_SET_TO_SET_OP.get(op), toBigInteger(t));
+        listener.addPrimitive(x.id(), TYPE_COND_OP_SET_TO_SET_OP.get(op), toBigInteger(t));
 
     }
 
@@ -1375,8 +1429,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrPrimitive(String id, XVarInteger x, TypeConditionOperatorSet op,
             int min, int max) {
 
-            listener.addPrimitive(x.id(), TYPE_COND_OP_SET_TO_SET_OP.get(op),
-                    BigInteger.valueOf(min), BigInteger.valueOf(max));
+        listener.addPrimitive(x.id(), TYPE_COND_OP_SET_TO_SET_OP.get(op),
+                BigInteger.valueOf(min), BigInteger.valueOf(max));
 
     }
 
@@ -1407,7 +1461,7 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addSum(
                         toVariableIdentifiers(list), toBigInteger(coeffs), op, rhs),
                 (op, rhs) -> listener.addSum(
-                        toVariableIdentifiers(list), toBigInteger(coeffs), op, rhs[0],rhs[1]),
+                        toVariableIdentifiers(list), toBigInteger(coeffs), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addSum(
                         toVariableIdentifiers(list), toBigInteger(coeffs), op, rhs));
     }
@@ -1422,6 +1476,9 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrSum(String id, XNode<XVarInteger>[] trees, Condition condition) {
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addSumIntension(toIntensionConstraints(trees), op, rhs),
+                (op, rhs) -> listener.addSumIntension(toIntensionConstraints(trees), op, rhs),
+                (op, rhs) -> listener.addSumIntension(toIntensionConstraints(trees), op, rhs[0],
+                        rhs[1]),
                 (op, rhs) -> listener.addSumIntension(toIntensionConstraints(trees), op, rhs));
     }
 
@@ -1437,6 +1494,10 @@ final class XCSPXCallback implements XCallbacks2 {
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addSumIntension(
                         toIntensionConstraints(trees), toBigInteger(coeffs), op, rhs),
+                (op, rhs) -> listener.addSumIntension(
+                        toIntensionConstraints(trees), toBigInteger(coeffs), op, rhs),
+                (op, rhs) -> listener.addSumIntension(
+                        toIntensionConstraints(trees), toBigInteger(coeffs), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addSumIntension(
                         toIntensionConstraints(trees), toBigInteger(coeffs), op, rhs));
     }
@@ -1455,6 +1516,11 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addSumWithVariableCoefficients(
                         toVariableIdentifiers(list), toVariableIdentifiers(coeffs), op, rhs),
                 (op, rhs) -> listener.addSumWithVariableCoefficients(
+                        toVariableIdentifiers(list), toVariableIdentifiers(coeffs), op, rhs),
+                (op, rhs) -> listener.addSumWithVariableCoefficients(
+                        toVariableIdentifiers(list), toVariableIdentifiers(coeffs), op, rhs[0],
+                        rhs[1]),
+                (op, rhs) -> listener.addSumWithVariableCoefficients(
                         toVariableIdentifiers(list), toVariableIdentifiers(coeffs), op, rhs));
     }
 
@@ -1472,30 +1538,39 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addSumIntensionWithVariableCoefficients(
                         toIntensionConstraints(trees), toVariableIdentifiers(coeffs), op, rhs),
                 (op, rhs) -> listener.addSumIntensionWithVariableCoefficients(
+                        toIntensionConstraints(trees), toVariableIdentifiers(coeffs), op, rhs),
+                (op, rhs) -> listener.addSumIntensionWithVariableCoefficients(
+                        toIntensionConstraints(trees), toVariableIdentifiers(coeffs), op, rhs[0],
+                        rhs[1]),
+                (op, rhs) -> listener.addSumIntensionWithVariableCoefficients(
                         toIntensionConstraints(trees), toVariableIdentifiers(coeffs), op, rhs));
     }
-    
-    
 
     /*
      * (non-Javadoc)
      *
-     * @see org.xcsp.parser.callbacks.XCallbacks2#buildCtrRegular(java.lang.String, org.xcsp.parser.entries.XVariables.XVarInteger[], org.xcsp.common.structures.Transition[], java.lang.String, java.lang.String[])
+     * @see org.xcsp.parser.callbacks.XCallbacks2#buildCtrRegular(java.lang.String,
+     * org.xcsp.parser.entries.XVariables.XVarInteger[],
+     * org.xcsp.common.structures.Transition[], java.lang.String, java.lang.String[])
      */
     @Override
     public void buildCtrRegular(String id, XVarInteger[] list, Transition[] transitions,
             String startState, String[] finalStates) {
-        listener.addRegular(toVariableIdentifiers(list), toUniverseTransition(transitions), startState, List.of(finalStates));
+        listener.addRegular(toVariableIdentifiers(list), toUniverseTransition(transitions),
+                startState, List.of(finalStates));
     }
 
     private List<UniverseTransition> toUniverseTransition(Transition[] transitions) {
-        return Stream.of(transitions).map(t->new UniverseTransition(t.start, ((Long)t.value).intValue(), t.end)).collect(Collectors.toList());
+        return Stream.of(transitions).map(
+                t -> new UniverseTransition(t.start, ((Long) t.value).intValue(), t.end)).collect(
+                        Collectors.toList());
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see org.xcsp.parser.callbacks.XCallbacks2#buildCtrCircuit(java.lang.String, org.xcsp.parser.entries.XVariables.XVarInteger[], int)
+     * @see org.xcsp.parser.callbacks.XCallbacks2#buildCtrCircuit(java.lang.String,
+     * org.xcsp.parser.entries.XVariables.XVarInteger[], int)
      */
     @Override
     public void buildCtrCircuit(String id, XVarInteger[] list, int startIndex) {
@@ -1505,7 +1580,8 @@ final class XCSPXCallback implements XCallbacks2 {
     /*
      * (non-Javadoc)
      *
-     * @see org.xcsp.parser.callbacks.XCallbacks2#buildCtrCircuit(java.lang.String, org.xcsp.parser.entries.XVariables.XVarInteger[], int, int)
+     * @see org.xcsp.parser.callbacks.XCallbacks2#buildCtrCircuit(java.lang.String,
+     * org.xcsp.parser.entries.XVariables.XVarInteger[], int, int)
      */
     @Override
     public void buildCtrCircuit(String id, XVarInteger[] list, int startIndex, int size) {
@@ -1515,20 +1591,21 @@ final class XCSPXCallback implements XCallbacks2 {
     /*
      * (non-Javadoc)
      *
-     * @see org.xcsp.parser.callbacks.XCallbacks2#buildCtrCircuit(java.lang.String, org.xcsp.parser.entries.XVariables.XVarInteger[], int, org.xcsp.parser.entries.XVariables.XVarInteger)
+     * @see org.xcsp.parser.callbacks.XCallbacks2#buildCtrCircuit(java.lang.String,
+     * org.xcsp.parser.entries.XVariables.XVarInteger[], int,
+     * org.xcsp.parser.entries.XVariables.XVarInteger)
      */
     @Override
     public void buildCtrCircuit(String id, XVarInteger[] list, int startIndex, XVarInteger size) {
-       listener.addCircuit(toVariableIdentifiers(list), startIndex,size.id());
+        listener.addCircuit(toVariableIdentifiers(list), startIndex, size.id());
     }
 
-    
-    
-    
     /*
      * (non-Javadoc)
      *
-     * @see org.xcsp.parser.callbacks.XCallbacks2#buildCtrMDD(java.lang.String, org.xcsp.parser.entries.XVariables.XVarInteger[], org.xcsp.common.structures.Transition[])
+     * @see org.xcsp.parser.callbacks.XCallbacks2#buildCtrMDD(java.lang.String,
+     * org.xcsp.parser.entries.XVariables.XVarInteger[],
+     * org.xcsp.common.structures.Transition[])
      */
     @Override
     public void buildCtrMDD(String id, XVarInteger[] list, Transition[] transitions) {
@@ -1818,10 +1895,12 @@ final class XCSPXCallback implements XCallbacks2 {
                     "Objective function of type " + type + " is not (yet?) supported");
         }
     }
+
     @Override
     public void buildAnnotationDecision(XVarInteger[] list) {
-    	listener.decisionVariables(toVariableIdentifiers(list));
+        listener.decisionVariables(toVariableIdentifiers(list));
     }
+
     /**
      * Transforms an array of {@code int} values into a vector of {@link BigInteger}.
      *
@@ -1908,7 +1987,7 @@ final class XCSPXCallback implements XCallbacks2 {
      * @return The matrix of the identifiers of the variables in the matrix.
      */
     private static List<List<String>> toVariableIdentifiers(XVarInteger[][] matrix) {
-    	List<List<String>> vec = new ArrayList<List<String>>(matrix.length);
+        List<List<String>> vec = new ArrayList<List<String>>(matrix.length);
         for (var array : matrix) {
             vec.add(toVariableIdentifiers(array));
         }
@@ -1951,7 +2030,8 @@ final class XCSPXCallback implements XCallbacks2 {
          * @param operator The operator of the condition.
          * @param rightHandSide The right-hand side of the condition.
          *
-         * @throws UniverseContradictionException If building the constraint results in a trivial
+         * @throws UniverseContradictionException If building the constraint results in a
+         *         trivial
          *         inconsistency.
          */
         void buildCtr(O operator, T rightHandSide);
@@ -2010,24 +2090,23 @@ final class XCSPXCallback implements XCallbacks2 {
             ConditionalConstraintBuilder<UniverseSetBelongingOperator, BigInteger[]> ifRange,
             ConditionalConstraintBuilder<UniverseSetBelongingOperator, List<BigInteger>> ifSetOfValues) {
 
-            // Getting the operator involved in the condition.
-            var operator = condition.operatorTypeExpr();
+        // Getting the operator involved in the condition.
+        var operator = condition.operatorTypeExpr();
 
-            // Considering the case where the condition uses a relational operator.
-            if (operator.isRelationalOperator()) {
-                buildCtrRelational(condition, ifConstant, ifVariable);
-                return;
-            }
+        // Considering the case where the condition uses a relational operator.
+        if (operator.isRelationalOperator()) {
+            buildCtrRelational(condition, ifConstant, ifVariable);
+            return;
+        }
 
-            // Considering the case where the condition is on a set.
-            if ((operator == TypeExpr.IN) || (operator == TypeExpr.NOTIN)) {
-                buildCtrConditionSet(condition, ifRange, ifSetOfValues);
-                return;
-            }
+        // Considering the case where the condition is on a set.
+        if ((operator == TypeExpr.IN) || (operator == TypeExpr.NOTIN)) {
+            buildCtrConditionSet(condition, ifRange, ifSetOfValues);
+            return;
+        }
 
-            throw new UnsupportedOperationException(
-                    "Unknown condition operator: " + operator);
-
+        throw new UnsupportedOperationException(
+                "Unknown condition operator: " + operator);
 
     }
 
@@ -2042,15 +2121,15 @@ final class XCSPXCallback implements XCallbacks2 {
      * @param ifVariable The builder to use to build a constraint if the condition has a
      *        variable on its right-hand side.
      *
-     * @throws UniverseContradictionException If building the constraint results in a trivial
+     * @throws UniverseContradictionException If building the constraint results in a
+     *         trivial
      *         inconsistency.
      * @throws UnsupportedOperationException If the condition uses an unrecognized
      *         operator.
      */
     private void buildCtrRelational(Condition condition,
             ConditionalConstraintBuilder<UniverseRelationalOperator, BigInteger> ifConstant,
-            ConditionalConstraintBuilder<UniverseRelationalOperator, String> ifVariable)
-             {
+            ConditionalConstraintBuilder<UniverseRelationalOperator, String> ifVariable) {
         // Translating the operator to the appropriate type.
         var relOperator = TYPE_EXPR_TO_REL_OP.get(condition.operatorTypeExpr());
 
@@ -2077,7 +2156,8 @@ final class XCSPXCallback implements XCallbacks2 {
      * @param ifSetOfValues The builder to use to build a constraint if the condition has
      *        a set on its right-hand side.
      *
-     * @throws UniverseContradictionException If building the constraint results in a trivial
+     * @throws UniverseContradictionException If building the constraint results in a
+     *         trivial
      *         inconsistency.
      * @throws UnsupportedOperationException If the condition uses an unrecognized
      *         operator.

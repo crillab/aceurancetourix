@@ -42,6 +42,7 @@ import fr.univartois.cril.juniverse.csp.operator.UniverseArithmeticOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseBooleanOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator;
+import fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator;
 
 /**
  * The IntensionConstraintXNodeAdapter is a (lazy) adapter for an {@link XNode}
@@ -78,7 +79,9 @@ final class IntensionConstraintXNodeAdapter implements IIntensionConstraint {
             Map.entry(TypeExpr.EQ, UniverseRelationalOperator.EQ),
             Map.entry(TypeExpr.NE, UniverseRelationalOperator.NEQ),
             Map.entry(TypeExpr.GE, UniverseRelationalOperator.GE),
-            Map.entry(TypeExpr.GT, UniverseRelationalOperator.GT));
+            Map.entry(TypeExpr.GT, UniverseRelationalOperator.GT),
+            Map.entry(TypeExpr.IN, UniverseSetBelongingOperator.IN),
+            Map.entry(TypeExpr.NOTIN, UniverseSetBelongingOperator.NOT_IN));
 
     /**
      * The mapping between {@link TypeExpr} and n-ary operators.
@@ -130,13 +133,14 @@ final class IntensionConstraintXNodeAdapter implements IIntensionConstraint {
             self.accept(visitor);
             return;
         }
-        
+
         if (type == TypeExpr.IF) {
             // The adapted node is an alternative.
             var adaptedCondition = new IntensionConstraintXNodeAdapter(adaptee.sons[0]);
             var adaptedIfTrue = new IntensionConstraintXNodeAdapter(adaptee.sons[1]);
             var adaptedIfFalse = new IntensionConstraintXNodeAdapter(adaptee.sons[2]);
-            var self = new IfThenElseIntensionConstraint(adaptedCondition, adaptedIfTrue, adaptedIfFalse);
+            var self = new IfThenElseIntensionConstraint(adaptedCondition, adaptedIfTrue,
+                    adaptedIfFalse);
             self.accept(visitor);
             return;
         }
@@ -163,9 +167,8 @@ final class IntensionConstraintXNodeAdapter implements IIntensionConstraint {
         var nary = NARY_OPERATORS.get(type);
         if (nary != null) {
             // The adapted node is an n-ary constraint.
-            var adaptedChildren = Stream.of(adaptee.sons)
-                    .map(IntensionConstraintXNodeAdapter::new)
-                    .collect(toList());
+            var adaptedChildren = Stream.of(adaptee.sons).map(
+                    IntensionConstraintXNodeAdapter::new).collect(toList());
             var self = new NaryIntensionConstraint(nary, adaptedChildren);
             self.accept(visitor);
             return;

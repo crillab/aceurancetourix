@@ -37,6 +37,7 @@ import java.io.UncheckedIOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -358,7 +359,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
         var v = getHead().isSatisfiable(assumpts);
         return v;
 
-    }
+    } 
 
     @Override
     public void addAllDifferent(List<String> arg0) throws UniverseContradictionException {
@@ -1932,8 +1933,12 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     @Override
     public void addSum(List<String> variables, UniverseSetBelongingOperator operator,
             BigInteger min, BigInteger max) {
-        // TODO Auto-generated method stub
-
+        List<String> vars = new ArrayList<>(variables);
+        int[] coeffs = new int[variables.size()];
+        Arrays.fill(coeffs, 1);
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.sum(toVarArray(vars), coeffs,
+                        toCondition(operator, min.intValue(), max.intValue())));
     }
 
     @Override
@@ -1950,21 +1955,34 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     @Override
     public void addSum(List<String> variables, UniverseSetBelongingOperator operator,
             List<BigInteger> values) {
-        // TODO Auto-generated method stub
+        List<String> vars = new ArrayList<>(variables);
+        int[] coeffs = new int[variables.size()];
+        Arrays.fill(coeffs, 1);
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.sum(toVarArray(vars), coeffs,
+                        toCondition(operator, values)));
 
     }
 
     @Override
     public void addSum(List<String> variables, List<BigInteger> coefficients,
             UniverseSetBelongingOperator operator, List<BigInteger> values) {
-        // TODO Auto-generated method stub
+        List<String> vars = new ArrayList<>(variables);
+        int[] coeffs = coefficients.stream().mapToInt(x -> x.intValue()).toArray();
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.sum(toVarArray(vars), coeffs,
+                        toCondition(operator, values)));
 
     }
 
     @Override
     public void addSumIntension(List<IIntensionConstraint> intensionConstraints,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
-        // TODO Auto-generated method stub
+        int[] coeffs = new int[intensionConstraints.size()];
+        Arrays.fill(coeffs, 1);
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.sum(toXnode(intensionConstraints), coeffs,
+                        toCondition(operator, min.intValue(), max.intValue())));
 
     }
 
@@ -1972,14 +1990,21 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     public void addSumIntension(List<IIntensionConstraint> intensionConstraints,
             List<BigInteger> coefficients, UniverseSetBelongingOperator operator, BigInteger min,
             BigInteger max) {
-        // TODO Auto-generated method stub
+        int[] coeffs = coefficients.stream().mapToInt(x -> x.intValue()).toArray();
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.sum(toXnode(intensionConstraints), coeffs,
+                        toCondition(operator, min.intValue(), max.intValue())));
 
     }
 
     @Override
     public void addSumIntension(List<IIntensionConstraint> intensionConstraints,
             UniverseSetBelongingOperator operator, List<BigInteger> values) {
-        // TODO Auto-generated method stub
+        int[] coeffs = new int[intensionConstraints.size()];
+        Arrays.fill(coeffs, 1);
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.sum(toXnode(intensionConstraints), coeffs,
+                        toCondition(operator, values)));
 
     }
 
@@ -1987,21 +2012,30 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     public void addSumIntension(List<IIntensionConstraint> intensionConstraints,
             List<BigInteger> coefficients, UniverseSetBelongingOperator operator,
             List<BigInteger> values) {
-        // TODO Auto-generated method stub
+        int[] coeffs = coefficients.stream().mapToInt(x -> x.intValue()).toArray();
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.sum(toXnode(intensionConstraints), coeffs,
+                        toCondition(operator, values)));
 
     }
 
     @Override
     public void addSumWithVariableCoefficients(List<String> variables, List<String> coefficients,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
-        // TODO Auto-generated method stub
+        List<String> vars = new ArrayList<>(variables);
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.sum(toVarArray(vars), toVarArray(coefficients),
+                        toCondition(operator, min.intValue(),max.intValue())));
 
     }
 
     @Override
     public void addSumWithVariableCoefficients(List<String> variables, List<String> coefficients,
             UniverseSetBelongingOperator operator, List<BigInteger> values) {
-        // TODO Auto-generated method stub
+        List<String> vars = new ArrayList<>(variables);
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.sum(toVarArray(vars), toVarArray(coefficients),
+                        toCondition(operator, values)));
 
     }
 
@@ -2009,7 +2043,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     public void addSumIntensionWithVariableCoefficients(
             List<IIntensionConstraint> intensionConstraints, List<String> coefficients,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
-        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
 
     }
 
@@ -2017,11 +2051,148 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     public void addSumIntensionWithVariableCoefficients(
             List<IIntensionConstraint> intensionConstraints, List<String> coefficients,
             UniverseSetBelongingOperator operator, List<BigInteger> values) {
-        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
 
     }
     
     
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addBiDimensionalNoOverlap(java.util.List, java.util.List, java.util.List, java.util.List)
+     */
+    @Override
+    public void addBiDimensionalNoOverlap(List<String> xVariables, List<String> yVariables,
+            List<String> xLength, List<BigInteger> yLength) {
+        addBiDimensionalNoOverlap(xVariables, yVariables, xLength, yLength, true);
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addBiDimensionalNoOverlap(java.util.List, java.util.List, java.util.List, java.util.List, boolean)
+     */
+    @Override
+    public void addBiDimensionalNoOverlap(List<String> xVariables, List<String> yVariables,
+            List<String> xLength, List<BigInteger> yLength, boolean zeroIgnored) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.noOverlap(toVarArray(xVariables), toVarArray(yVariables), toVarArray(xLength), toIntArray(yLength), zeroIgnored));
+        
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addFlow(java.util.List, java.util.List, java.util.List)
+     */
+    @Override
+    public void addFlow(List<String> list, List<BigInteger> balance, List<List<BigInteger>> edges) {
+        getHead().xcsp3.addConstraintsToAdd(p->p.flow(toVarArray(list), toIntArray(balance), toIntMatrix(edges)));
+        
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addFlow(java.util.List, java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String)
+     */
+    @Override
+    public void addFlow(List<String> list, List<BigInteger> balance, List<List<BigInteger>> edges,
+            List<BigInteger> weights, UniverseRelationalOperator operator, String variable) {
+        getHead().xcsp3.addConstraintsToAdd(p->p.flow(toVarArray(list), toIntArray(balance), toIntMatrix(edges),toIntArray(weights),toCondition(operator, variable)));
+        
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addFlow(java.util.List, java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger)
+     */
+    @Override
+    public void addFlow(List<String> list, List<BigInteger> balance, List<List<BigInteger>> edges,
+            List<BigInteger> weights, UniverseRelationalOperator operator, BigInteger value) {
+        getHead().xcsp3.addConstraintsToAdd(p->p.flow(toVarArray(list), toIntArray(balance), toIntMatrix(edges),toIntArray(weights),toCondition(operator, value.intValue())));
+        
+        
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String)
+     */
+    @Override
+    public void addKnapsack(List<String> list, List<BigInteger> weights,
+            UniverseRelationalOperator wOperator, String wVariable, List<BigInteger> profits,
+            UniverseRelationalOperator pOperator, String pVariable) {
+        getHead().xcsp3.addConstraintsToAdd(p->p.knapsack(toVarArray(list),toIntArray(weights), toCondition(wOperator, wVariable), toIntArray(profits), toCondition(pOperator, pVariable)));
+        
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger)
+     */
+    @Override
+    public void addKnapsack(List<String> list, List<BigInteger> weights,
+            UniverseRelationalOperator wOperator, String wVariable, List<BigInteger> profits,
+            UniverseRelationalOperator pOperator, BigInteger pValue) {
+        getHead().xcsp3.addConstraintsToAdd(p->p.knapsack(toVarArray(list),toIntArray(weights), toCondition(wOperator, wVariable), toIntArray(profits), toCondition(pOperator, pValue.intValue())));
+        
+        
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String)
+     */
+    @Override
+    public void addKnapsack(List<String> list, List<BigInteger> weights,
+            UniverseRelationalOperator wOperator, BigInteger wValue, List<BigInteger> profits,
+            UniverseRelationalOperator pOperator, String pVariable) {
+        getHead().xcsp3.addConstraintsToAdd(p->p.knapsack(toVarArray(list),toIntArray(weights), toCondition(wOperator, wValue.intValue()), toIntArray(profits), toCondition(pOperator, pVariable)));
+        
+        
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger)
+     */
+    @Override
+    public void addKnapsack(List<String> list, List<BigInteger> weights,
+            UniverseRelationalOperator wOperator, BigInteger wValue, List<BigInteger> profits,
+            UniverseRelationalOperator pOperator, BigInteger pValue) {
+        getHead().xcsp3.addConstraintsToAdd(p->p.knapsack(toVarArray(list),toIntArray(weights), toCondition(wOperator, wValue.intValue()), toIntArray(profits), toCondition(pOperator, pValue.intValue())));
+        
+        
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addPrecedence(java.util.List)
+     */
+    @Override
+    public void addPrecedence(List<String> list) {
+        getHead().xcsp3.addConstraintsToAdd(p->p.precedence(toVarArray(list)));
+        
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addPrecedence(java.util.List, java.util.List, boolean)
+     */
+    @Override
+    public void addPrecedence(List<String> list, List<BigInteger> values, boolean covered) {
+        getHead().xcsp3.addConstraintsToAdd(p->p.precedence(toVarArray(list),toIntArray(values),covered));
+        
+    }
 
     /*
      * (non-Javadoc)

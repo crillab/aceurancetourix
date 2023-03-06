@@ -20,10 +20,13 @@
 
 package fr.univartois.cril.aceurancetourix;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.xcsp.common.IVar;
+import org.xcsp.common.Range;
 import org.xcsp.common.Types.TypeExpr;
 import org.xcsp.common.predicates.XNode;
 import org.xcsp.common.predicates.XNodeLeaf;
@@ -34,6 +37,8 @@ import fr.univartois.cril.juniverse.csp.intension.ConstantIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor;
 import fr.univartois.cril.juniverse.csp.intension.IfThenElseIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.intension.NaryIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.RangeIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.SetIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.intension.UnaryIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.intension.VariableIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.operator.UniverseOperator;
@@ -191,11 +196,29 @@ class AceIntensionConstraintVisitor implements IIntensionConstraintVisitor {
             case "EQUIV":
                 op = TypeExpr.IFF;
                 break;
+            case "NOT_IN":
+                op = TypeExpr.NOTIN;
+                break;
             default:
                 op = TypeExpr.valueOf(string);
                 break;
         }
         return op;
+    }
+
+    @Override
+    public void visit(RangeIntensionConstraint rangeIntensionConstraint) {
+        stack.push(XNodeParent.set(new Range(rangeIntensionConstraint.getMin().intValue(),rangeIntensionConstraint.getMax().intValue()+1)));
+    }
+
+    @Override
+    public void visit(SetIntensionConstraint setIntensionConstraint) {
+         List<Long> values =new ArrayList<>(setIntensionConstraint.size());
+         for(int i=0;i<setIntensionConstraint.size();i++) {
+             var value = (XNodeLeaf<IVar>)stack.pop();
+             values.add((Long)value.value);
+         }
+         stack.push(XNodeParent.set(values));
     }
 
 }
