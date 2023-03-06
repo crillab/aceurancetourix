@@ -16,7 +16,7 @@ apply plugin: "maven-publish"
  **********************/
 
 group = "fr.cril"
-version = "0.1.12"
+version = "0.1.13"
 
 def outDir = "${rootDir}/dist"
 def jarDir = "${outDir}/home"
@@ -37,7 +37,7 @@ repositories {
 
 dependencies {
     implementation files("lib/ACE.jar")
-    implementation group: 'fr.cril', name:'juniverse', version: '0.1.13'
+    implementation group: 'fr.cril', name:'juniverse', version: '0.1.15'
 	implementation group: "org.xcsp", name: "xcsp3-tools", version: "2.0.3"
     
     testImplementation group: "org.junit.jupiter", name: "junit-jupiter-engine", version: "5.6.0"
