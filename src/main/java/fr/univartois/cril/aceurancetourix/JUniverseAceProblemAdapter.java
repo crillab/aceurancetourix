@@ -2306,4 +2306,216 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
         return getHead().getSolver().problem.framework==TypeFramework.COP;
     }
 
+    @Override
+    public void addElement(List<String> variables, UniverseSetBelongingOperator operator,
+            BigInteger min, BigInteger max) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.element(toVarArray(variables), toCondition(operator, min.intValue(), max.intValue())));
+        
+    }
+
+    @Override
+    public void addElement(List<String> variables, UniverseSetBelongingOperator operator,
+            List<BigInteger> value) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.element(toVarArray(variables), toCondition(operator, value)));
+        
+    }
+
+    @Override
+    public void addElementConstantValues(List<BigInteger> values, int startIndex, String index,
+            UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.element(toIntArray(values),startIndex,toVar(index),TypeRank.ANY, toCondition(operator, min.intValue(), max.intValue())));
+        
+    }
+
+    @Override
+    public void addElementConstantValues(List<BigInteger> values, int startIndex, String index,
+            UniverseSetBelongingOperator operator, List<BigInteger> set) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.element(toIntArray(values),startIndex,toVar(index),TypeRank.ANY, toCondition(operator, set)));
+        
+    }
+
+    @Override
+    public void addElement(List<String> variables, int startIndex, String index,
+            UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.element(toVarArray(variables),startIndex,toVar(index),TypeRank.ANY, toCondition(operator, min.intValue(), max.intValue())));
+        
+    }
+
+    @Override
+    public void addElement(List<String> values, int startIndex, String index,
+            UniverseSetBelongingOperator operator, List<BigInteger> set) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.element(toVarArray(values),startIndex,toVar(index),TypeRank.ANY, toCondition(operator, set)));
+        
+    }
+
+    @Override
+    public void addElementConstantMatrix(List<List<BigInteger>> matrix, int startRowIndex,
+            String rowIndex, int startColIndex, String colIndex,
+            UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.element(toIntMatrix(matrix),startRowIndex,toVar(rowIndex),startColIndex,toVar(colIndex), toCondition(operator, min.intValue(), max.intValue())));
+        
+    }
+
+    @Override
+    public void addElementConstantMatrix(List<List<BigInteger>> matrix, int startRowIndex,
+            String rowIndex, int startColIndex, String colIndex,
+            UniverseSetBelongingOperator operator, List<BigInteger> set) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.element(toIntMatrix(matrix),startRowIndex,toVar(rowIndex),startColIndex,toVar(colIndex), toCondition(operator, set)));
+        
+    }
+
+    @Override
+    public void addElementMatrix(List<List<String>> matrix, int startRowIndex, String rowIndex,
+            int startColIndex, String colIndex, UniverseSetBelongingOperator operator,
+            BigInteger min, BigInteger max) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.element(toVarMatrix(matrix),startRowIndex,toVar(rowIndex),startColIndex,toVar(colIndex), toCondition(operator, min.intValue(), max.intValue())));
+        
+    }
+
+    @Override
+    public void addElementMatrix(List<List<String>> matrix, int startRowIndex, String rowIndex,
+            int startColIndex, String colIndex, UniverseSetBelongingOperator operator,
+            List<BigInteger> set) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.element(toVarMatrix(matrix),startRowIndex,toVar(rowIndex),startColIndex,toVar(colIndex), toCondition(operator, set)));
+        
+    }
+
+    @Override
+    public void addMaximumArg(List<String> variables, UniverseRelationalOperator operator,
+            BigInteger value) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.maximumArg(toVarArray(variables),TypeRank.ANY,toCondition(operator, value.intValue())));
+        
+    }
+
+    @Override
+    public void addMaximumArg(List<String> variables, UniverseRelationalOperator operator,
+            String variable) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.maximumArg(toVarArray(variables),TypeRank.ANY,toCondition(operator, variable)));
+        
+    }
+
+    @Override
+    public void addMinimumArg(List<String> variables, UniverseRelationalOperator operator,
+            BigInteger value) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.minimumArg(toVarArray(variables),TypeRank.ANY,toCondition(operator, value.intValue())));
+        
+    }
+
+    @Override
+    public void addMinimumArg(List<String> variables, UniverseRelationalOperator operator,
+            String variable) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.minimumArg(toVarArray(variables),TypeRank.ANY,toCondition(operator, variable)));
+        
+    }
+
+    @Override
+    public void addMaximumArgIntension(List<IIntensionConstraint> variables,
+            UniverseRelationalOperator operator, BigInteger value) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.maximumArg(toXnode(variables),TypeRank.ANY,toCondition(operator, value.intValue())));
+        
+    }
+
+    @Override
+    public void addMaximumArgIntension(List<IIntensionConstraint> variables,
+            UniverseRelationalOperator operator, String variable) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.maximumArg(toXnode(variables),TypeRank.ANY,toCondition(operator, variable)));
+        
+    }
+
+    @Override
+    public void addMinimumArgIntension(List<IIntensionConstraint> variables,
+            UniverseRelationalOperator operator, BigInteger value) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.minimumArg(toXnode(variables),TypeRank.ANY,toCondition(operator, value.intValue())));
+        
+    }
+
+    @Override
+    public void addMinimumArgIntension(List<IIntensionConstraint> variables,
+            UniverseRelationalOperator operator, String variable) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.minimumArg(toXnode(variables),TypeRank.ANY,toCondition(operator, variable)));
+        
+    }
+
+    @Override
+    public void addMaximumArg(List<String> variables, UniverseSetBelongingOperator operator,
+            BigInteger min, BigInteger max) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.maximumArg(toVarArray(variables),TypeRank.ANY,toCondition(operator, min.intValue(),max.intValue())));
+        
+    }
+
+    @Override
+    public void addMaximumArg(List<String> variables, UniverseSetBelongingOperator operator,
+            List<BigInteger> set) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.maximumArg(toVarArray(variables),TypeRank.ANY,toCondition(operator, set)));
+        
+    }
+
+    @Override
+    public void addMinimumArg(List<String> variables, UniverseSetBelongingOperator operator,
+            BigInteger min, BigInteger max) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.minimumArg(toVarArray(variables),TypeRank.ANY,toCondition(operator, min.intValue(),max.intValue())));
+        
+    }
+
+    @Override
+    public void addMinimumArg(List<String> variables, UniverseSetBelongingOperator operator,
+            List<BigInteger> set) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.minimumArg(toVarArray(variables),TypeRank.ANY,toCondition(operator, set)));
+        
+    }
+
+    @Override
+    public void addMaximumArgIntension(List<IIntensionConstraint> variables,
+            UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.maximumArg(toXnode(variables),TypeRank.ANY,toCondition(operator, min.intValue(),max.intValue())));
+        
+    }
+
+    @Override
+    public void addMaximumArgIntension(List<IIntensionConstraint> variables,
+            UniverseSetBelongingOperator operator, List<BigInteger> set) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.maximumArg(toXnode(variables),TypeRank.ANY,toCondition(operator, set)));
+        
+    }
+
+    @Override
+    public void addMinimumArgIntension(List<IIntensionConstraint> variables,
+            UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.minimumArg(toXnode(variables),TypeRank.ANY,toCondition(operator, min.intValue(),max.intValue())));
+        
+    }
+
+    @Override
+    public void addMinimumArgIntension(List<IIntensionConstraint> variables,
+            UniverseSetBelongingOperator operator, List<BigInteger> set) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.minimumArg(toXnode(variables),TypeRank.ANY,toCondition(operator, set)));
+        
+    }
+
 }

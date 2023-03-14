@@ -36,6 +36,7 @@ import fr.univartois.cril.juniverse.csp.intension.IIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor;
 import fr.univartois.cril.juniverse.csp.intension.IfThenElseIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.intension.NaryIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.SetIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.intension.UnaryIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.intension.VariableIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.operator.UniverseArithmeticOperator;
@@ -130,6 +131,14 @@ final class IntensionConstraintXNodeAdapter implements IIntensionConstraint {
         if (type == TypeExpr.VAR) {
             // The adapted node is a variable.
             var self = new VariableIntensionConstraint(adaptee.var(0).id());
+            self.accept(visitor);
+            return;
+        }
+        
+        if(type == TypeExpr.SET) {
+            var adaptedChildren = Stream.of(adaptee.sons).map(
+                    IntensionConstraintXNodeAdapter::new).collect(toList());
+            var self = new SetIntensionConstraint(adaptedChildren);
             self.accept(visitor);
             return;
         }

@@ -850,6 +850,12 @@ final class XCSPXCallback implements XCallbacks2 {
                         colIndex.id(), op, rhs),
                 (op, rhs) -> listener.addElementConstantMatrix(
                         toBigInteger(matrix), startRowIndex, rowIndex.id(), startColIndex,
+                        colIndex.id(), op, rhs),
+                (op, rhs) -> listener.addElementConstantMatrix(
+                        toBigInteger(matrix), startRowIndex, rowIndex.id(), startColIndex,
+                        colIndex.id(), op, rhs[0],rhs[1]),
+                (op, rhs) -> listener.addElementConstantMatrix(
+                        toBigInteger(matrix), startRowIndex, rowIndex.id(), startColIndex,
                         colIndex.id(), op, rhs));
     }
 
@@ -863,6 +869,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrElement(String id, XVarInteger[] list, Condition condition) {
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addElement(toVariableIdentifiers(list), op, rhs),
+                (op, rhs) -> listener.addElement(toVariableIdentifiers(list), op, rhs),
+                (op, rhs) -> listener.addElement(toVariableIdentifiers(list), op, rhs[0],rhs[1]),
                 (op, rhs) -> listener.addElement(toVariableIdentifiers(list), op, rhs));
     }
 
@@ -883,6 +891,10 @@ final class XCSPXCallback implements XCallbacks2 {
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addElementConstantValues(
                         toBigInteger(list), startIndex, index.id(), op, rhs),
+                (op, rhs) -> listener.addElementConstantValues(
+                        toBigInteger(list), startIndex, index.id(), op, rhs),
+                (op, rhs) -> listener.addElementConstantValues(
+                        toBigInteger(list), startIndex, index.id(), op, rhs[0],rhs[1]),
                 (op, rhs) -> listener.addElementConstantValues(
                         toBigInteger(list), startIndex, index.id(), op, rhs));
     }
@@ -906,6 +918,10 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addElement(
                         toVariableIdentifiers(list), startIndex, index.id(), op, rhs),
                 (op, rhs) -> listener.addElement(
+                        toVariableIdentifiers(list), startIndex, index.id(), op, rhs),
+                (op, rhs) -> listener.addElement(
+                        toVariableIdentifiers(list), startIndex, index.id(), op, rhs[0],rhs[1]),
+                (op, rhs) -> listener.addElement(
                         toVariableIdentifiers(list), startIndex, index.id(), op, rhs));
     }
 
@@ -924,6 +940,12 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addElementMatrix(
                         toVariableIdentifiers(matrix), startRowIndex, rowIndex.id(), startColIndex,
                         colIndex.id(), op, rhs),
+                (op, rhs) -> listener.addElementMatrix(
+                        toVariableIdentifiers(matrix), startRowIndex, rowIndex.id(), startColIndex,
+                        colIndex.id(), op, rhs),
+                (op, rhs) -> listener.addElementMatrix(
+                        toVariableIdentifiers(matrix), startRowIndex, rowIndex.id(), startColIndex,
+                        colIndex.id(), op, rhs[0],rhs[1]),
                 (op, rhs) -> listener.addElementMatrix(
                         toVariableIdentifiers(matrix), startRowIndex, rowIndex.id(), startColIndex,
                         colIndex.id(), op, rhs));
@@ -1257,6 +1279,79 @@ final class XCSPXCallback implements XCallbacks2 {
         listener.addPrecedence(toVariableIdentifiers(list), toBigInteger(values), covered);
     }
 
+    @Override
+    public void buildCtrMaximumArg(String id, XNode<XVarInteger>[] trees, TypeRank rank,
+            Condition condition) {
+        if (rank != TypeRank.ANY) {
+            throw new UnsupportedOperationException("Unsupported type rank for element: " + rank);
+        }
+
+        buildCtrWithCondition(condition,
+                (op, rhs) -> listener.addMaximumArgIntension(
+                        toIntensionConstraints(trees), op, rhs),
+                (op, rhs) -> listener.addMaximumArgIntension(
+                        toIntensionConstraints(trees), op, rhs),
+                (op, rhs) -> listener.addMaximumArgIntension(
+                        toIntensionConstraints(trees), op, rhs[0],rhs[1]),
+                (op, rhs) -> listener.addMaximumArgIntension(
+                        toIntensionConstraints(trees), op, rhs));
+    }
+    
+    @Override
+    public void buildCtrMaximumArg(String id, XVarInteger[] list, TypeRank rank,
+            Condition condition) {
+        if (rank != TypeRank.ANY) {
+            throw new UnsupportedOperationException("Unsupported type rank for element: " + rank);
+        }
+
+        buildCtrWithCondition(condition,
+                (op, rhs) -> listener.addMaximumArg(
+                        toVariableIdentifiers(list), op, rhs),
+                (op, rhs) -> listener.addMaximumArg(
+                        toVariableIdentifiers(list), op, rhs),
+                (op, rhs) -> listener.addMaximumArg(
+                        toVariableIdentifiers(list), op, rhs[0],rhs[1]),
+                (op, rhs) -> listener.addMaximumArg(
+                        toVariableIdentifiers(list), op, rhs));
+    }
+    
+    @Override
+    public void buildCtrMinimumArg(String id, XNode<XVarInteger>[] trees, TypeRank rank,
+            Condition condition) {
+        if (rank != TypeRank.ANY) {
+            throw new UnsupportedOperationException("Unsupported type rank for element: " + rank);
+        }
+
+        buildCtrWithCondition(condition,
+                (op, rhs) -> listener.addMinimumArgIntension(
+                        toIntensionConstraints(trees), op, rhs),
+                (op, rhs) -> listener.addMinimumArgIntension(
+                        toIntensionConstraints(trees), op, rhs),
+                (op, rhs) -> listener.addMinimumArgIntension(
+                        toIntensionConstraints(trees), op, rhs[0],rhs[1]),
+                (op, rhs) -> listener.addMinimumArgIntension(
+                        toIntensionConstraints(trees), op, rhs));
+    }
+    
+    @Override
+    public void buildCtrMinimumArg(String id, XVarInteger[] list, TypeRank rank,
+            Condition condition) {
+        if (rank != TypeRank.ANY) {
+            throw new UnsupportedOperationException("Unsupported type rank for element: " + rank);
+        }
+
+        buildCtrWithCondition(condition,
+                (op, rhs) -> listener.addMinimumArg(
+                        toVariableIdentifiers(list), op, rhs),
+                (op, rhs) -> listener.addMinimumArg(
+                        toVariableIdentifiers(list), op, rhs),
+                (op, rhs) -> listener.addMinimumArg(
+                        toVariableIdentifiers(list), op, rhs[0],rhs[1]),
+                (op, rhs) -> listener.addMinimumArg(
+                        toVariableIdentifiers(list), op, rhs));
+    }
+  
+    
     /*
      * (non-Javadoc)
      *
