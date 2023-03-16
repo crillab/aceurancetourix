@@ -187,6 +187,7 @@ public class AceHead extends Head {
     @Override
     public Problem buildProblem(int i) {
         if (!problemBuilt) {
+            getBuilder().getOptionsOptimizationBuilder().setReplaceObjVar(true);
             problem = new Problem(xcsp3, "", "", "", false, new String[0], this);
             problem.priorityArrays = new VarArray[0];
             for (ObserverOnConstruction obs : observersConstruction)
