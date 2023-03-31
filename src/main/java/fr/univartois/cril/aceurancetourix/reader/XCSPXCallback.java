@@ -20,6 +20,13 @@
 
 package fr.univartois.cril.aceurancetourix.reader;
 
+import static org.xcsp.parser.callbacks.XCallbacks.XCallbacksParameters.RECOGNIZE_BINARY_PRIMITIVES;
+import static org.xcsp.parser.callbacks.XCallbacks.XCallbacksParameters.RECOGNIZE_EXTREMUM_CASES;
+import static org.xcsp.parser.callbacks.XCallbacks.XCallbacksParameters.RECOGNIZE_LOGIC_CASES;
+import static org.xcsp.parser.callbacks.XCallbacks.XCallbacksParameters.RECOGNIZE_SUM_CASES;
+import static org.xcsp.parser.callbacks.XCallbacks.XCallbacksParameters.RECOGNIZE_TERNARY_PRIMITIVES;
+import static org.xcsp.parser.callbacks.XCallbacks.XCallbacksParameters.RECOGNIZE_UNARY_PRIMITIVES;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -161,6 +168,12 @@ final class XCSPXCallback implements XCallbacks2 {
     XCSPXCallback(IUniverseCSPSolver listener) {
         this.listener = listener;
         this.implem = new Implem(this);
+		implem.currParameters.remove(RECOGNIZE_UNARY_PRIMITIVES);
+		implem.currParameters.remove(RECOGNIZE_BINARY_PRIMITIVES);
+		implem.currParameters.remove(RECOGNIZE_TERNARY_PRIMITIVES);
+		implem.currParameters.remove(RECOGNIZE_LOGIC_CASES);
+		implem.currParameters.remove(RECOGNIZE_EXTREMUM_CASES);
+		implem.currParameters.remove(RECOGNIZE_SUM_CASES);
     }
 
     /*
