@@ -109,6 +109,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     public static int currentGroup;
 
     public static boolean inGroup;
+    
+    private int[][] previousArray;
+    private boolean previousStarred;
+    
+    private List<List<BigInteger>> previousList;
 
     /**
      * Creates a new JUniverseAceProblemAdapter.
@@ -1222,12 +1227,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     @Override
     public void addSumIntension(List<IIntensionConstraint> arg0, UniverseRelationalOperator arg1,
             BigInteger arg2) throws UniverseContradictionException {
-        getHead().xcsp3.addConstraintsToAdd(p -> {
-            IIntensionConstraint right = IntensionConstraintFactory.constant(arg2);
-            IIntensionConstraint left = IntensionConstraintFactory.add(arg0);
-
-            p.intension(toXnode(IntensionConstraintFactory.binary(arg1, left, right)));
-        });
+        int[] coeffs = new int[arg0.size()];
+        Arrays.fill(coeffs, 1);
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.sum(toXnode(arg0), coeffs, toCondition(arg1, arg2.intValue())));
 
     }
 
@@ -1301,8 +1304,18 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     @Override
     public void addSupport(List<String> arg0, List<List<BigInteger>> arg1)
             throws UniverseContradictionException {
-        int[][] t = new int[arg1.size()][arg1.get(0).size()];
-        boolean starred = toTuples(arg1, t);
+        int[][] t;
+        boolean starred;
+        if(arg1==previousList) {
+            t=previousArray;
+            starred=previousStarred;
+        }else {
+            t= new int[arg1.size()][arg1.get(0).size()];
+            starred= toTuples(arg1, t);
+            previousList=arg1;
+            previousArray=t;
+            previousStarred=starred;
+        }
 
         getHead().xcsp3.addConstraintsToAdd(p -> p.extension(toVarArray(arg0), t, true, starred));
 
@@ -1321,8 +1334,18 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IOptimiza
     @Override
     public void addConflicts(List<String> arg0, List<List<BigInteger>> arg1)
             throws UniverseContradictionException {
-        int[][] t = new int[arg1.size()][arg1.get(0).size()];
-        boolean starred = toTuples(arg1, t);
+        int[][] t;
+        boolean starred;
+        if(arg1==previousList) {
+            t=previousArray;
+            starred=previousStarred;
+        }else {
+            t= new int[arg1.size()][arg1.get(0).size()];
+            starred= toTuples(arg1, t);
+            previousList=arg1;
+            previousArray=t;
+            previousStarred=starred;
+        }
         getHead().xcsp3.addConstraintsToAdd(p -> p.extension(toVarArray(arg0), t, false, starred));
 
     }

@@ -51,6 +51,7 @@ import org.xcsp.common.Types.TypeObjective;
 import org.xcsp.common.Types.TypeOperatorRel;
 import org.xcsp.common.Types.TypeRank;
 import org.xcsp.common.Types.TypeUnaryArithmeticOperator;
+import org.xcsp.common.predicates.MatcherInterface;
 import org.xcsp.common.predicates.XNode;
 import org.xcsp.common.predicates.XNodeParent;
 import org.xcsp.common.structures.Transition;
@@ -68,6 +69,7 @@ import fr.univartois.cril.juniverse.csp.operator.UniverseBooleanOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator;
+import variables.Variable.VariableInteger;
 
 /**
  * The UglyXCallback is an implementation of {@link XCallbacks2} that hides all
@@ -160,6 +162,10 @@ final class XCSPXCallback implements XCallbacks2 {
      */
     private Implem implem;
 
+    private int[][] previousArray;
+
+    private List<List<BigInteger>> previousList;
+
     /**
      * Creates a new UglyXCallback.
      *
@@ -168,12 +174,12 @@ final class XCSPXCallback implements XCallbacks2 {
     XCSPXCallback(IUniverseCSPSolver listener) {
         this.listener = listener;
         this.implem = new Implem(this);
-		implem.currParameters.remove(RECOGNIZE_UNARY_PRIMITIVES);
-		implem.currParameters.remove(RECOGNIZE_BINARY_PRIMITIVES);
-		implem.currParameters.remove(RECOGNIZE_TERNARY_PRIMITIVES);
-		implem.currParameters.remove(RECOGNIZE_LOGIC_CASES);
-		implem.currParameters.remove(RECOGNIZE_EXTREMUM_CASES);
-		implem.currParameters.remove(RECOGNIZE_SUM_CASES);
+        implem.currParameters.remove(RECOGNIZE_UNARY_PRIMITIVES);
+        implem.currParameters.remove(RECOGNIZE_BINARY_PRIMITIVES);
+        implem.currParameters.remove(RECOGNIZE_TERNARY_PRIMITIVES);
+        implem.currParameters.remove(RECOGNIZE_LOGIC_CASES);
+        implem.currParameters.remove(RECOGNIZE_EXTREMUM_CASES);
+        implem.currParameters.remove(RECOGNIZE_SUM_CASES);
     }
 
     /*
@@ -866,7 +872,7 @@ final class XCSPXCallback implements XCallbacks2 {
                         colIndex.id(), op, rhs),
                 (op, rhs) -> listener.addElementConstantMatrix(
                         toBigInteger(matrix), startRowIndex, rowIndex.id(), startColIndex,
-                        colIndex.id(), op, rhs[0],rhs[1]),
+                        colIndex.id(), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addElementConstantMatrix(
                         toBigInteger(matrix), startRowIndex, rowIndex.id(), startColIndex,
                         colIndex.id(), op, rhs));
@@ -883,7 +889,7 @@ final class XCSPXCallback implements XCallbacks2 {
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addElement(toVariableIdentifiers(list), op, rhs),
                 (op, rhs) -> listener.addElement(toVariableIdentifiers(list), op, rhs),
-                (op, rhs) -> listener.addElement(toVariableIdentifiers(list), op, rhs[0],rhs[1]),
+                (op, rhs) -> listener.addElement(toVariableIdentifiers(list), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addElement(toVariableIdentifiers(list), op, rhs));
     }
 
@@ -907,7 +913,7 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addElementConstantValues(
                         toBigInteger(list), startIndex, index.id(), op, rhs),
                 (op, rhs) -> listener.addElementConstantValues(
-                        toBigInteger(list), startIndex, index.id(), op, rhs[0],rhs[1]),
+                        toBigInteger(list), startIndex, index.id(), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addElementConstantValues(
                         toBigInteger(list), startIndex, index.id(), op, rhs));
     }
@@ -933,7 +939,7 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addElement(
                         toVariableIdentifiers(list), startIndex, index.id(), op, rhs),
                 (op, rhs) -> listener.addElement(
-                        toVariableIdentifiers(list), startIndex, index.id(), op, rhs[0],rhs[1]),
+                        toVariableIdentifiers(list), startIndex, index.id(), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addElement(
                         toVariableIdentifiers(list), startIndex, index.id(), op, rhs));
     }
@@ -958,7 +964,7 @@ final class XCSPXCallback implements XCallbacks2 {
                         colIndex.id(), op, rhs),
                 (op, rhs) -> listener.addElementMatrix(
                         toVariableIdentifiers(matrix), startRowIndex, rowIndex.id(), startColIndex,
-                        colIndex.id(), op, rhs[0],rhs[1]),
+                        colIndex.id(), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addElementMatrix(
                         toVariableIdentifiers(matrix), startRowIndex, rowIndex.id(), startColIndex,
                         colIndex.id(), op, rhs));
@@ -1020,12 +1026,20 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrExtension(String id, XVarInteger[] list, int[][] tuples, boolean positive,
             Set<TypeFlag> flags) {
 
+        List<List<BigInteger>> bigIntegers;
+        if (tuples == previousArray) {
+            bigIntegers = previousList;
+        } else {
+            bigIntegers = toBigInteger(tuples, flags.contains(TypeFlag.STARRED_TUPLES));
+            previousArray=tuples;
+            previousList=bigIntegers;
+        }
         if (positive) {
             listener.addSupport(toVariableIdentifiers(list),
-                    toBigInteger(tuples, flags.contains(TypeFlag.STARRED_TUPLES)));
+                    bigIntegers);
         } else {
             listener.addConflicts(toVariableIdentifiers(list),
-                    toBigInteger(tuples, flags.contains(TypeFlag.STARRED_TUPLES)));
+                    bigIntegers);
         }
 
     }
@@ -1305,11 +1319,11 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addMaximumArgIntension(
                         toIntensionConstraints(trees), op, rhs),
                 (op, rhs) -> listener.addMaximumArgIntension(
-                        toIntensionConstraints(trees), op, rhs[0],rhs[1]),
+                        toIntensionConstraints(trees), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addMaximumArgIntension(
                         toIntensionConstraints(trees), op, rhs));
     }
-    
+
     @Override
     public void buildCtrMaximumArg(String id, XVarInteger[] list, TypeRank rank,
             Condition condition) {
@@ -1323,11 +1337,11 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addMaximumArg(
                         toVariableIdentifiers(list), op, rhs),
                 (op, rhs) -> listener.addMaximumArg(
-                        toVariableIdentifiers(list), op, rhs[0],rhs[1]),
+                        toVariableIdentifiers(list), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addMaximumArg(
                         toVariableIdentifiers(list), op, rhs));
     }
-    
+
     @Override
     public void buildCtrMinimumArg(String id, XNode<XVarInteger>[] trees, TypeRank rank,
             Condition condition) {
@@ -1341,11 +1355,11 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addMinimumArgIntension(
                         toIntensionConstraints(trees), op, rhs),
                 (op, rhs) -> listener.addMinimumArgIntension(
-                        toIntensionConstraints(trees), op, rhs[0],rhs[1]),
+                        toIntensionConstraints(trees), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addMinimumArgIntension(
                         toIntensionConstraints(trees), op, rhs));
     }
-    
+
     @Override
     public void buildCtrMinimumArg(String id, XVarInteger[] list, TypeRank rank,
             Condition condition) {
@@ -1359,12 +1373,11 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addMinimumArg(
                         toVariableIdentifiers(list), op, rhs),
                 (op, rhs) -> listener.addMinimumArg(
-                        toVariableIdentifiers(list), op, rhs[0],rhs[1]),
+                        toVariableIdentifiers(list), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addMinimumArg(
                         toVariableIdentifiers(list), op, rhs));
     }
-  
-    
+
     /*
      * (non-Javadoc)
      *
@@ -1750,7 +1763,13 @@ final class XCSPXCallback implements XCallbacks2 {
      */
     @Override
     public void buildObjToMinimize(String id, XNodeParent<XVarInteger> tree) {
-        listener.minimizeExpression(new IntensionConstraintXNodeAdapter(tree));
+        var is = isSum(tree);
+        if (is.size() > 0) {
+            listener.minimizeSum(is.stream().map(vv -> vv.x).collect(Collectors.toList()),
+                    is.stream().map(vv -> BigInteger.valueOf(vv.a)).collect(Collectors.toList()));
+        } else {
+            listener.minimizeExpression(new IntensionConstraintXNodeAdapter(tree));
+        }
     }
 
     /*
@@ -1761,7 +1780,13 @@ final class XCSPXCallback implements XCallbacks2 {
      */
     @Override
     public void buildObjToMaximize(String id, XNodeParent<XVarInteger> tree) {
-        listener.maximizeExpression(new IntensionConstraintXNodeAdapter(tree));
+        var is = isSum(tree);
+        if (is.size() > 0) {
+            listener.maximizeSum(is.stream().map(vv -> vv.x).collect(Collectors.toList()),
+                    is.stream().map(vv -> BigInteger.valueOf(vv.a)).collect(Collectors.toList()));
+        } else {
+            listener.maximizeExpression(new IntensionConstraintXNodeAdapter(tree));
+        }
     }
 
     /*
@@ -2298,6 +2323,35 @@ final class XCSPXCallback implements XCallbacks2 {
 
         throw new UnsupportedOperationException(
                 "Unknown condition type: " + condition.getClass());
+    }
+
+    private static class VarVal {
+
+        String x;
+
+        int a;
+
+        VarVal(String x, int a) {
+            this.x = x;
+            this.a = a;
+        }
+    }
+
+    private List<VarVal> isSum(XNodeParent<XVarInteger> tree) {
+        List<VarVal> list = new ArrayList<>();
+        if (tree.type == TypeExpr.ADD)
+            for (XNode<XVarInteger> son : tree.sons) {
+                if (son.type == TypeExpr.VAR)
+                    list.add(new VarVal(son.var(0).id(), 1));
+                else if (MatcherInterface.x_mul_k.matches(son)
+                        || MatcherInterface.k_mul_x.matches(son))
+                    list.add(new VarVal(son.var(0).id(), son.val(0)));
+                else {
+                    list.clear();
+                    break;
+                }
+            }
+        return list;
     }
 
 }
