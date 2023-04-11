@@ -32,19 +32,19 @@ import org.xcsp.common.predicates.XNode;
 import org.xcsp.common.predicates.XNodeLeaf;
 import org.xcsp.common.predicates.XNodeParent;
 
-import fr.univartois.cril.juniverse.csp.intension.BinaryIntensionConstraint;
-import fr.univartois.cril.juniverse.csp.intension.ConstantIntensionConstraint;
-import fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor;
-import fr.univartois.cril.juniverse.csp.intension.IfThenElseIntensionConstraint;
-import fr.univartois.cril.juniverse.csp.intension.NaryIntensionConstraint;
-import fr.univartois.cril.juniverse.csp.intension.RangeIntensionConstraint;
-import fr.univartois.cril.juniverse.csp.intension.SetIntensionConstraint;
-import fr.univartois.cril.juniverse.csp.intension.UnaryIntensionConstraint;
-import fr.univartois.cril.juniverse.csp.intension.VariableIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.IUniverseIntensionConstraintVisitor;
+import fr.univartois.cril.juniverse.csp.intension.UniverseBinaryIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.UniverseConstantIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.UniverseIfThenElseIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.UniverseNaryIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.UniverseRangeIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.UniverseSetIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.UniverseUnaryIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.UniverseVariableIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.operator.UniverseOperator;
 
 /**
- * The AceIntensionConstraintVisitor is an {@link IIntensionConstraintVisitor} allowing to
+ * The AceIntensionConstraintVisitor is an {@link IUniverseIntensionConstraintVisitor} allowing to
  * convert an intension constraint to an {@link XNode}, which is the object recognized by
  * ACE.
  *
@@ -53,7 +53,7 @@ import fr.univartois.cril.juniverse.csp.operator.UniverseOperator;
  *
  * @version 0.1.0
  */
-class AceIntensionConstraintVisitor implements IIntensionConstraintVisitor {
+class AceIntensionConstraintVisitor implements IUniverseIntensionConstraintVisitor {
 
     /**
      * ACE's Head.
@@ -78,11 +78,11 @@ class AceIntensionConstraintVisitor implements IIntensionConstraintVisitor {
      * (non-Javadoc)
      *
      * @see
-     * fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor#visit(fr.
+     * fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor#visit(Universefr.
      * univartois.cril.juniverse.csp.intension.UnaryIntensionConstraint)
      */
     @Override
-    public void visit(UnaryIntensionConstraint constr) {
+    public void visit(UniverseUnaryIntensionConstraint constr) {
         var xnode = stack.pop();
         TypeExpr op = toTypeExpr(constr.getOperator());
         stack.push(XNodeParent.build(op, xnode));
@@ -92,11 +92,11 @@ class AceIntensionConstraintVisitor implements IIntensionConstraintVisitor {
      * (non-Javadoc)
      *
      * @see
-     * fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor#visit(fr.
+     * fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor#visit(Universefr.
      * univartois.cril.juniverse.csp.intension.BinaryIntensionConstraint)
      */
     @Override
-    public void visit(BinaryIntensionConstraint constr) {
+    public void visit(UniverseBinaryIntensionConstraint constr) {
         var right = stack.pop();
         var left = stack.pop();
         stack.push(XNodeParent.build(toTypeExpr(constr.getOperator()), left, right));
@@ -107,11 +107,11 @@ class AceIntensionConstraintVisitor implements IIntensionConstraintVisitor {
      * (non-Javadoc)
      *
      * @see
-     * fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor#visit(fr.
+     * fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor#visit(Universefr.
      * univartois.cril.juniverse.csp.intension.NaryIntensionConstraint)
      */
     @Override
-    public void visit(NaryIntensionConstraint constr) {
+    public void visit(UniverseNaryIntensionConstraint constr) {
         int arity = constr.getArity();
         Object[] sons = new XNode[arity];
         for (int i = 0; i < arity; i++) {
@@ -125,11 +125,11 @@ class AceIntensionConstraintVisitor implements IIntensionConstraintVisitor {
      * (non-Javadoc)
      *
      * @see
-     * fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor#visit(fr.
+     * fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor#visit(Universefr.
      * univartois.cril.juniverse.csp.intension.IfThenElseIntensionConstraint)
      */
     @Override
-    public void visit(IfThenElseIntensionConstraint ifThenElse) {
+    public void visit(UniverseIfThenElseIntensionConstraint ifThenElse) {
         var iffalse = stack.pop();
         var iftrue = stack.pop();
         var condition = stack.pop();
@@ -142,11 +142,11 @@ class AceIntensionConstraintVisitor implements IIntensionConstraintVisitor {
      * (non-Javadoc)
      *
      * @see
-     * fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor#visit(fr.
+     * fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor#visit(Universefr.
      * univartois.cril.juniverse.csp.intension.VariableIntensionConstraint)
      */
     @Override
-    public void visit(VariableIntensionConstraint variable) {
+    public void visit(UniverseVariableIntensionConstraint variable) {
         stack.push(new XNodeLeaf<>(TypeExpr.VAR, head.xcsp3.getVariable(variable.getIdentifier())));
 
     }
@@ -155,11 +155,11 @@ class AceIntensionConstraintVisitor implements IIntensionConstraintVisitor {
      * (non-Javadoc)
      *
      * @see
-     * fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor#visit(fr.
+     * fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor#visit(Universefr.
      * univartois.cril.juniverse.csp.intension.ConstantIntensionConstraint)
      */
     @Override
-    public void visit(ConstantIntensionConstraint constant) {
+    public void visit(UniverseConstantIntensionConstraint constant) {
         stack.push(new XNodeLeaf<>(TypeExpr.LONG, constant.getValue().longValue()));
 
     }
@@ -172,7 +172,7 @@ class AceIntensionConstraintVisitor implements IIntensionConstraintVisitor {
     <T extends XNode<IVar>> T getTree() {
         return (T) stack.getFirst();
     }
-  
+
     /**
      * Converts a {@link UniverseOperator} into {@link TypeExpr}.
      *
@@ -207,18 +207,18 @@ class AceIntensionConstraintVisitor implements IIntensionConstraintVisitor {
     }
 
     @Override
-    public void visit(RangeIntensionConstraint rangeIntensionConstraint) {
+    public void visit(UniverseRangeIntensionConstraint rangeIntensionConstraint) {
         stack.push(XNodeParent.set(new Range(rangeIntensionConstraint.getMin().intValue(),rangeIntensionConstraint.getMax().intValue()+1)));
     }
 
     @Override
-    public void visit(SetIntensionConstraint setIntensionConstraint) {
-         List<Long> values =new ArrayList<>(setIntensionConstraint.size());
-         for(int i=0;i<setIntensionConstraint.size();i++) {
-             var value = (XNodeLeaf<IVar>)stack.pop();
-             values.add((Long)value.value);
-         }
-         stack.push(XNodeParent.set(values));
+    public void visit(UniverseSetIntensionConstraint setIntensionConstraint) {
+        List<Long> values =new ArrayList<>(setIntensionConstraint.size());
+        for(int i=0;i<setIntensionConstraint.size();i++) {
+            var value = (XNodeLeaf<IVar>)stack.pop();
+            values.add((Long)value.value);
+        }
+        stack.push(XNodeParent.set(values));
     }
 
 }

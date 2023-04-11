@@ -30,15 +30,15 @@ import org.xcsp.common.Types.TypeExpr;
 import org.xcsp.common.predicates.XNode;
 
 import fr.univartois.cril.juniverse.core.UniverseContradictionException;
-import fr.univartois.cril.juniverse.csp.intension.BinaryIntensionConstraint;
-import fr.univartois.cril.juniverse.csp.intension.ConstantIntensionConstraint;
-import fr.univartois.cril.juniverse.csp.intension.IIntensionConstraint;
-import fr.univartois.cril.juniverse.csp.intension.IIntensionConstraintVisitor;
-import fr.univartois.cril.juniverse.csp.intension.IfThenElseIntensionConstraint;
-import fr.univartois.cril.juniverse.csp.intension.NaryIntensionConstraint;
-import fr.univartois.cril.juniverse.csp.intension.SetIntensionConstraint;
-import fr.univartois.cril.juniverse.csp.intension.UnaryIntensionConstraint;
-import fr.univartois.cril.juniverse.csp.intension.VariableIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.IUniverseIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.IUniverseIntensionConstraintVisitor;
+import fr.univartois.cril.juniverse.csp.intension.UniverseBinaryIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.UniverseConstantIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.UniverseIfThenElseIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.UniverseNaryIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.UniverseSetIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.UniverseUnaryIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.UniverseVariableIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.operator.UniverseArithmeticOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseBooleanOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseOperator;
@@ -47,14 +47,14 @@ import fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator;
 
 /**
  * The IntensionConstraintXNodeAdapter is a (lazy) adapter for an {@link XNode}
- * representation of an {@link IIntensionConstraint}.
+ * representation of an {@link IUniverseIntensionConstraint}.
  *
  * @author Thibault Falque
  * @author Romain Wallon
  *
  * @version 0.1.0
  */
-final class IntensionConstraintXNodeAdapter implements IIntensionConstraint {
+final class IntensionConstraintXNodeAdapter implements IUniverseIntensionConstraint {
 
     /**
      * The mapping between {@link TypeExpr} and unary operators.
@@ -118,27 +118,27 @@ final class IntensionConstraintXNodeAdapter implements IIntensionConstraint {
      * constraints.encoder.intension.IIntensionConstraintVisitor)
      */
     @Override
-    public void accept(IIntensionConstraintVisitor visitor) throws UniverseContradictionException {
+    public void accept(IUniverseIntensionConstraintVisitor visitor) throws UniverseContradictionException {
         var type = adaptee.type;
 
         if (type == TypeExpr.LONG) {
             // The adapted node is a constant.
-            var self = new ConstantIntensionConstraint(BigInteger.valueOf(adaptee.val(0)));
+            var self = new UniverseConstantIntensionConstraint(BigInteger.valueOf(adaptee.val(0)));
             self.accept(visitor);
             return;
         }
 
         if (type == TypeExpr.VAR) {
             // The adapted node is a variable.
-            var self = new VariableIntensionConstraint(adaptee.var(0).id());
+            var self = new UniverseVariableIntensionConstraint(adaptee.var(0).id());
             self.accept(visitor);
             return;
         }
-        
+
         if(type == TypeExpr.SET) {
             var adaptedChildren = Stream.of(adaptee.sons).map(
                     IntensionConstraintXNodeAdapter::new).collect(toList());
-            var self = new SetIntensionConstraint(adaptedChildren);
+            var self = new UniverseSetIntensionConstraint(adaptedChildren);
             self.accept(visitor);
             return;
         }
@@ -148,7 +148,7 @@ final class IntensionConstraintXNodeAdapter implements IIntensionConstraint {
             var adaptedCondition = new IntensionConstraintXNodeAdapter(adaptee.sons[0]);
             var adaptedIfTrue = new IntensionConstraintXNodeAdapter(adaptee.sons[1]);
             var adaptedIfFalse = new IntensionConstraintXNodeAdapter(adaptee.sons[2]);
-            var self = new IfThenElseIntensionConstraint(adaptedCondition, adaptedIfTrue,
+            var self = new UniverseIfThenElseIntensionConstraint(adaptedCondition, adaptedIfTrue,
                     adaptedIfFalse);
             self.accept(visitor);
             return;
@@ -158,7 +158,7 @@ final class IntensionConstraintXNodeAdapter implements IIntensionConstraint {
         if (unary != null) {
             // The adapted node is a unary constraint.
             var adaptedChild = new IntensionConstraintXNodeAdapter(adaptee.sons[0]);
-            var self = new UnaryIntensionConstraint(unary, adaptedChild);
+            var self = new UniverseUnaryIntensionConstraint(unary, adaptedChild);
             self.accept(visitor);
             return;
         }
@@ -168,7 +168,7 @@ final class IntensionConstraintXNodeAdapter implements IIntensionConstraint {
             // The adapted node is a binary constraint.
             var adaptedLeft = new IntensionConstraintXNodeAdapter(adaptee.sons[0]);
             var adaptedRight = new IntensionConstraintXNodeAdapter(adaptee.sons[1]);
-            var self = new BinaryIntensionConstraint(binary, adaptedLeft, adaptedRight);
+            var self = new UniverseBinaryIntensionConstraint(binary, adaptedLeft, adaptedRight);
             self.accept(visitor);
             return;
         }
@@ -178,7 +178,7 @@ final class IntensionConstraintXNodeAdapter implements IIntensionConstraint {
             // The adapted node is an n-ary constraint.
             var adaptedChildren = Stream.of(adaptee.sons).map(
                     IntensionConstraintXNodeAdapter::new).collect(toList());
-            var self = new NaryIntensionConstraint(nary, adaptedChildren);
+            var self = new UniverseNaryIntensionConstraint(nary, adaptedChildren);
             self.accept(visitor);
             return;
         }

@@ -29,16 +29,16 @@ repositories {
      maven {
             url = uri("https://maven.pkg.github.com/crillab/*")
             credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+                username = project.findProperty("gpr.user") ?: System.getProperty("GITHUB_ACTOR")
+                password = project.findProperty("gpr.key") ?: System.getProperty("GITHUB_TOKEN")
             }
         }
 }
 
 dependencies {
     implementation files("lib/ACE.jar")
-    implementation group: 'fr.cril', name:'juniverse', version: '0.1.16'
-	implementation group: "org.xcsp", name: "xcsp3-tools", version: "2.0.3"
+    implementation group: 'fr.cril', name:'juniverse', version: '0.2.1'
+	implementation group: "org.xcsp", name: "xcsp3-tools", version: "2.3"
     
     testImplementation group: "org.junit.jupiter", name: "junit-jupiter-engine", version: "5.6.0"
     testImplementation group: "org.junit.jupiter", name: "junit-jupiter-params", version: "5.6.0"

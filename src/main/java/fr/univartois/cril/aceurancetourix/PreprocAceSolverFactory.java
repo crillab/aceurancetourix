@@ -23,7 +23,7 @@ package fr.univartois.cril.aceurancetourix;
 import fr.univartois.cril.juniverse.csp.IUniverseCSPSolver;
 import fr.univartois.cril.juniverse.pb.IUniversePseudoBooleanSolver;
 import fr.univartois.cril.juniverse.sat.IUniverseSatSolver;
-import fr.univartois.cril.juniverse.utils.ISolverFactory;
+import fr.univartois.cril.juniverse.utils.IUniverseSolverFactory;
 
 /**
  * The PreprocAceSolverFactory
@@ -33,7 +33,7 @@ import fr.univartois.cril.juniverse.utils.ISolverFactory;
  *
  * @version 0.1.0
  */
-public class PreprocAceSolverFactory implements ISolverFactory {
+public class PreprocAceSolverFactory implements IUniverseSolverFactory {
 
     /**
      * Creates a new PreprocAceSolverFactory.

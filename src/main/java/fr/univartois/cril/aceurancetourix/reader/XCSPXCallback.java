@@ -63,13 +63,12 @@ import fr.univartois.cril.aceurancetourix.JUniverseAceProblemAdapter;
 import fr.univartois.cril.juniverse.core.UniverseContradictionException;
 import fr.univartois.cril.juniverse.csp.IUniverseCSPSolver;
 import fr.univartois.cril.juniverse.csp.UniverseTransition;
-import fr.univartois.cril.juniverse.csp.intension.IIntensionConstraint;
+import fr.univartois.cril.juniverse.csp.intension.IUniverseIntensionConstraint;
 import fr.univartois.cril.juniverse.csp.operator.UniverseArithmeticOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseBooleanOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator;
-import variables.Variable.VariableInteger;
 
 /**
  * The UglyXCallback is an implementation of {@link XCallbacks2} that hides all
@@ -1706,7 +1705,7 @@ final class XCSPXCallback implements XCallbacks2 {
      */
     @Override
     public void buildCtrCircuit(String id, XVarInteger[] list, int startIndex, int size) {
-        listener.addCircuit(toVariableIdentifiers(list), startIndex, size);
+        listener.addCircuit(toVariableIdentifiers(list), startIndex, BigInteger.valueOf(size));
     }
 
     /*
@@ -2120,7 +2119,7 @@ final class XCSPXCallback implements XCallbacks2 {
      * @return The matrix of the identifiers of the variables in the matrix.
      */
     private static List<List<String>> toVariableIdentifiers(XVarInteger[][] matrix) {
-        List<List<String>> vec = new ArrayList<List<String>>(matrix.length);
+        List<List<String>> vec = new ArrayList<>(matrix.length);
         for (var array : matrix) {
             vec.add(toVariableIdentifiers(array));
         }
@@ -2134,8 +2133,8 @@ final class XCSPXCallback implements XCallbacks2 {
      *
      * @return The vector of intension constraints.
      */
-    private static List<IIntensionConstraint> toIntensionConstraints(XNode<?>[] nodes) {
-        var vec = new ArrayList<IIntensionConstraint>(nodes.length);
+    private static List<IUniverseIntensionConstraint> toIntensionConstraints(XNode<?>[] nodes) {
+        var vec = new ArrayList<IUniverseIntensionConstraint>(nodes.length);
         for (var n : nodes) {
             vec.add(new IntensionConstraintXNodeAdapter(n));
         }
@@ -2155,7 +2154,7 @@ final class XCSPXCallback implements XCallbacks2 {
      * @param <T> The type of the value of the right-hand side of the constraint.
      */
     @FunctionalInterface
-    private static interface ConditionalConstraintBuilder<O extends UniverseOperator, T> {
+    private interface ConditionalConstraintBuilder<O extends UniverseOperator, T> {
 
         /**
          * Builds the constraint based on a {@link Condition} object.
@@ -2298,7 +2297,7 @@ final class XCSPXCallback implements XCallbacks2 {
     private void buildCtrConditionSet(Condition condition,
             ConditionalConstraintBuilder<UniverseSetBelongingOperator, BigInteger[]> ifRange,
             ConditionalConstraintBuilder<UniverseSetBelongingOperator, List<BigInteger>> ifSetOfValues)
-            throws UniverseContradictionException {
+                    throws UniverseContradictionException {
         // Translating the operator to the appropriate type.
         var setOperator = UniverseSetBelongingOperator.IN;
         if (condition.operatorTypeExpr() == TypeExpr.NOTIN) {
@@ -2339,18 +2338,19 @@ final class XCSPXCallback implements XCallbacks2 {
 
     private List<VarVal> isSum(XNodeParent<XVarInteger> tree) {
         List<VarVal> list = new ArrayList<>();
-        if (tree.type == TypeExpr.ADD)
+        if (tree.type == TypeExpr.ADD) {
             for (XNode<XVarInteger> son : tree.sons) {
-                if (son.type == TypeExpr.VAR)
+                if (son.type == TypeExpr.VAR) {
                     list.add(new VarVal(son.var(0).id(), 1));
-                else if (MatcherInterface.x_mul_k.matches(son)
-                        || MatcherInterface.k_mul_x.matches(son))
+                } else if (MatcherInterface.x_mul_k.matches(son)
+                        || MatcherInterface.k_mul_x.matches(son)) {
                     list.add(new VarVal(son.var(0).id(), son.val(0)));
-                else {
+                } else {
                     list.clear();
                     break;
                 }
             }
+        }
         return list;
     }
 
