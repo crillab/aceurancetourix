@@ -21,12 +21,8 @@
 package fr.univartois.cril.aceurancetourix;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 import fr.univartois.cril.aceurancetourix.reader.XCSP3Reader;
-import fr.univartois.cril.juniverse.core.UniverseAssumption;
 import fr.univartois.cril.juniverse.core.UniverseContradictionException;
 
 /**
@@ -50,6 +46,8 @@ public class Main {
         var factory = new AceSolverFactory();
         JUniverseAceProblemAdapter solver=(JUniverseAceProblemAdapter)factory.createCspSolver();
         solver.getHead().getBuilder().getOptionsGeneralBuilder().setExceptionsVisible(true);
+        solver.getHead().getBuilder().getOptionsGeneralBuilder().setEnableAnnotations(true);
+        solver.getHead().getBuilder().getOptionsGeneralBuilder().setVerbose(1);
         XCSP3Reader reader = new XCSP3Reader(solver);
         try {
             reader.parseInstance(args[0]);

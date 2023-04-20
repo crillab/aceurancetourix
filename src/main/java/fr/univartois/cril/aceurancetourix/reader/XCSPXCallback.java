@@ -57,6 +57,7 @@ import org.xcsp.common.predicates.XNodeParent;
 import org.xcsp.common.structures.Transition;
 import org.xcsp.parser.callbacks.XCallbacks2;
 import org.xcsp.parser.entries.XConstraints.XGroup;
+import org.xcsp.parser.entries.XConstraints.XLogic;
 import org.xcsp.parser.entries.XVariables.XVarInteger;
 
 import fr.univartois.cril.aceurancetourix.JUniverseAceProblemAdapter;
@@ -71,7 +72,7 @@ import fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator;
 
 /**
- * The UglyXCallback is an implementation of {@link XCallbacks2} that hides all
+ * The XCSPXCallback is an implementation of {@link XCallbacks2} that hides all
  * the gory implementation details required by this interface to make easier and
  * more flexible the parsing of XCSP3 instances.
  *
@@ -166,7 +167,7 @@ final class XCSPXCallback implements XCallbacks2 {
     private List<List<BigInteger>> previousList;
 
     /**
-     * Creates a new UglyXCallback.
+     * Creates a new XCSPXCallbacks.
      *
      * @param listener The listener to notify while reading an XCSP3 instance.
      */
@@ -261,7 +262,16 @@ final class XCSPXCallback implements XCallbacks2 {
 
     }
 
-    /*
+    @Override
+	public void beginLogic(XLogic l) {
+		
+	}
+
+	@Override
+	public void endLogic(XLogic l) {
+	}
+
+	/*
      * (non-Javadoc)
      *
      * @see org.xcsp.parser.callbacks.XCallbacks2#buildCtrLogic(java.lang.String,
