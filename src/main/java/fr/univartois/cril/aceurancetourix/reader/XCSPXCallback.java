@@ -659,6 +659,10 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addCountWithConstantValues(toVariableIdentifiers(list),
                         toBigInteger(values), op, rhs),
                 (op, rhs) -> listener.addCountWithConstantValues(toVariableIdentifiers(list),
+                        toBigInteger(values), op, rhs),
+                (op, rhs) -> listener.addCountWithConstantValues(toVariableIdentifiers(list),
+                        toBigInteger(values), op, rhs[0], rhs[1]),
+                (op, rhs) -> listener.addCountWithConstantValues(toVariableIdentifiers(list),
                         toBigInteger(values), op, rhs));
     }
 
@@ -676,6 +680,10 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addCountWithVariableValues(toVariableIdentifiers(list),
                         toVariableIdentifiers(values), op, rhs),
                 (op, rhs) -> listener.addCountWithVariableValues(toVariableIdentifiers(list),
+                        toVariableIdentifiers(values), op, rhs),
+                (op, rhs) -> listener.addCountWithVariableValues(toVariableIdentifiers(list),
+                        toVariableIdentifiers(values), op, rhs[0], rhs[1]),
+                (op, rhs) -> listener.addCountWithVariableValues(toVariableIdentifiers(list),
                         toVariableIdentifiers(values), op, rhs));
     }
 
@@ -691,6 +699,10 @@ final class XCSPXCallback implements XCallbacks2 {
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addCountIntensionWithConstantValues(
                         toIntensionConstraints(trees), toBigInteger(values), op, rhs),
+                (op, rhs) -> listener.addCountIntensionWithConstantValues(
+                        toIntensionConstraints(trees), toBigInteger(values), op, rhs),
+                (op, rhs) -> listener.addCountIntensionWithConstantValues(
+                        toIntensionConstraints(trees), toBigInteger(values), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addCountIntensionWithConstantValues(
                         toIntensionConstraints(trees), toBigInteger(values), op, rhs));
     }
@@ -709,6 +721,12 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addCumulativeConstantLengthsConstantHeights(
                         toVariableIdentifiers(origins), toBigInteger(lengths),
                         toBigInteger(heights), op, rhs),
+                (op, rhs) -> listener.addCumulativeConstantLengthsConstantHeights(
+                        toVariableIdentifiers(origins), toBigInteger(lengths),
+                        toBigInteger(heights), op, rhs),
+                (op, rhs) -> listener.addCumulativeConstantLengthsConstantHeights(
+                        toVariableIdentifiers(origins), toBigInteger(lengths),
+                        toBigInteger(heights), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addCumulativeConstantLengthsConstantHeights(
                         toVariableIdentifiers(origins), toBigInteger(lengths),
                         toBigInteger(heights), op, rhs));
@@ -730,6 +748,12 @@ final class XCSPXCallback implements XCallbacks2 {
                         toVariableIdentifiers(heights), op, rhs),
                 (op, rhs) -> listener.addCumulativeConstantLengthsVariableHeights(
                         toVariableIdentifiers(origins), toBigInteger(lengths),
+                        toVariableIdentifiers(heights), op, rhs),
+                (op, rhs) -> listener.addCumulativeConstantLengthsVariableHeights(
+                        toVariableIdentifiers(origins), toBigInteger(lengths),
+                        toVariableIdentifiers(heights), op, rhs[0], rhs[1]),
+                (op, rhs) -> listener.addCumulativeConstantLengthsVariableHeights(
+                        toVariableIdentifiers(origins), toBigInteger(lengths),
                         toVariableIdentifiers(heights), op, rhs));
     }
 
@@ -747,6 +771,12 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addCumulativeConstantLengthsConstantHeights(
                         toVariableIdentifiers(origins), toBigInteger(lengths),
                         toVariableIdentifiers(ends), toBigInteger(heights), op, rhs),
+                (op, rhs) -> listener.addCumulativeConstantLengthsConstantHeights(
+                        toVariableIdentifiers(origins), toBigInteger(lengths),
+                        toVariableIdentifiers(ends), toBigInteger(heights), op, rhs),
+                (op, rhs) -> listener.addCumulativeConstantLengthsConstantHeights(
+                        toVariableIdentifiers(origins), toBigInteger(lengths),
+                        toVariableIdentifiers(ends), toBigInteger(heights), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addCumulativeConstantLengthsConstantHeights(
                         toVariableIdentifiers(origins), toBigInteger(lengths),
                         toVariableIdentifiers(ends), toBigInteger(heights), op, rhs));
@@ -767,6 +797,12 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addCumulativeConstantLengthsVariableHeights(
                         toVariableIdentifiers(origins), toBigInteger(lengths),
                         toVariableIdentifiers(ends), toVariableIdentifiers(heights), op, rhs),
+                (op, rhs) -> listener.addCumulativeConstantLengthsVariableHeights(
+                        toVariableIdentifiers(origins), toBigInteger(lengths),
+                        toVariableIdentifiers(ends), toVariableIdentifiers(heights), op, rhs),
+                (op, rhs) -> listener.addCumulativeConstantLengthsVariableHeights(
+                        toVariableIdentifiers(origins), toBigInteger(lengths),
+                        toVariableIdentifiers(ends), toVariableIdentifiers(heights), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addCumulativeConstantLengthsVariableHeights(
                         toVariableIdentifiers(origins), toBigInteger(lengths),
                         toVariableIdentifiers(ends), toVariableIdentifiers(heights), op, rhs));
@@ -788,6 +824,12 @@ final class XCSPXCallback implements XCallbacks2 {
                         toBigInteger(heights), op, rhs),
                 (op, rhs) -> listener.addCumulativeVariableLengthsConstantHeights(
                         toVariableIdentifiers(origins), toVariableIdentifiers(lengths),
+                        toBigInteger(heights), op, rhs),
+                (op, rhs) -> listener.addCumulativeVariableLengthsConstantHeights(
+                        toVariableIdentifiers(origins), toVariableIdentifiers(lengths),
+                        toBigInteger(heights), op, rhs[0], rhs[1]),
+                (op, rhs) -> listener.addCumulativeVariableLengthsConstantHeights(
+                        toVariableIdentifiers(origins), toVariableIdentifiers(lengths),
                         toBigInteger(heights), op, rhs));
     }
 
@@ -806,6 +848,12 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addCumulativeVariableLengthsVariableHeights(
                         toVariableIdentifiers(origins), toVariableIdentifiers(lengths),
                         toVariableIdentifiers(heights), op, rhs),
+                (op, rhs) -> listener.addCumulativeVariableLengthsVariableHeights(
+                        toVariableIdentifiers(origins), toVariableIdentifiers(lengths),
+                        toVariableIdentifiers(heights), op, rhs),
+                (op, rhs) -> listener.addCumulativeVariableLengthsVariableHeights(
+                        toVariableIdentifiers(origins), toVariableIdentifiers(lengths),
+                        toVariableIdentifiers(heights), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addCumulativeVariableLengthsVariableHeights(
                         toVariableIdentifiers(origins), toVariableIdentifiers(lengths),
                         toVariableIdentifiers(heights), op, rhs));
@@ -828,6 +876,12 @@ final class XCSPXCallback implements XCallbacks2 {
                         toVariableIdentifiers(ends), toBigInteger(heights), op, rhs),
                 (op, rhs) -> listener.addCumulativeVariableLengthsConstantHeights(
                         toVariableIdentifiers(origins), toVariableIdentifiers(lengths),
+                        toVariableIdentifiers(ends), toBigInteger(heights), op, rhs),
+                (op, rhs) -> listener.addCumulativeVariableLengthsConstantHeights(
+                        toVariableIdentifiers(origins), toVariableIdentifiers(lengths),
+                        toVariableIdentifiers(ends), toBigInteger(heights), op, rhs[0], rhs[1]),
+                (op, rhs) -> listener.addCumulativeVariableLengthsConstantHeights(
+                        toVariableIdentifiers(origins), toVariableIdentifiers(lengths),
                         toVariableIdentifiers(ends), toBigInteger(heights), op, rhs));
     }
 
@@ -847,6 +901,12 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addCumulativeVariableLengthsVariableHeights(
                         toVariableIdentifiers(origins), toVariableIdentifiers(lengths),
                         toVariableIdentifiers(ends), toVariableIdentifiers(heights), op, rhs),
+                (op, rhs) -> listener.addCumulativeVariableLengthsVariableHeights(
+                        toVariableIdentifiers(origins), toVariableIdentifiers(lengths),
+                        toVariableIdentifiers(ends), toVariableIdentifiers(heights), op, rhs),
+                (op, rhs) -> listener.addCumulativeVariableLengthsVariableHeights(
+                        toVariableIdentifiers(origins), toVariableIdentifiers(lengths),
+                        toVariableIdentifiers(ends), toVariableIdentifiers(heights), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addCumulativeVariableLengthsVariableHeights(
                         toVariableIdentifiers(origins), toVariableIdentifiers(lengths),
                         toVariableIdentifiers(ends), toVariableIdentifiers(heights), op, rhs));
@@ -1109,6 +1169,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrMaximum(String id, XVarInteger[] list, Condition condition) {
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addMaximum(toVariableIdentifiers(list), op, rhs),
+                (op, rhs) -> listener.addMaximum(toVariableIdentifiers(list), op, rhs),
+                (op, rhs) -> listener.addMaximum(toVariableIdentifiers(list), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addMaximum(toVariableIdentifiers(list), op, rhs));
     }
 
@@ -1122,6 +1184,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrMaximum(String id, XNode<XVarInteger>[] trees, Condition condition) {
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addMaximumIntension(toIntensionConstraints(trees), op, rhs),
+                (op, rhs) -> listener.addMaximumIntension(toIntensionConstraints(trees), op, rhs),
+                (op, rhs) -> listener.addMaximumIntension(toIntensionConstraints(trees), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addMaximumIntension(toIntensionConstraints(trees), op, rhs));
     }
 
@@ -1135,6 +1199,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrMinimum(String id, XVarInteger[] list, Condition condition) {
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addMinimum(toVariableIdentifiers(list), op, rhs),
+                (op, rhs) -> listener.addMinimum(toVariableIdentifiers(list), op, rhs),
+                (op, rhs) -> listener.addMinimum(toVariableIdentifiers(list), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addMinimum(toVariableIdentifiers(list), op, rhs));
     }
 
@@ -1148,6 +1214,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrMinimum(String id, XNode<XVarInteger>[] trees, Condition condition) {
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addMinimumIntension(toIntensionConstraints(trees), op, rhs),
+                (op, rhs) -> listener.addMinimumIntension(toIntensionConstraints(trees), op, rhs),
+                (op, rhs) -> listener.addMinimumIntension(toIntensionConstraints(trees), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addMinimumIntension(toIntensionConstraints(trees), op, rhs));
     }
 
@@ -1161,6 +1229,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrNValues(String id, XVarInteger[] list, Condition condition) {
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addNValues(toVariableIdentifiers(list), op, rhs),
+                (op, rhs) -> listener.addNValues(toVariableIdentifiers(list), op, rhs),
+                (op, rhs) -> listener.addNValues(toVariableIdentifiers(list), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addNValues(toVariableIdentifiers(list), op, rhs));
     }
 
@@ -1177,6 +1247,10 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addNValuesExcept(
                         toVariableIdentifiers(list), op, rhs, toBigInteger(except)),
                 (op, rhs) -> listener.addNValuesExcept(
+                        toVariableIdentifiers(list), op, rhs, toBigInteger(except)),
+                (op, rhs) -> listener.addNValuesExcept(
+                        toVariableIdentifiers(list), op, rhs[0], rhs[1], toBigInteger(except)),
+                (op, rhs) -> listener.addNValuesExcept(
                         toVariableIdentifiers(list), op, rhs, toBigInteger(except)));
     }
 
@@ -1190,6 +1264,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrNValues(String id, XNode<XVarInteger>[] trees, Condition condition) {
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addNValuesIntension(toIntensionConstraints(trees), op, rhs),
+                (op, rhs) -> listener.addNValuesIntension(toIntensionConstraints(trees), op, rhs),
+                (op, rhs) -> listener.addNValuesIntension(toIntensionConstraints(trees), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addNValuesIntension(toIntensionConstraints(trees), op, rhs));
     }
 
@@ -1274,6 +1350,10 @@ final class XCSPXCallback implements XCallbacks2 {
                 (op, rhs) -> listener.addFlow(toVariableIdentifiers(list), toBigInteger(balance),
                         toBigInteger(arcs), toBigInteger(weights), op, rhs),
                 (op, rhs) -> listener.addFlow(toVariableIdentifiers(list), toBigInteger(balance),
+                        toBigInteger(arcs), toBigInteger(weights), op, rhs),
+                (op, rhs) -> listener.addFlow(toVariableIdentifiers(list), toBigInteger(balance),
+                        toBigInteger(arcs), toBigInteger(weights), op, rhs[0], rhs[1]),
+                (op, rhs) -> listener.addFlow(toVariableIdentifiers(list), toBigInteger(balance),
                         toBigInteger(arcs), toBigInteger(weights), op, rhs));
     }
 
@@ -1286,13 +1366,40 @@ final class XCSPXCallback implements XCallbacks2 {
                                 toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp, pRhs),
                         (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
                                 toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp,
+                                pRhs),
+                        (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
+                                toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp,
+                                pRhs[0], pRhs[1]),
+                        (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
+                                toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp,
                                 pRhs)),
                 (wOp, wRhs) -> buildCtrWithCondition(pcondition,
                         (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
                                 toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp, pRhs),
                         (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
-                                toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp,
-                                pRhs)));
+                                toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp, pRhs),
+                        (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
+                                toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp, pRhs[0], pRhs[1]),
+                        (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
+                                toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp, pRhs)),
+                (wOp, wRhs) -> buildCtrWithCondition(pcondition,
+                        (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
+                                toBigInteger(weights), wOp, wRhs[0], wRhs[1], toBigInteger(profits), pOp, pRhs),
+                        (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
+                                toBigInteger(weights), wOp, wRhs[0], wRhs[1], toBigInteger(profits), pOp, pRhs),
+                        (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
+                                toBigInteger(weights), wOp, wRhs[0], wRhs[1], toBigInteger(profits), pOp, pRhs[0], pRhs[1]),
+                        (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
+                                toBigInteger(weights), wOp, wRhs[0], wRhs[1], toBigInteger(profits), pOp, pRhs)),
+                (wOp, wRhs) -> buildCtrWithCondition(pcondition,
+                        (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
+                                toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp, pRhs),
+                        (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
+                                toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp, pRhs),
+                        (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
+                                toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp, pRhs[0], pRhs[1]),
+                        (pOp, pRhs) -> listener.addKnapsack(toVariableIdentifiers(list),
+                                toBigInteger(weights), wOp, wRhs, toBigInteger(profits), pOp, pRhs)));
     }
 
     @Override
@@ -1564,6 +1671,8 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildCtrSum(String id, XVarInteger[] list, Condition condition) {
         buildCtrWithCondition(condition,
                 (op, rhs) -> listener.addSum(toVariableIdentifiers(list), op, rhs),
+                (op, rhs) -> listener.addSum(toVariableIdentifiers(list), op, rhs),
+                (op, rhs) -> listener.addSum(toVariableIdentifiers(list), op, rhs[0], rhs[1]),
                 (op, rhs) -> listener.addSum(toVariableIdentifiers(list), op, rhs));
     }
 
@@ -2168,34 +2277,6 @@ final class XCSPXCallback implements XCallbacks2 {
          */
         void buildCtr(O operator, T rightHandSide);
 
-    }
-
-    /**
-     * Builds a constraint that uses a condition.
-     * The type of the right-hand side of the constraint will be used to choose the right
-     * way of building the constraint.
-     *
-     * @param condition The condition of the constraint to build.
-     * @param ifConstant The builder to use to build a constraint if the condition has a
-     *        constant on its right-hand side.
-     * @param ifVariable The builder to use to build a constraint if the condition has a
-     *        variable on its right-hand side.
-     *
-     * @throws UnsupportedOperationException If the condition uses an unrecognized
-     *         operator for the constraint to build.
-     */
-    private void buildCtrWithCondition(Condition condition,
-            ConditionalConstraintBuilder<UniverseRelationalOperator, BigInteger> ifConstant,
-            ConditionalConstraintBuilder<UniverseRelationalOperator, String> ifVariable) {
-        buildCtrWithCondition(condition, ifConstant, ifVariable,
-                (op, rhs) -> {
-                    throw new UnsupportedOperationException(
-                            "Sets are not supported (yet?) for this constraint");
-                },
-                (op, rhs) -> {
-                    throw new UnsupportedOperationException(
-                            "Sets are not supported (yet?) for this constraint");
-                });
     }
 
     /**

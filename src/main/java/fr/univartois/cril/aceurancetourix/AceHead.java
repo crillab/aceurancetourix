@@ -121,7 +121,7 @@ public class AceHead extends Head {
     /**
      * Check the satisfiability of the set of constraints contained inside the
      * solver.
-     * 
+     *
      * @return A UniverseSolverResult indicating the satisfiability of the problem.
      */
     public UniverseSolverResult isSatisfiable() {
@@ -131,7 +131,7 @@ public class AceHead extends Head {
     /**
      * Check the satisfiability of the set of constraints contained inside the
      * solver using the specified assumption.
-     * 
+     *
      * @param assumpts The assumptions to consider when solving.
      * @return The outcome of the search conducted by the solver.
      */
@@ -160,7 +160,7 @@ public class AceHead extends Head {
     }
 
     /**
-     * 
+     *
      */
     protected void buildProblemAndSolver() {
         if (!problemBuilt) {
@@ -178,7 +178,7 @@ public class AceHead extends Head {
         buildProblemAndSolver();
         return solver;
     }
-    
+
     /*
      * (non-Javadoc)
      *
@@ -190,8 +190,9 @@ public class AceHead extends Head {
             getBuilder().getOptionsOptimizationBuilder().setReplaceObjVar(true);
             problem = new Problem(xcsp3, "", "", "", false, new String[0], this);
             problem.priorityArrays = new VarArray[0];
-            for (ObserverOnConstruction obs : observersConstruction)
+            for (ObserverOnConstruction obs : observersConstruction) {
                 obs.afterProblemConstruction(this.problem.variables.length);
+            }
             problemBuilt = true;
         }
         return problem;
@@ -232,7 +233,7 @@ public class AceHead extends Head {
 
         /**
          * Creates a new AceXCSP3.
-         * 
+         *
          * @param head ACE's Head.
          */
         public AceXCSP3(Head head) {
@@ -260,11 +261,13 @@ public class AceHead extends Head {
          */
         @Override
         public void model() {
-            variables.forEach((v) -> {
+            variables.forEach(v -> {
                 Variable variable = variablesToAdd.get(v).apply(head.problem, v);
                 mapping.put(v, variable);
             });
             constraintsToAdd.forEach(c -> c.accept(head.problem));
+            variables.clear();
+            constraintsToAdd.clear();
             endVariables();
             endConstraints();
             endInstance();
@@ -272,7 +275,7 @@ public class AceHead extends Head {
 
         /**
          * Adds a variable to the solver.
-         * 
+         *
          * @param name The name of the variable.
          * @param v The function to invoke to add the variable.
          */

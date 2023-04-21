@@ -1261,22 +1261,6 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void addSumIntensionWithVariableCoefficients(List<IUniverseIntensionConstraint> arg0,
-            List<String> arg1, UniverseRelationalOperator arg2, BigInteger arg3)
-                    throws UniverseContradictionException {
-        throw new UnsupportedOperationException();
-
-    }
-
-    @Override
-    public void addSumIntensionWithVariableCoefficients(List<IUniverseIntensionConstraint> arg0,
-            List<String> arg1, UniverseRelationalOperator arg2, String arg3)
-                    throws UniverseContradictionException {
-        throw new UnsupportedOperationException();
-
-    }
-
-    @Override
     public void addSumWithVariableCoefficients(List<String> arg0, List<String> arg1,
             UniverseRelationalOperator arg2, BigInteger arg3)
                     throws UniverseContradictionException {
@@ -2042,7 +2026,6 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
                         toCondition(operator, values)));
 
     }
-
     @Override
     public void addSumWithVariableCoefficients(List<String> variables, List<String> coefficients,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
@@ -2075,6 +2058,22 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addSumIntensionWithVariableCoefficients(
             List<IUniverseIntensionConstraint> intensionConstraints, List<String> coefficients,
             UniverseSetBelongingOperator operator, List<BigInteger> values) {
+        throw new UnsupportedOperationException();
+
+    }
+
+    @Override
+    public void addSumIntensionWithVariableCoefficients(List<IUniverseIntensionConstraint> arg0,
+            List<String> arg1, UniverseRelationalOperator arg2, BigInteger arg3)
+                    throws UniverseContradictionException {
+        throw new UnsupportedOperationException();
+
+    }
+
+    @Override
+    public void addSumIntensionWithVariableCoefficients(List<IUniverseIntensionConstraint> arg0,
+            List<String> arg1, UniverseRelationalOperator arg2, String arg3)
+                    throws UniverseContradictionException {
         throw new UnsupportedOperationException();
 
     }
@@ -2550,7 +2549,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void newVariableSymbolic(String id, List<String> values) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2561,7 +2560,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addInstantiationSymbolic(String variable, String value) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2572,7 +2571,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addInstantiationSymbolic(List<String> variables, List<String> values) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2584,7 +2583,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addAllDifferentList(List<List<String>> variableLists,
             List<List<BigInteger>> except) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2596,7 +2595,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addCountWithConstantValues(List<String> variables, List<BigInteger> values,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2608,7 +2607,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addCountWithConstantValues(List<String> variables, List<BigInteger> values,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2620,7 +2619,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addCountWithVariableValues(List<String> variables, List<String> values,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2632,7 +2631,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addCountWithVariableValues(List<String> variables, List<String> values,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2645,7 +2644,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             List<BigInteger> values, UniverseSetBelongingOperator operator, BigInteger min,
             BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2657,7 +2656,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addCountIntensionWithConstantValues(List<IUniverseIntensionConstraint> expressions,
             List<BigInteger> values, UniverseSetBelongingOperator operator, List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2669,7 +2668,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addNValues(List<String> variables, UniverseSetBelongingOperator operator,
             BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2681,7 +2680,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addNValuesExcept(List<String> variables, UniverseSetBelongingOperator operator,
             BigInteger min, BigInteger max, List<BigInteger> except) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2693,7 +2692,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addNValues(List<String> variables, UniverseSetBelongingOperator operator,
             List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2705,7 +2704,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addNValuesExcept(List<String> variables, UniverseSetBelongingOperator operator,
             List<BigInteger> set, List<BigInteger> except) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2717,7 +2716,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addNValuesIntension(List<IUniverseIntensionConstraint> expressions,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2729,7 +2728,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addNValuesIntension(List<IUniverseIntensionConstraint> expressions,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2741,7 +2740,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addBinPacking(List<String> variables, List<BigInteger> sizes,
             UniverseRelationalOperator operator, BigInteger value) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2753,7 +2752,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addBinPacking(List<String> variables, List<BigInteger> sizes,
             UniverseRelationalOperator operator, String variable) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2765,7 +2764,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addBinPacking(List<String> variables, List<BigInteger> sizes,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2777,7 +2776,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addBinPacking(List<String> variables, List<BigInteger> sizes,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2789,7 +2788,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addBinPackingWithConstantCapacities(List<String> variables, List<BigInteger> sizes,
             List<BigInteger> capacities, boolean loads) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2801,7 +2800,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addBinPackingWithVariableCapacities(List<String> variables, List<BigInteger> sizes,
             List<String> capacities, boolean loads) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2814,7 +2813,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             List<BigInteger> lengths, List<BigInteger> heights,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2827,7 +2826,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             List<BigInteger> lengths, List<String> ends, List<BigInteger> heights,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2840,7 +2839,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             List<BigInteger> lengths, List<BigInteger> heights,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2853,7 +2852,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             List<BigInteger> lengths, List<String> ends, List<BigInteger> heights,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2863,10 +2862,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
      */
     @Override
     public void addCumulativeConstantLengthsVariableHeights(List<String> origins,
-            List<BigInteger> lengths, List<BigInteger> heights,
+            List<BigInteger> lengths, List<String> heights,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2876,10 +2875,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
      */
     @Override
     public void addCumulativeConstantLengthsVariableHeights(List<String> origins,
-            List<BigInteger> lengths, List<String> ends, List<BigInteger> heights,
+            List<BigInteger> lengths, List<String> ends, List<String> heights,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2889,10 +2888,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
      */
     @Override
     public void addCumulativeConstantLengthsVariableHeights(List<String> origins,
-            List<BigInteger> lengths, List<BigInteger> heights,
+            List<BigInteger> lengths, List<String> heights,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2902,10 +2901,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
      */
     @Override
     public void addCumulativeConstantLengthsVariableHeights(List<String> origins,
-            List<BigInteger> lengths, List<String> ends, List<BigInteger> heights,
+            List<BigInteger> lengths, List<String> ends, List<String> heights,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2918,7 +2917,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             List<String> lengths, List<BigInteger> heights, UniverseSetBelongingOperator operator,
             BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2931,7 +2930,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             List<String> lengths, List<String> ends, List<BigInteger> heights,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2944,7 +2943,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             List<String> lengths, List<BigInteger> heights, UniverseSetBelongingOperator operator,
             List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2957,7 +2956,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             List<String> lengths, List<String> ends, List<BigInteger> heights,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2967,10 +2966,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
      */
     @Override
     public void addCumulativeVariableLengthsVariableHeights(List<String> origins,
-            List<String> lengths, List<BigInteger> heights, UniverseSetBelongingOperator operator,
+            List<String> lengths, List<String> heights, UniverseSetBelongingOperator operator,
             BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2980,10 +2979,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
      */
     @Override
     public void addCumulativeVariableLengthsVariableHeights(List<String> origins,
-            List<String> lengths, List<String> ends, List<BigInteger> heights,
+            List<String> lengths, List<String> ends, List<String> heights,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -2993,10 +2992,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
      */
     @Override
     public void addCumulativeVariableLengthsVariableHeights(List<String> origins,
-            List<String> lengths, List<BigInteger> heights, UniverseSetBelongingOperator operator,
+            List<String> lengths, List<String> heights, UniverseSetBelongingOperator operator,
             List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3006,10 +3005,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
      */
     @Override
     public void addCumulativeVariableLengthsVariableHeights(List<String> origins,
-            List<String> lengths, List<String> ends, List<BigInteger> heights,
+            List<String> lengths, List<String> ends, List<String> heights,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3022,7 +3021,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             UniverseRelationalOperator wOperator, BigInteger wValue, List<BigInteger> profits,
             UniverseSetBelongingOperator pOperator, BigInteger pMin, BigInteger pMax) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3035,7 +3034,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             UniverseRelationalOperator wOperator, BigInteger wValue, List<BigInteger> profits,
             UniverseSetBelongingOperator pOperator, List<BigInteger> pSet) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3048,7 +3047,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             UniverseRelationalOperator wOperator, String wVariable, List<BigInteger> profits,
             UniverseSetBelongingOperator pOperator, BigInteger pMin, BigInteger pMax) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3061,7 +3060,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             UniverseRelationalOperator wOperator, String wVariable, List<BigInteger> profits,
             UniverseSetBelongingOperator pOperator, List<BigInteger> pSet) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3074,7 +3073,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             UniverseSetBelongingOperator wOperator, BigInteger wMin, BigInteger wMax,
             List<BigInteger> profits, UniverseRelationalOperator pOperator, BigInteger pValue) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3087,7 +3086,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             UniverseSetBelongingOperator wOperator, BigInteger wMin, BigInteger wMax,
             List<BigInteger> profits, UniverseRelationalOperator pOperator, String pVariable) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3101,7 +3100,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             List<BigInteger> profits, UniverseSetBelongingOperator pOperator, BigInteger pMin,
             BigInteger pMax) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3115,7 +3114,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             List<BigInteger> profits, UniverseSetBelongingOperator pOperator,
             List<BigInteger> pSet) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3128,7 +3127,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             UniverseSetBelongingOperator wOperator, List<BigInteger> wSet, List<BigInteger> profits,
             UniverseRelationalOperator pOperator, BigInteger pValue) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3141,7 +3140,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             UniverseSetBelongingOperator wOperator, List<BigInteger> wSet, List<BigInteger> profits,
             UniverseRelationalOperator pOperator, String pVariable) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3154,7 +3153,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             UniverseSetBelongingOperator wOperator, List<BigInteger> wSet, List<BigInteger> profits,
             UniverseSetBelongingOperator pOperator, BigInteger pMin, BigInteger pMax) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3167,7 +3166,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             UniverseSetBelongingOperator wOperator, List<BigInteger> wSet, List<BigInteger> profits,
             UniverseSetBelongingOperator pOperator, List<BigInteger> pSet) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3179,7 +3178,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addStretch(List<String> variables, List<BigInteger> values,
             List<BigInteger> widthsMin, List<BigInteger> widthsMax) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3192,7 +3191,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             List<BigInteger> widthsMin, List<BigInteger> widthsMax,
             List<List<BigInteger>> patterns) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3203,7 +3202,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addSupportSymbolic(String variable, List<String> allowedValues) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3214,7 +3213,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addSupportSymbolic(List<String> variableTuple, List<List<String>> allowedValues) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3225,7 +3224,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addConflictsSymbolic(String variable, List<String> forbiddenValues) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3237,7 +3236,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addConflictsSymbolic(List<String> variableTuple,
             List<List<String>> forbiddenValues) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3249,7 +3248,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMinimum(List<String> variables, UniverseSetBelongingOperator operator,
             BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3261,7 +3260,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMinimum(List<String> variables, UniverseSetBelongingOperator operator,
             List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3273,7 +3272,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMinimumIndex(List<String> variables, int startIndex, String index,
             UniverseRelationalOperator operator, BigInteger value) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3285,7 +3284,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMinimumIndex(List<String> variables, int startIndex, String index,
             UniverseRelationalOperator operator, String value) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3297,7 +3296,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMinimumIndex(List<String> variables, int startIndex, String index,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3309,7 +3308,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMinimumIndex(List<String> variables, int startIndex, String index,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3321,7 +3320,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMinimumIntension(List<IUniverseIntensionConstraint> intensionConstraints,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3333,7 +3332,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMinimumIntension(List<IUniverseIntensionConstraint> intensionConstraints,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3345,7 +3344,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMaximum(List<String> variables, UniverseSetBelongingOperator operator,
             BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3357,7 +3356,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMaximum(List<String> variables, UniverseSetBelongingOperator operator,
             List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3369,7 +3368,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMaximumIndex(List<String> variables, int startIndex, String index,
             UniverseRelationalOperator operator, BigInteger value) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3381,7 +3380,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMaximumIndex(List<String> variables, int startIndex, String index,
             UniverseRelationalOperator operator, String value) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3393,7 +3392,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMaximumIndex(List<String> variables, int startIndex, String index,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3405,7 +3404,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMaximumIndex(List<String> variables, int startIndex, String index,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3417,7 +3416,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMaximumIntension(List<IUniverseIntensionConstraint> intensionConstraints,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3429,7 +3428,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMaximumIntension(List<IUniverseIntensionConstraint> intensionConstraints,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3441,20 +3440,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addLex(List<String> variables, List<BigInteger> limit,
             UniverseRelationalOperator operator) {
         // TODO Auto-generated method stub.
-
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addSumIntensionWithVariableCoefficients(java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
-     */
-    @Override
-    public void addSumIntensionWithVariableCoefficients(
-            List<IUniverseIntensionConstraint> expressions, UniverseSetBelongingOperator operator,
-            List<BigInteger> values) {
-        // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3467,7 +3453,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             List<List<BigInteger>> edges, List<BigInteger> weights,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3480,7 +3466,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             List<List<BigInteger>> edges, List<BigInteger> weights,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         // TODO Auto-generated method stub.
-
+        throw new UnsupportedOperationException();
     }
 
 }
