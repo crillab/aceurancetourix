@@ -32,6 +32,7 @@ import static fr.univartois.cril.juniverse.csp.intension.UniverseIntensionConstr
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UncheckedIOException;
 import java.math.BigInteger;
@@ -1698,7 +1699,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.annotations.decision = toVariableArray(variables));
     }
-
+    
+    @Override
+	public void valueHeuristicStatic(List<String> vars, List<? extends Number> order) {
+		getHead().xcsp3.addConstraintsToAdd(p->p.staticValHeuristic(toVarArray(vars), toIntArray(order)));	
+	}
+    
+    
     /**
      * Creates an array of {@code int} values from a List of {@link Number}.
      *
@@ -3468,5 +3475,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
         // TODO Auto-generated method stub.
         throw new UnsupportedOperationException();
     }
+
+	@Override
+	public void setLogStream(OutputStream stream) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 
 }

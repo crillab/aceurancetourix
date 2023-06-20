@@ -2151,6 +2151,11 @@ final class XCSPXCallback implements XCallbacks2 {
     public void buildAnnotationDecision(XVarInteger[] list) {
         listener.decisionVariables(toVariableIdentifiers(list));
     }
+    
+    @Override
+    public void buildAnnotationValHeuristicStatic(XVarInteger[] list, int[] order) {
+    	listener.valueHeuristicStatic(toVariableIdentifiers(list), toBigInteger(order));
+    }
 
     /**
      * Transforms an array of {@code int} values into a vector of {@link BigInteger}.
