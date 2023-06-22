@@ -61,5 +61,15 @@ public class PreprocAceSolverFactory implements IUniverseSolverFactory {
         return null;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Aceurancetourix (preprocessing only)";
+    }
+
 }
 

@@ -38,7 +38,7 @@ repositories {
 dependencies {
     implementation files("lib/ACE.jar")
     implementation files("lib/xcsp3-tools-2.3.jar")
-    implementation group: 'fr.cril', name:'juniverse', version: '0.2.8'
+    implementation group: 'fr.cril', name:'juniverse', version: '0.2.10'
 	//implementation group: "org.xcsp", name: "xcsp3-tools", version: "2.3"
     
     testImplementation group: "org.junit.jupiter", name: "junit-jupiter-engine", version: "5.6.0"

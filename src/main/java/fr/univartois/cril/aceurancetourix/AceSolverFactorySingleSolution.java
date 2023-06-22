@@ -86,5 +86,15 @@ public class AceSolverFactorySingleSolution implements IUniverseSolverFactory {
         return newDefault();
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Aceurancetourix (single solution)";
+    }
+
 }
 
