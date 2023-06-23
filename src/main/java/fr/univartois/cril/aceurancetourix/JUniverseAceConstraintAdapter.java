@@ -1,10 +1,21 @@
 /**
- * This file is a part of the {@code fr.univartois.cril.aceurancetourix} package.
- *
- * It contains the type JUniverseAceConstraintAdapter.
- *
- * (c) 2023 Romain Wallon - aceurancetourix.
+ * Aceurancetourix, the JUniverse adapter for ACE.
+ * Copyright (c) 2022-2023 - Univ Artois, CNRS & Exakis Nelite.
  * All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses>.
  */
 
 package fr.univartois.cril.aceurancetourix;
@@ -17,21 +28,25 @@ import constraints.Constraint;
 import fr.univartois.cril.juniverse.core.problem.IUniverseConstraint;
 import fr.univartois.cril.juniverse.core.problem.IUniverseVariable;
 
-
 /**
  * The JUniverseAceConstraintAdapter
  *
+ * @author Thibault Falque
  * @author Romain Wallon
  *
  * @version 0.1.0
  */
-public class JUniverseAceConstraintAdapter implements IUniverseConstraint {
+class JUniverseAceConstraintAdapter implements IUniverseConstraint {
 
+    /**
+     * The adapted constraint.
+     */
     private final Constraint constraint;
 
     /**
      * Creates a new JUniverseAceConstraintAdapter.
-     * @param constraint
+     *
+     * @param constraint The constraint to adapt.
      */
     public JUniverseAceConstraintAdapter(Constraint constraint) {
         this.constraint = constraint;
@@ -44,7 +59,9 @@ public class JUniverseAceConstraintAdapter implements IUniverseConstraint {
      */
     @Override
     public List<IUniverseVariable> scope() {
-        return Arrays.stream(constraint.scp).map(JUniverseVariableAceAdapter::new).collect(Collectors.toList());
+        return Arrays.stream(constraint.scp)
+                .map(JUniverseVariableAceAdapter::new)
+                .collect(Collectors.toList());
     }
 
     /*
@@ -58,4 +75,3 @@ public class JUniverseAceConstraintAdapter implements IUniverseConstraint {
     }
 
 }
-

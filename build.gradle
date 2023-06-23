@@ -24,6 +24,10 @@ def jarDir = "${outDir}/home"
 sourceCompatibility = "10"
 targetCompatibility = "10"
 
+
+ext.moduleName = "fr.univartois.cril.aceurancetourix"
+
+
 repositories {
     mavenCentral()
      maven {
@@ -36,7 +40,7 @@ repositories {
 }
 
 dependencies {
-    implementation files("lib/ACE.jar")
+    implementation files("lib/ace-2.1.jar")
     implementation files("lib/xcsp3-tools-2.3.jar")
     implementation group: 'fr.cril', name:'juniverse', version: '0.2.10'
 	//implementation group: "org.xcsp", name: "xcsp3-tools", version: "2.3"
@@ -46,6 +50,35 @@ dependencies {
     testImplementation group: "org.junit.platform", name: "junit-platform-launcher", version: "1.6.0"
     testImplementation group: "org.junit.platform", name: "junit-platform-runner", version: "1.6.0"
 }
+
+/*************************
+ * Eclipse Configuration *
+ *************************/
+
+eclipse.classpath.file.whenMerged {
+    // Modularizing project dependencies.
+    entries.findAll{ isModule(it) }.each{ it.entryAttributes["module"] = "true" }
+}
+
+/****************************************
+ * Compilation Configuration for Jigsaw *
+ ****************************************/
+
+afterEvaluate {
+    compileJava {
+        // Setting the module name.
+        inputs.property("moduleName", moduleName)
+
+        // Adding the classpath to the module path.
+        doFirst {
+            options.compilerArgs = [
+                "--module-path", classpath.asPath
+            ]
+            classpath = files()
+        }
+    }
+}
+
 
 /**********************
  * Test Configuration *
@@ -201,3 +234,13 @@ task removeBinaries(type: Delete) {
 }
 clean.dependsOn removeBinaries
 
+
+
+/*************
+ * Functions *
+ *************/
+
+// Checking whether an Eclipse classpath entry must be put in the module path.
+boolean isModule(entry) {
+    (entry.kind == "src") || ((entry.kind == "lib") && (entry.entryAttributes["gradle_used_by_scope"] != "test"))
+}

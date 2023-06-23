@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.
- * If not, see {@link http://www.gnu.org/licenses}.
+ * If not, see <http://www.gnu.org/licenses>.
  */
 
 package fr.univartois.cril.aceurancetourix;
@@ -283,7 +283,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addSearchListener(IUniverseSearchListener listener) {
         var observer = new AceSearchListenerAdapter(listener, this);
-        getHead().getSolver().addObserverOnSolution(observer);
+
+        getHead().getSolver().observersOnSolution.add(observer);
         getHead().getSolver().observersOnAssignments.add(observer);
         getHead().getSolver().observersOnConflicts.add(observer);
         getHead().getSolver().observersOnRuns.add(observer);
@@ -297,9 +298,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
      * @see fr.univartois.cril.juniverse.core.IUniverseSolver#removeSearchListener(fr.univartois.cril.juniverse.listener.IUniverseSearchListener)
      */
     @Override
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void removeSearchListener(IUniverseSearchListener listener) {
-        Predicate p = l -> (l instanceof AceSearchListenerAdapter && (((AceSearchListenerAdapter) l).getAdaptee() == listener));
+        Predicate p = l -> (l instanceof AceSearchListenerAdapter)
+                && (((AceSearchListenerAdapter) l).getAdaptee() == listener);
+
         getHead().getSolver().observersOnSolution.removeIf(p);
         getHead().getSolver().observersOnAssignments.removeIf(p);
         getHead().getSolver().observersOnConflicts.removeIf(p);

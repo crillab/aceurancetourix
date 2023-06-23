@@ -1,10 +1,21 @@
 /**
- * This file is a part of the {@code fr.univartois.cril.aceurancetourix} package.
- *
- * It contains the type AceSearchListenerAdapter.
- *
- * (c) 2023 Romain Wallon - aceurancetourix.
+ * Aceurancetourix, the JUniverse adapter for ACE.
+ * Copyright (c) 2022 - Univ Artois, CNRS & Exakis Nelite.
  * All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses>.
  */
 
 package fr.univartois.cril.aceurancetourix;
@@ -26,35 +37,45 @@ import variables.Variable;
 /**
  * The AceSearchListenerAdapter
  *
+ * @author Thibault Falque
  * @author Romain Wallon
  *
  * @version 0.1.0
  */
-public class AceSearchListenerAdapter implements ObserverOnAssignments, ObserverOnConflicts,
-        ObserverOnDecisions, ObserverOnRuns, ObserverOnSolution, ObserverOnSolving {
+class AceSearchListenerAdapter implements ObserverOnSolving, ObserverOnDecisions,
+        ObserverOnAssignments, ObserverOnConflicts, ObserverOnRuns, ObserverOnSolution {
 
+    /**
+     * The adapted Universe listener.
+     */
     private final IUniverseSearchListener adaptee;
 
+    /**
+     * The solver that is being listened.
+     */
     private final JUniverseAceProblemAdapter solver;
 
+    /**
+     * The current decision level in the solver.
+     */
     private int currentLevel;
 
     /**
      * Creates a new AceSearchListenerAdapter.
      *
-     * @param adaptee
+     * @param adaptee The Universe listener to adapt.
+     * @param solver The solver that is being listened.
      */
     public AceSearchListenerAdapter(IUniverseSearchListener adaptee,
             JUniverseAceProblemAdapter solver) {
         this.adaptee = adaptee;
         this.solver = solver;
     }
-    
-    
+
     /**
-     * Gives the adaptee of this AceSearchListenerAdapter.
+     * Gives the adapted Universe listener.
      *
-     * @return This AceSearchListenerAdapter's adaptee.
+     * @return The adapted Universe listener.
      */
     public IUniverseSearchListener getAdaptee() {
         return adaptee;
@@ -63,45 +84,37 @@ public class AceSearchListenerAdapter implements ObserverOnAssignments, Observer
     /*
      * (non-Javadoc)
      *
-     * @see interfaces.Observers.ObserverOnSolution#handleNewSolution()
+     * @see interfaces.Observers.ObserverOnSolving#beforeSolving()
      */
     @Override
-    public void handleNewSolution() {
-        var solution = solver.mapSolution();
-        var solutionVar = new HashMap<IUniverseVariable, BigInteger>();
-        for (var assignment : solution.entrySet()) {
-            solutionVar.put(solver.getVariablesMapping().get(assignment.getKey()),
-                    assignment.getValue());
-        }
-        if (solver.getHead().solver.problem.optimizer != null) {
-            adaptee.onSolutionFound(solutionVar,
-                    BigInteger.valueOf(solver.getHead().solver.solutions.bestBound));
-        } else {
-            adaptee.onSolutionFound(solutionVar);
-        }
+    public void beforeSolving() {
+        adaptee.start();
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see interfaces.Observers.ObserverOnConflicts#whenBacktrack()
+     * @see
+     * interfaces.Observers.ObserverOnDecisions#beforePositiveDecision(variables.Variable,
+     * int)
      */
     @Override
-    public void whenBacktrack() {
-        currentLevel--;
-        adaptee.onBacktrack(currentLevel);
+    public void beforePositiveDecision(Variable x, int a) {
+        currentLevel++;
+        adaptee.onPositiveDecision(new JUniverseVariableAceAdapter(x), BigInteger.valueOf(a));
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see interfaces.Observers.ObserverOnConflicts#whenWipeout(constraints.Constraint,
-     * variables.Variable)
+     * @see
+     * interfaces.Observers.ObserverOnDecisions#beforeNegativeDecision(variables.Variable,
+     * int)
      */
     @Override
-    public void whenWipeout(Constraint arg0, Variable arg1) {
-        adaptee.onConflict(new JUniverseAceConstraintAdapter(arg0),
-                solver.getVariablesMapping().get(arg1.id()));
+    public void beforeNegativeDecision(Variable x, int a) {
+        currentLevel++;
+        adaptee.onNegativeDecision(new JUniverseVariableAceAdapter(x), BigInteger.valueOf(a));
     }
 
     /*
@@ -140,21 +153,24 @@ public class AceSearchListenerAdapter implements ObserverOnAssignments, Observer
     /*
      * (non-Javadoc)
      *
-     * @see interfaces.Observers.ObserverOnSolving#afterSolving()
+     * @see interfaces.Observers.ObserverOnConflicts#whenWipeout(constraints.Constraint,
+     * variables.Variable)
      */
     @Override
-    public void afterSolving() {
-        adaptee.end(solver.getResult());
+    public void whenWipeout(Constraint arg0, Variable arg1) {
+        adaptee.onConflict(new JUniverseAceConstraintAdapter(arg0),
+                solver.getVariablesMapping().get(arg1.id()));
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see interfaces.Observers.ObserverOnSolving#beforeSolving()
+     * @see interfaces.Observers.ObserverOnConflicts#whenBacktrack()
      */
     @Override
-    public void beforeSolving() {
-        adaptee.start();
+    public void whenBacktrack() {
+        currentLevel--;
+        adaptee.onBacktrack(currentLevel);
     }
 
     /*
@@ -170,25 +186,32 @@ public class AceSearchListenerAdapter implements ObserverOnAssignments, Observer
     /*
      * (non-Javadoc)
      *
-     * @see
-     * interfaces.Observers.ObserverOnDecisions#beforeNegativeDecision(variables.Variable,
-     * int)
+     * @see interfaces.Observers.ObserverOnSolution#handleNewSolution()
      */
     @Override
-    public void beforeNegativeDecision(Variable x, int a) {
-        adaptee.onNegativeDecision(new JUniverseVariableAceAdapter(x), BigInteger.valueOf(a));
+    public void handleNewSolution() {
+        var solution = solver.mapSolution();
+        var solutionVar = new HashMap<IUniverseVariable, BigInteger>();
+        for (var assignment : solution.entrySet()) {
+            solutionVar.put(solver.getVariablesMapping().get(assignment.getKey()),
+                    assignment.getValue());
+        }
+        if (solver.getHead().solver.problem.optimizer != null) {
+            adaptee.onSolutionFound(solutionVar,
+                    BigInteger.valueOf(solver.getHead().solver.solutions.bestBound));
+        } else {
+            adaptee.onSolutionFound(solutionVar);
+        }
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see
-     * interfaces.Observers.ObserverOnDecisions#beforePositiveDecision(variables.Variable,
-     * int)
+     * @see interfaces.Observers.ObserverOnSolving#afterSolving()
      */
     @Override
-    public void beforePositiveDecision(Variable x, int a) {
-        adaptee.onPositiveDecision(new JUniverseVariableAceAdapter(x), BigInteger.valueOf(a));
+    public void afterSolving() {
+        adaptee.end(solver.getResult());
     }
 
 }
