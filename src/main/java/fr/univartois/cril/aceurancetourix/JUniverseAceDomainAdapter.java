@@ -98,4 +98,36 @@ public class JUniverseAceDomainAdapter implements IUniverseDomain {
         }
     }
 
+	@Override
+	public long currentSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public List<BigInteger> getCurrentValues() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void keepValues(BigInteger min, BigInteger max) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void keepValues(List<BigInteger> values) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void removeValues(BigInteger min, BigInteger max) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void removeValues(List<BigInteger> values) {
+		throw new UnsupportedOperationException();
+	}
+
 }

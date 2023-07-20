@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.xcsp.common.Condition;
 import org.xcsp.common.Condition.ConditionIntset;
@@ -72,6 +73,7 @@ import fr.univartois.cril.aceurancetourix.reader.XCSP3Reader;
 import fr.univartois.cril.juniverse.core.UniverseAssumption;
 import fr.univartois.cril.juniverse.core.UniverseContradictionException;
 import fr.univartois.cril.juniverse.core.UniverseSolverResult;
+import fr.univartois.cril.juniverse.core.problem.IUniverseConstraint;
 import fr.univartois.cril.juniverse.core.problem.IUniverseVariable;
 import fr.univartois.cril.juniverse.csp.IUniverseCSPSolver;
 import fr.univartois.cril.juniverse.csp.UniverseTransition;
@@ -3526,8 +3528,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
 
 	@Override
 	public void setLogStream(OutputStream stream) {
-		// TODO Auto-generated method stub
-
+        throw new UnsupportedOperationException();
 	}
 
     /*
@@ -3537,8 +3538,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
      */
     @Override
     public List<String> getAuxiliaryVariables() {
-        // TODO Auto-generated method stub.
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3548,8 +3548,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
      */
     @Override
     public boolean checkSolution() {
-        // TODO Auto-generated method stub.
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -3559,9 +3558,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
      */
     @Override
     public boolean checkSolution(Map<String, BigInteger> assignment) {
-        // TODO Auto-generated method stub.
-        return false;
+        throw new UnsupportedOperationException();
     }
+
+	@Override
+	public List<IUniverseConstraint> getConstraints() {
+		return Stream.of(getHead().getSolver().problem.constraints).map(JUniverseAceConstraintAdapter::new).collect(Collectors.toList());
+	}
 
 
 
