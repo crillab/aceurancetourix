@@ -1,1 +1,1 @@
-moduleSearchIndex = [];updateSearchResults();
+moduleSearchIndex = [{"l":"fr.univartois.cril.aceurancetourix"}];updateSearchResults();

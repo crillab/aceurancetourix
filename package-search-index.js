@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"fr.univartois.cril.aceurancetourix"},{"l":"fr.univartois.cril.aceurancetourix.reader"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"m":"fr.univartois.cril.aceurancetourix","l":"fr.univartois.cril.aceurancetourix"},{"m":"fr.univartois.cril.aceurancetourix","l":"fr.univartois.cril.aceurancetourix.reader"}];updateSearchResults();
