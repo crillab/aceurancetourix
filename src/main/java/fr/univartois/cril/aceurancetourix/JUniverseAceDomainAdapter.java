@@ -21,6 +21,7 @@
 package fr.univartois.cril.aceurancetourix;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -78,7 +79,7 @@ public class JUniverseAceDomainAdapter implements IUniverseDomain {
      */
     @Override
     public long size() {
-        return this.dom.size();
+        return this.dom.initSize();
     }
 
     /*
@@ -100,14 +101,16 @@ public class JUniverseAceDomainAdapter implements IUniverseDomain {
 
 	@Override
 	public long currentSize() {
-		// TODO Auto-generated method stub
-		return 0;
+		return dom.size();
 	}
 
 	@Override
 	public List<BigInteger> getCurrentValues() {
-		// TODO Auto-generated method stub
-		return null;
+        List<BigInteger> current = new ArrayList<>((int) currentSize());
+		for (int i = dom.first(); i != -1; i = dom.next(i)) {
+            current.add(BigInteger.valueOf(dom.toVal(i)));
+        }
+        return current;
 	}
 
 	@Override
