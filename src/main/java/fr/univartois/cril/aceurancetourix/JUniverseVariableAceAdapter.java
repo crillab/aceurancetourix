@@ -20,6 +20,11 @@
 
 package fr.univartois.cril.aceurancetourix;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import fr.univartois.cril.juniverse.core.problem.IUniverseConstraint;
 import fr.univartois.cril.juniverse.core.problem.IUniverseDomain;
 import fr.univartois.cril.juniverse.core.problem.IUniverseVariable;
 import variables.Variable;
@@ -73,6 +78,12 @@ public class JUniverseVariableAceAdapter implements IUniverseVariable {
     @Override
     public IUniverseDomain getDomain() {
         return new JUniverseAceDomainAdapter(x.dom);
+    }
+
+    @Override
+    public List<IUniverseConstraint> getConstraints() {
+        return Arrays.stream(x.ctrs).map(
+                JUniverseAceConstraintAdapter::new).collect(Collectors.toList());
     }
 
 }

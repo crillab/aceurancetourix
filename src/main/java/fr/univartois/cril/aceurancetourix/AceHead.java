@@ -224,7 +224,7 @@ public class AceHead extends Head {
          * The mapping associating the name of a variable to ACE's representation of this
          * variable.
          */
-        private Map<String, Variable> mapping;
+        Map<String, Variable> mapping;
 
         /**
          * The constraint to be added to the solver.

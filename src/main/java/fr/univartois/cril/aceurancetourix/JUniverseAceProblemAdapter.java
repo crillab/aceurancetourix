@@ -28,6 +28,7 @@ import static fr.univartois.cril.juniverse.csp.intension.UniverseIntensionConstr
 import static fr.univartois.cril.juniverse.csp.intension.UniverseIntensionConstraintFactory.neq;
 import static fr.univartois.cril.juniverse.csp.intension.UniverseIntensionConstraintFactory.unary;
 import static fr.univartois.cril.juniverse.csp.intension.UniverseIntensionConstraintFactory.variable;
+import static utility.Kit.control;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -71,6 +72,7 @@ import fr.univartois.cril.aceurancetourix.reader.XCSP3Reader;
 import fr.univartois.cril.juniverse.core.UniverseAssumption;
 import fr.univartois.cril.juniverse.core.UniverseContradictionException;
 import fr.univartois.cril.juniverse.core.UniverseSolverResult;
+import fr.univartois.cril.juniverse.core.problem.IUniverseConstraint;
 import fr.univartois.cril.juniverse.core.problem.IUniverseVariable;
 import fr.univartois.cril.juniverse.csp.IUniverseCSPSolver;
 import fr.univartois.cril.juniverse.csp.UniverseTransition;
@@ -111,6 +113,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public static boolean inGroup;
 
     private int[][] previousArray;
+
     private boolean previousStarred;
 
     private List<List<BigInteger>> previousList;
@@ -240,6 +243,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void interrupt() {
         getHead().interruptSearch();
+        System.out.println("interrupt from ace !");
     }
 
     @Override
@@ -259,7 +263,20 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
         solver.stopping = null;
         solver.solutions.found = 0;
         solver.solutions.last = null;
-        solver.nRecursiveRuns=0;
+        solver.nRecursiveRuns = 0;
+        
+        solver.propagation.clear();
+        solver.propagation.nTuplesRemoved = 0;
+        solver.restarter.reset();
+        solver.resetNoSolutions();
+        control(solver.decisions.set.isEmpty()); // otherwise decisions.set.clear();
+        if (solver.heuristic !=null)
+            solver.heuristic.setPriorityVars(solver.problem.priorityVars, 0);
+        // lastConflict.beforeRun();
+        if (solver.nogoodReasoner != null)
+            solver.nogoodReasoner.reset();
+       
+        solver.stats.reset();
     }
 
     @Override
@@ -357,6 +374,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public UniverseSolverResult solve(List<UniverseAssumption<BigInteger>> arg0) {
 
+        getHead().buildProblemAndSolver();
         List<Assumption> assumpts = new ArrayList<>();
         for (UniverseAssumption<BigInteger> assumpt : arg0) {
             int id = ((Variable) toVar(assumpt.getVariableId())).num;
@@ -364,7 +382,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
                     assumpt.getValue().intValueExact()));
         }
         var v = getHead().isSatisfiable(assumpts);
+        System.out.println(v + " from ace");
         return v;
+
 
     }
 
@@ -452,7 +472,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCardinalityWithConstantValuesAndConstantCounts(List<String> arg0,
             List<BigInteger> arg1, List<BigInteger> arg2, boolean arg3)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.cardinality(toVarArray(arg0), toIntArray(arg1), arg3, toIntArray(arg2)));
 
@@ -461,7 +481,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCardinalityWithConstantValuesAndConstantIntervalCounts(List<String> arg0,
             List<BigInteger> arg1, List<BigInteger> arg2, List<BigInteger> arg3, boolean arg4)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.cardinality(toVarArray(arg0), toIntArray(arg1), arg4, toIntArray(arg2),
                         toIntArray(arg3)));
@@ -471,7 +491,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCardinalityWithConstantValuesAndVariableCounts(List<String> arg0,
             List<BigInteger> arg1, List<String> arg2, boolean arg3)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.cardinality(toVarArray(arg0), toIntArray(arg1), arg3, toVarArray(arg2)));
 
@@ -480,7 +500,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCardinalityWithVariableValuesAndConstantCounts(List<String> arg0,
             List<String> arg1, List<BigInteger> arg2, boolean arg3)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.cardinality(toVarArray(arg0), toVarArray(arg1), arg3, toIntArray(arg2)));
 
@@ -489,7 +509,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCardinalityWithVariableValuesAndConstantIntervalCounts(List<String> arg0,
             List<String> arg1, List<BigInteger> arg2, List<BigInteger> arg3, boolean arg4)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.cardinality(toVarArray(arg0), toVarArray(arg1), arg4, toIntArray(arg2),
                         toIntArray(arg3)));
@@ -499,7 +519,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCardinalityWithVariableValuesAndVariableCounts(List<String> arg0,
             List<String> arg1, List<String> arg2, boolean arg3)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.cardinality(toVarArray(arg0), toVarArray(arg1), arg3, toVarArray(arg2)));
 
@@ -533,7 +553,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCountIntensionWithConstantValues(List<IUniverseIntensionConstraint> arg0,
             List<BigInteger> arg1, UniverseRelationalOperator arg2, BigInteger arg3)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.count(toXnode(arg0), toIntArray(arg1), toCondition(arg2, arg3.intValue())));
 
@@ -542,7 +562,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCountIntensionWithConstantValues(List<IUniverseIntensionConstraint> arg0,
             List<BigInteger> arg1, UniverseRelationalOperator arg2, String arg3)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.count(toXnode(arg0), toIntArray(arg1), toCondition(arg2, arg3)));
     }
@@ -550,7 +570,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCountWithConstantValues(List<String> arg0, List<BigInteger> arg1,
             UniverseRelationalOperator arg2, BigInteger arg3)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.count(toVarArray(arg0), toIntArray(arg1),
                         toCondition(arg2, arg3.intValue())));
@@ -567,7 +587,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCountWithVariableValues(List<String> arg0, List<String> arg1,
             UniverseRelationalOperator arg2, BigInteger arg3)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.count(toVarArray(arg0), toVarArray(arg1),
                         toCondition(arg2, arg3.intValue())));
@@ -604,7 +624,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addCumulativeConstantLengthsConstantHeights(List<String> arg0,
             List<BigInteger> arg1, List<String> arg2, List<BigInteger> arg3,
             UniverseRelationalOperator arg4, BigInteger arg5)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.cumulative(toVarArray(arg0), toIntArray(arg1), toVarArray(arg2),
                         toIntArray(arg3), new ConditionVal(toOperator(arg4), arg5.longValue())));
@@ -631,7 +651,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCumulativeConstantLengthsVariableHeights(List<String> arg0,
             List<BigInteger> arg1, List<String> arg2, UniverseRelationalOperator arg3, String arg4)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.cumulative(toVarArray(arg0), toIntArray(arg1), null,
                         toVarArray(arg2), new ConditionVar(toOperator(arg3), toVar(arg4))));
@@ -641,7 +661,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addCumulativeConstantLengthsVariableHeights(List<String> arg0,
             List<BigInteger> arg1, List<String> arg2, List<String> arg3,
             UniverseRelationalOperator arg4, BigInteger arg5)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.cumulative(toVarArray(arg0), toIntArray(arg1), toVarArray(arg2),
                         toVarArray(arg3), new ConditionVal(toOperator(arg4), arg5.longValue())));
@@ -659,7 +679,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCumulativeVariableLengthsConstantHeights(List<String> arg0, List<String> arg1,
             List<BigInteger> arg2, UniverseRelationalOperator arg3, BigInteger arg4)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.cumulative(toVarArray(arg0), toVarArray(arg1), null,
                         toIntArray(arg2), new ConditionVal(toOperator(arg3), arg4.longValue())));
@@ -668,7 +688,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCumulativeVariableLengthsConstantHeights(List<String> arg0, List<String> arg1,
             List<BigInteger> arg2, UniverseRelationalOperator arg3, String arg4)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.cumulative(toVarArray(arg0), toVarArray(arg1), null,
                         toIntArray(arg2), new ConditionVar(toOperator(arg3), toVar(arg4))));
@@ -686,7 +706,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCumulativeVariableLengthsConstantHeights(List<String> arg0, List<String> arg1,
             List<String> arg2, List<BigInteger> arg3, UniverseRelationalOperator arg4, String arg5)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.cumulative(toVarArray(arg0), toVarArray(arg1), toVarArray(arg2),
                         toIntArray(arg3), new ConditionVar(toOperator(arg4), toVar(arg5))));
@@ -695,7 +715,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCumulativeVariableLengthsVariableHeights(List<String> arg0, List<String> arg1,
             List<String> arg2, UniverseRelationalOperator arg3, BigInteger arg4)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.cumulative(toVarArray(arg0), toVarArray(arg1), null,
                         toVarArray(arg2), new ConditionVal(toOperator(arg3), arg4.longValue())));
@@ -704,7 +724,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCumulativeVariableLengthsVariableHeights(List<String> arg0, List<String> arg1,
             List<String> arg2, UniverseRelationalOperator arg3, String arg4)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.cumulative(toVarArray(arg0), toVarArray(arg1), null,
                         toVarArray(arg2), new ConditionVar(toOperator(arg3), toVar(arg4))));
@@ -714,7 +734,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCumulativeVariableLengthsVariableHeights(List<String> arg0, List<String> arg1,
             List<String> arg2, List<String> arg3, UniverseRelationalOperator arg4, BigInteger arg5)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.cumulative(toVarArray(arg0), toVarArray(arg1), toVarArray(arg2),
                         toVarArray(arg3), new ConditionVal(toOperator(arg4), arg5.longValue())));
@@ -724,34 +744,37 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addCumulativeVariableLengthsVariableHeights(List<String> arg0, List<String> arg1,
             List<String> arg2, List<String> arg3, UniverseRelationalOperator arg4, String arg5)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.cumulative(toVarArray(arg0), toVarArray(arg1), toVarArray(arg2),
                         toVarArray(arg3), new ConditionVar(toOperator(arg4), toVar(arg5))));
     }
 
     @Override
-    public void addElement(List<String> arg0,UniverseRelationalOperator operator,  BigInteger arg1)
+    public void addElement(List<String> arg0, UniverseRelationalOperator operator, BigInteger arg1)
             throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.element(toVarArray(arg0),
                 toCondition(operator, arg1.intValue())));
     }
 
     @Override
-    public void addElement(List<String> arg0,UniverseRelationalOperator operator,  String arg1) throws UniverseContradictionException {
+    public void addElement(List<String> arg0, UniverseRelationalOperator operator, String arg1)
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.element(toVarArray(arg0),
                 toCondition(operator, arg1)));
     }
 
     @Override
-    public void addElement(List<String> arg0, int arg1, String arg2, UniverseRelationalOperator operator, BigInteger arg3)
+    public void addElement(List<String> arg0, int arg1, String arg2,
+            UniverseRelationalOperator operator, BigInteger arg3)
             throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.element(toVarArray(arg0), arg1, toVar(arg2),
                 TypeRank.ANY, toCondition(operator, arg3.intValue())));
     }
 
     @Override
-    public void addElement(List<String> arg0, int arg1, String arg2, UniverseRelationalOperator operator, String arg3)
+    public void addElement(List<String> arg0, int arg1, String arg2,
+            UniverseRelationalOperator operator, String arg3)
             throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.element(toVarArray(arg0), arg1, toVar(arg2),
                 TypeRank.ANY, toCondition(operator, arg3)));
@@ -759,7 +782,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
 
     @Override
     public void addElementConstantMatrix(List<List<BigInteger>> arg0, int arg1, String arg2,
-            int arg3, String arg4, UniverseRelationalOperator operator, BigInteger arg5) throws UniverseContradictionException {
+            int arg3, String arg4, UniverseRelationalOperator operator, BigInteger arg5)
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.element(toIntMatrix(arg0), arg1, toVar(arg2),
                 arg3,
                 toVar(arg4), toCondition(operator, arg5.intValue())));
@@ -767,7 +791,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
 
     @Override
     public void addElementConstantMatrix(List<List<BigInteger>> arg0, int arg1, String arg2,
-            int arg3, String arg4, UniverseRelationalOperator operator, String arg5) throws UniverseContradictionException {
+            int arg3, String arg4, UniverseRelationalOperator operator, String arg5)
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.element(toIntMatrix(arg0), arg1, toVar(arg2), arg3,
                         toVar(arg4), toCondition(operator, arg5)));
@@ -775,7 +800,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void addElementConstantValues(List<BigInteger> arg0, int arg1, String arg2,UniverseRelationalOperator operator,
+    public void addElementConstantValues(List<BigInteger> arg0, int arg1, String arg2,
+            UniverseRelationalOperator operator,
             BigInteger arg3) throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.element(toIntArray(arg0), arg1, toVar(arg2),
                 TypeRank.ANY, toCondition(operator, arg3.intValue())));
@@ -783,7 +809,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void addElementConstantValues(List<BigInteger> arg0, int arg1, String arg2, UniverseRelationalOperator operator, String arg3)
+    public void addElementConstantValues(List<BigInteger> arg0, int arg1, String arg2,
+            UniverseRelationalOperator operator, String arg3)
             throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.element(toIntArray(arg0), arg1, toVar(arg2),
                 TypeRank.ANY, toCondition(operator, arg3)));
@@ -792,7 +819,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
 
     @Override
     public void addElementMatrix(List<List<String>> arg0, int arg1, String arg2, int arg3,
-            String arg4,UniverseRelationalOperator operator,  BigInteger arg5) throws UniverseContradictionException {
+            String arg4, UniverseRelationalOperator operator, BigInteger arg5)
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.element(toVarMatrix(arg0), arg1, toVar(arg2),
                 arg3,
                 toVar(arg4), toCondition(operator, arg5.intValue())));
@@ -801,7 +829,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
 
     @Override
     public void addElementMatrix(List<List<String>> arg0, int arg1, String arg2, int arg3,
-            String arg4, UniverseRelationalOperator operator, String arg5) throws UniverseContradictionException {
+            String arg4, UniverseRelationalOperator operator, String arg5)
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.element(toVarMatrix(arg0), arg1, toVar(arg2), arg3,
                         toVar(arg4), toCondition(operator, arg5)));
@@ -840,7 +869,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void addIntension(IUniverseIntensionConstraint arg0) throws UniverseContradictionException {
+    public void addIntension(IUniverseIntensionConstraint arg0)
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.intension(toXnode(arg0)));
 
     }
@@ -864,7 +894,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> p.intension(
                 toXnode(nary(arg0,
-                        arg1.stream().map(UniverseIntensionConstraintFactory::variable).collect(Collectors.toList())))));
+                        arg1.stream().map(UniverseIntensionConstraintFactory::variable).collect(
+                                Collectors.toList())))));
 
     }
 
@@ -874,11 +905,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
         if (arg1) {
             getHead().xcsp3.addConstraintsToAdd(p -> p.intension(toXnode(equiv(variable(arg0),
                     nary(arg2,
-                            arg3.stream().map(UniverseIntensionConstraintFactory::variable).collect(Collectors.toList()))))));
+                            arg3.stream().map(UniverseIntensionConstraintFactory::variable).collect(
+                                    Collectors.toList()))))));
         } else {
             getHead().xcsp3.addConstraintsToAdd(p -> p.intension(toXnode(neq(variable(arg0),
                     nary(arg2,
-                            arg3.stream().map(UniverseIntensionConstraintFactory::variable).collect(Collectors.toList()))))));
+                            arg3.stream().map(UniverseIntensionConstraintFactory::variable).collect(
+                                    Collectors.toList()))))));
         }
     }
 
@@ -915,7 +948,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addMaximumIntension(List<IUniverseIntensionConstraint> arg0,
             UniverseRelationalOperator arg1, BigInteger arg2)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.maximum(toXnode(arg0), toCondition(arg1, arg2.intValue())));
     }
@@ -944,7 +977,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addMinimumIntension(List<IUniverseIntensionConstraint> arg0,
             UniverseRelationalOperator arg1, BigInteger arg2)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.minimum(toXnode(arg0), toCondition(arg1, arg2.intValue())));
 
@@ -1020,7 +1053,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addNValuesIntension(List<IUniverseIntensionConstraint> arg0,
             UniverseRelationalOperator arg1, BigInteger arg2)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.nValues(toXnode(arg0), toCondition(arg1, arg2.intValue())));
     }
@@ -1138,7 +1171,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addPrimitive(String arg0, UniverseArithmeticOperator arg1, BigInteger arg2,
             UniverseRelationalOperator arg3, BigInteger arg4)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> {
             IUniverseIntensionConstraint left = binary(arg1, variable(arg0), constant(arg2));
             IUniverseIntensionConstraint right = constant(arg4);
@@ -1149,7 +1182,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addPrimitive(String arg0, UniverseArithmeticOperator arg1, String arg2,
             UniverseRelationalOperator arg3, BigInteger arg4)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(p -> {
             IUniverseIntensionConstraint left = binary(arg1,
                     variable(arg0),
@@ -1227,7 +1260,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void addSumIntension(List<IUniverseIntensionConstraint> arg0, UniverseRelationalOperator arg1,
+    public void addSumIntension(List<IUniverseIntensionConstraint> arg0,
+            UniverseRelationalOperator arg1,
             BigInteger arg2) throws UniverseContradictionException {
         int[] coeffs = new int[arg0.size()];
         Arrays.fill(coeffs, 1);
@@ -1237,7 +1271,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void addSumIntension(List<IUniverseIntensionConstraint> arg0, UniverseRelationalOperator arg1,
+    public void addSumIntension(List<IUniverseIntensionConstraint> arg0,
+            UniverseRelationalOperator arg1,
             String arg2) throws UniverseContradictionException {
         int[] coeffs = new int[arg0.size()];
         Arrays.fill(coeffs, 1);
@@ -1248,7 +1283,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addSumIntension(List<IUniverseIntensionConstraint> arg0, List<BigInteger> arg1,
             UniverseRelationalOperator arg2, BigInteger arg3)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.sum(toXnode(arg0), toIntArray(arg1), toCondition(arg2, arg3.intValue())));
 
@@ -1264,7 +1299,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addSumWithVariableCoefficients(List<String> arg0, List<String> arg1,
             UniverseRelationalOperator arg2, BigInteger arg3)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         List<String> vars = new ArrayList<>(arg0);
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.sum(toVarArray(vars), toVarArray(arg1), toCondition(arg2, arg3.intValue())));
@@ -1292,15 +1327,15 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             throws UniverseContradictionException {
         int[][] t;
         boolean starred;
-        if(arg1==previousList) {
-            t=previousArray;
-            starred=previousStarred;
-        }else {
-            t= new int[arg1.size()][arg1.get(0).size()];
-            starred= toTuples(arg1, t);
-            previousList=arg1;
-            previousArray=t;
-            previousStarred=starred;
+        if (arg1 == previousList) {
+            t = previousArray;
+            starred = previousStarred;
+        } else {
+            t = new int[arg1.size()][arg1.get(0).size()];
+            starred = toTuples(arg1, t);
+            previousList = arg1;
+            previousArray = t;
+            previousStarred = starred;
         }
 
         getHead().xcsp3.addConstraintsToAdd(p -> p.extension(toVarArray(arg0), t, true, starred));
@@ -1322,15 +1357,15 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             throws UniverseContradictionException {
         int[][] t;
         boolean starred;
-        if(arg1==previousList) {
-            t=previousArray;
-            starred=previousStarred;
-        }else {
-            t= new int[arg1.size()][arg1.get(0).size()];
-            starred= toTuples(arg1, t);
-            previousList=arg1;
-            previousArray=t;
-            previousStarred=starred;
+        if (arg1 == previousList) {
+            t = previousArray;
+            starred = previousStarred;
+        } else {
+            t = new int[arg1.size()][arg1.get(0).size()];
+            starred = toTuples(arg1, t);
+            previousList = arg1;
+            previousArray = t;
+            previousStarred = starred;
         }
         getHead().xcsp3.addConstraintsToAdd(p -> p.extension(toVarArray(arg0), t, false, starred));
 
@@ -1355,7 +1390,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void maximizeExpressionMaximum(List<IUniverseIntensionConstraint> arg0, List<BigInteger> arg1) {
+    public void maximizeExpressionMaximum(List<IUniverseIntensionConstraint> arg0,
+            List<BigInteger> arg1) {
         int[] coeffs = arg1.stream().mapToInt(BigInteger::intValue).toArray();
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.maximize(TypeObjective.MAXIMUM, toXnode(arg0), coeffs));
@@ -1368,7 +1404,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void maximizeExpressionMinimum(List<IUniverseIntensionConstraint> arg0, List<BigInteger> arg1) {
+    public void maximizeExpressionMinimum(List<IUniverseIntensionConstraint> arg0,
+            List<BigInteger> arg1) {
         int[] coeffs = arg1.stream().mapToInt(BigInteger::intValue).toArray();
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.maximize(TypeObjective.MINIMUM, toXnode(arg0), coeffs));
@@ -1381,7 +1418,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void maximizeExpressionNValues(List<IUniverseIntensionConstraint> arg0, List<BigInteger> arg1) {
+    public void maximizeExpressionNValues(List<IUniverseIntensionConstraint> arg0,
+            List<BigInteger> arg1) {
         int[] coeffs = arg1.stream().mapToInt(BigInteger::intValue).toArray();
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.maximize(TypeObjective.NVALUES, toXnode(arg0), coeffs));
@@ -1394,7 +1432,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void maximizeExpressionProduct(List<IUniverseIntensionConstraint> arg0, List<BigInteger> arg1) {
+    public void maximizeExpressionProduct(List<IUniverseIntensionConstraint> arg0,
+            List<BigInteger> arg1) {
         int[] coeffs = arg1.stream().mapToInt(BigInteger::intValue).toArray();
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.maximize(TypeObjective.PRODUCT, toXnode(arg0), coeffs));
@@ -1407,7 +1446,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void maximizeExpressionSum(List<IUniverseIntensionConstraint> arg0, List<BigInteger> arg1) {
+    public void maximizeExpressionSum(List<IUniverseIntensionConstraint> arg0,
+            List<BigInteger> arg1) {
         int[] coeffs = arg1.stream().mapToInt(BigInteger::intValue).toArray();
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.maximize(TypeObjective.SUM, toXnode(arg0), coeffs));
@@ -1521,7 +1561,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void minimizeExpressionMaximum(List<IUniverseIntensionConstraint> arg0, List<BigInteger> arg1) {
+    public void minimizeExpressionMaximum(List<IUniverseIntensionConstraint> arg0,
+            List<BigInteger> arg1) {
         int[] coeffs = arg1.stream().mapToInt(BigInteger::intValue).toArray();
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.minimize(TypeObjective.MAXIMUM, toXnode(arg0), coeffs));
@@ -1534,7 +1575,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void minimizeExpressionMinimum(List<IUniverseIntensionConstraint> arg0, List<BigInteger> arg1) {
+    public void minimizeExpressionMinimum(List<IUniverseIntensionConstraint> arg0,
+            List<BigInteger> arg1) {
         int[] coeffs = arg1.stream().mapToInt(BigInteger::intValue).toArray();
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.minimize(TypeObjective.MINIMUM, toXnode(arg0), coeffs));
@@ -1547,7 +1589,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void minimizeExpressionNValues(List<IUniverseIntensionConstraint> arg0, List<BigInteger> arg1) {
+    public void minimizeExpressionNValues(List<IUniverseIntensionConstraint> arg0,
+            List<BigInteger> arg1) {
         int[] coeffs = arg1.stream().mapToInt(BigInteger::intValue).toArray();
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.minimize(TypeObjective.NVALUES, toXnode(arg0), coeffs));
@@ -1560,7 +1603,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void minimizeExpressionProduct(List<IUniverseIntensionConstraint> arg0, List<BigInteger> arg1) {
+    public void minimizeExpressionProduct(List<IUniverseIntensionConstraint> arg0,
+            List<BigInteger> arg1) {
         int[] coeffs = arg1.stream().mapToInt(BigInteger::intValue).toArray();
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.minimize(TypeObjective.PRODUCT, toXnode(arg0), coeffs));
@@ -1573,7 +1617,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void minimizeExpressionSum(List<IUniverseIntensionConstraint> arg0, List<BigInteger> arg1) {
+    public void minimizeExpressionSum(List<IUniverseIntensionConstraint> arg0,
+            List<BigInteger> arg1) {
         int[] coeffs = arg1.stream().mapToInt(BigInteger::intValue).toArray();
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.minimize(TypeObjective.SUM, toXnode(arg0), coeffs));
@@ -1699,13 +1744,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.annotations.decision = toVariableArray(variables));
     }
-    
+
     @Override
-	public void valueHeuristicStatic(List<String> vars, List<? extends Number> order) {
-		getHead().xcsp3.addConstraintsToAdd(p->p.staticValHeuristic(toVarArray(vars), toIntArray(order)));	
-	}
-    
-    
+    public void valueHeuristicStatic(List<String> vars, List<? extends Number> order) {
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.staticValHeuristic(toVarArray(vars), toIntArray(order)));
+    }
+
     /**
      * Creates an array of {@code int} values from a List of {@link Number}.
      *
@@ -1785,7 +1830,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     /**
-     * Creates an {@link XNodeParent} representing the given {@link IUniverseIntensionConstraint}.
+     * Creates an {@link XNodeParent} representing the given
+     * {@link IUniverseIntensionConstraint}.
      *
      * @param i The intension constraint to convert to an {@link XNodeParent}.
      * @return The created {@link XNodeParent}.
@@ -1939,7 +1985,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public Map<String, IUniverseVariable> getVariablesMapping() {
         getHead().buildProblem(0);
         var map = new HashMap<String, IUniverseVariable>();
-        for (var variable : getHead().problem.variables) {
+        for (var variable : getHead().xcsp3.mapping.values()) {
             map.put(variable.id(), new JUniverseVariableAceAdapter(variable));
         }
         return map;
@@ -2033,13 +2079,14 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
                         toCondition(operator, values)));
 
     }
+
     @Override
     public void addSumWithVariableCoefficients(List<String> variables, List<String> coefficients,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         List<String> vars = new ArrayList<>(variables);
         getHead().xcsp3.addConstraintsToAdd(
                 p -> p.sum(toVarArray(vars), toVarArray(coefficients),
-                        toCondition(operator, min.intValue(),max.intValue())));
+                        toCondition(operator, min.intValue(), max.intValue())));
 
     }
 
@@ -2072,7 +2119,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addSumIntensionWithVariableCoefficients(List<IUniverseIntensionConstraint> arg0,
             List<String> arg1, UniverseRelationalOperator arg2, BigInteger arg3)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         throw new UnsupportedOperationException();
 
     }
@@ -2080,17 +2127,17 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void addSumIntensionWithVariableCoefficients(List<IUniverseIntensionConstraint> arg0,
             List<String> arg1, UniverseRelationalOperator arg2, String arg3)
-                    throws UniverseContradictionException {
+            throws UniverseContradictionException {
         throw new UnsupportedOperationException();
 
     }
 
-
-
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addBiDimensionalNoOverlap(java.util.List, java.util.List, java.util.List, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addBiDimensionalNoOverlap(java.
+     * util.List, java.util.List, java.util.List, java.util.List)
      */
     @Override
     public void addBiDimensionalNoOverlap(List<String> xVariables, List<String> yVariables,
@@ -2101,192 +2148,253 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addBiDimensionalNoOverlap(java.util.List, java.util.List, java.util.List, java.util.List, boolean)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addBiDimensionalNoOverlap(java.
+     * util.List, java.util.List, java.util.List, java.util.List, boolean)
      */
     @Override
     public void addBiDimensionalNoOverlap(List<String> xVariables, List<String> yVariables,
             List<String> xLength, List<BigInteger> yLength, boolean zeroIgnored) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.noOverlap(toVarArray(xVariables), toVarArray(yVariables), toVarArray(xLength), toIntArray(yLength), zeroIgnored));
+                p -> p.noOverlap(toVarArray(xVariables), toVarArray(yVariables),
+                        toVarArray(xLength), toIntArray(yLength), zeroIgnored));
 
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addFlow(java.util.List, java.util.List, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addFlow(java.util.List,
+     * java.util.List, java.util.List)
      */
     @Override
     public void addFlow(List<String> list, List<BigInteger> balance, List<List<BigInteger>> edges) {
-        getHead().xcsp3.addConstraintsToAdd(p->p.flow(toVarArray(list), toIntArray(balance), toIntMatrix(edges)));
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.flow(toVarArray(list), toIntArray(balance), toIntMatrix(edges)));
 
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addFlow(java.util.List, java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addFlow(java.util.List,
+     * java.util.List, java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.lang.String)
      */
     @Override
     public void addFlow(List<String> list, List<BigInteger> balance, List<List<BigInteger>> edges,
             List<BigInteger> weights, UniverseRelationalOperator operator, String variable) {
-        getHead().xcsp3.addConstraintsToAdd(p->p.flow(toVarArray(list), toIntArray(balance), toIntMatrix(edges),toIntArray(weights),toCondition(operator, variable)));
+        getHead().xcsp3.addConstraintsToAdd(p -> p.flow(toVarArray(list), toIntArray(balance),
+                toIntMatrix(edges), toIntArray(weights), toCondition(operator, variable)));
 
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addFlow(java.util.List, java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addFlow(java.util.List,
+     * java.util.List, java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.math.BigInteger)
      */
     @Override
     public void addFlow(List<String> list, List<BigInteger> balance, List<List<BigInteger>> edges,
             List<BigInteger> weights, UniverseRelationalOperator operator, BigInteger value) {
-        getHead().xcsp3.addConstraintsToAdd(p->p.flow(toVarArray(list), toIntArray(balance), toIntMatrix(edges),toIntArray(weights),toCondition(operator, value.intValue())));
-
+        getHead().xcsp3.addConstraintsToAdd(p -> p.flow(toVarArray(list), toIntArray(balance),
+                toIntMatrix(edges), toIntArray(weights), toCondition(operator, value.intValue())));
 
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.lang.String, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.lang.String)
      */
     @Override
     public void addKnapsack(List<String> list, List<BigInteger> weights,
             UniverseRelationalOperator wOperator, String wVariable, List<BigInteger> profits,
             UniverseRelationalOperator pOperator, String pVariable) {
-        getHead().xcsp3.addConstraintsToAdd(p->p.knapsack(toVarArray(list),toIntArray(weights), toCondition(wOperator, wVariable), toIntArray(profits), toCondition(pOperator, pVariable)));
+        getHead().xcsp3.addConstraintsToAdd(p -> p.knapsack(toVarArray(list), toIntArray(weights),
+                toCondition(wOperator, wVariable), toIntArray(profits),
+                toCondition(pOperator, pVariable)));
 
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.lang.String, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.math.BigInteger)
      */
     @Override
     public void addKnapsack(List<String> list, List<BigInteger> weights,
             UniverseRelationalOperator wOperator, String wVariable, List<BigInteger> profits,
             UniverseRelationalOperator pOperator, BigInteger pValue) {
-        getHead().xcsp3.addConstraintsToAdd(p->p.knapsack(toVarArray(list),toIntArray(weights), toCondition(wOperator, wVariable), toIntArray(profits), toCondition(pOperator, pValue.intValue())));
-
+        getHead().xcsp3.addConstraintsToAdd(p -> p.knapsack(toVarArray(list), toIntArray(weights),
+                toCondition(wOperator, wVariable), toIntArray(profits),
+                toCondition(pOperator, pValue.intValue())));
 
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.math.BigInteger, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.lang.String)
      */
     @Override
     public void addKnapsack(List<String> list, List<BigInteger> weights,
             UniverseRelationalOperator wOperator, BigInteger wValue, List<BigInteger> profits,
             UniverseRelationalOperator pOperator, String pVariable) {
-        getHead().xcsp3.addConstraintsToAdd(p->p.knapsack(toVarArray(list),toIntArray(weights), toCondition(wOperator, wValue.intValue()), toIntArray(profits), toCondition(pOperator, pVariable)));
-
+        getHead().xcsp3.addConstraintsToAdd(p -> p.knapsack(toVarArray(list), toIntArray(weights),
+                toCondition(wOperator, wValue.intValue()), toIntArray(profits),
+                toCondition(pOperator, pVariable)));
 
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.math.BigInteger, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.math.BigInteger)
      */
     @Override
     public void addKnapsack(List<String> list, List<BigInteger> weights,
             UniverseRelationalOperator wOperator, BigInteger wValue, List<BigInteger> profits,
             UniverseRelationalOperator pOperator, BigInteger pValue) {
-        getHead().xcsp3.addConstraintsToAdd(p->p.knapsack(toVarArray(list),toIntArray(weights), toCondition(wOperator, wValue.intValue()), toIntArray(profits), toCondition(pOperator, pValue.intValue())));
-
+        getHead().xcsp3.addConstraintsToAdd(p -> p.knapsack(toVarArray(list), toIntArray(weights),
+                toCondition(wOperator, wValue.intValue()), toIntArray(profits),
+                toCondition(pOperator, pValue.intValue())));
 
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addPrecedence(java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addPrecedence(java.util.List)
      */
     @Override
     public void addPrecedence(List<String> list) {
-        getHead().xcsp3.addConstraintsToAdd(p->p.precedence(toVarArray(list)));
+        getHead().xcsp3.addConstraintsToAdd(p -> p.precedence(toVarArray(list)));
 
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addPrecedence(java.util.List, java.util.List, boolean)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addPrecedence(java.util.List,
+     * java.util.List, boolean)
      */
     @Override
     public void addPrecedence(List<String> list, List<BigInteger> values, boolean covered) {
-        getHead().xcsp3.addConstraintsToAdd(p->p.precedence(toVarArray(list),toIntArray(values),covered));
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.precedence(toVarArray(list), toIntArray(values), covered));
 
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addRegular(java.lang.String, java.util.List, java.util.List, java.lang.String, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addRegular(java.lang.String,
+     * java.util.List, java.util.List, java.lang.String, java.util.List)
      */
     @Override
     public void addRegular(List<String> list, List<UniverseTransition> transitions,
             String startState, List<String> finalStates) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.regular(toVarArray(list),new Automaton(startState, toTransition(transitions), finalStates.toArray(new String[finalStates.size()]))));
+                p -> p.regular(toVarArray(list),
+                        new Automaton(startState, toTransition(transitions),
+                                finalStates.toArray(new String[finalStates.size()]))));
 
     }
 
     private Transition[] toTransition(List<UniverseTransition> transitions) {
-        return transitions.stream().map(t->new Transition(t.getStart(),(long)t.getValue(),t.getEnd())).collect(Collectors.toList()).toArray(new Transition[transitions.size()]);
+        return transitions.stream().map(
+                t -> new Transition(t.getStart(), (long) t.getValue(), t.getEnd())).collect(
+                        Collectors.toList()).toArray(new Transition[transitions.size()]);
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMDD(java.lang.String, java.util.List, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMDD(java.lang.String,
+     * java.util.List, java.util.List)
      */
     @Override
     public void addMDD(List<String> list, List<UniverseTransition> transitions) {
-        getHead().xcsp3.addConstraintsToAdd(p->p.mdd(toVarArray(list), toTransition(transitions)));
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.mdd(toVarArray(list), toTransition(transitions)));
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCircuit(java.lang.String, java.util.List, int)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCircuit(java.lang.String,
+     * java.util.List, int)
      */
     @Override
     public void addCircuit(List<String> list, int startIndex) {
-        getHead().xcsp3.addConstraintsToAdd(p->p.circuit(toVarArray(list), startIndex));
+        getHead().xcsp3.addConstraintsToAdd(p -> p.circuit(toVarArray(list), startIndex));
 
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCircuit(java.lang.String, java.util.List, int, int)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCircuit(java.lang.String,
+     * java.util.List, int, int)
      */
     @Override
     public void addCircuit(List<String> list, int startIndex, BigInteger size) {
-        getHead().xcsp3.addConstraintsToAdd(p->p.circuit(toVarArray(list), startIndex,size.intValue()));
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.circuit(toVarArray(list), startIndex, size.intValue()));
 
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCircuit(java.lang.String, java.util.List, int, java.lang.String)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCircuit(java.lang.String,
+     * java.util.List, int, java.lang.String)
      */
     @Override
     public void addCircuit(List<String> list, int startIndex, String size) {
-        getHead().xcsp3.addConstraintsToAdd(p->p.circuit(toVarArray(list), startIndex,toVar(size)));
+        getHead().xcsp3.addConstraintsToAdd(
+                p -> p.circuit(toVarArray(list), startIndex, toVar(size)));
     }
 
     @Override
     public void setLowerBound(BigInteger lb) {
         getHead().getSolver().problem.optimizer.setAsyncMinBound(lb.longValue());
-        if(getHead().getSolver().solutions.found>0) {
+        if (getHead().getSolver().solutions.found > 0) {
             var solution = solution();
             String stringSolution = solution.stream().map(BigInteger::toString).collect(
                     Collectors.joining(" "));
@@ -2297,7 +2405,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     @Override
     public void setUpperBound(BigInteger ub) {
         getHead().getSolver().problem.optimizer.setAsyncMaxBound(ub.longValue());
-        if(getHead().getSolver().solutions.found>0) {
+        if (getHead().getSolver().solutions.found > 0) {
             var solution = solution();
             String stringSolution = solution.stream().map(BigInteger::toString).collect(
                     Collectors.joining(" "));
@@ -2333,14 +2441,15 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
 
     @Override
     public boolean isOptimization() {
-        return getHead().getSolver().problem.framework==TypeFramework.COP;
+        return getHead().getSolver().problem.framework == TypeFramework.COP;
     }
 
     @Override
     public void addElement(List<String> variables, UniverseSetBelongingOperator operator,
             BigInteger min, BigInteger max) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.element(toVarArray(variables), toCondition(operator, min.intValue(), max.intValue())));
+                p -> p.element(toVarArray(variables),
+                        toCondition(operator, min.intValue(), max.intValue())));
 
     }
 
@@ -2356,7 +2465,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addElementConstantValues(List<BigInteger> values, int startIndex, String index,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.element(toIntArray(values),startIndex,toVar(index),TypeRank.ANY, toCondition(operator, min.intValue(), max.intValue())));
+                p -> p.element(toIntArray(values), startIndex, toVar(index), TypeRank.ANY,
+                        toCondition(operator, min.intValue(), max.intValue())));
 
     }
 
@@ -2364,7 +2474,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addElementConstantValues(List<BigInteger> values, int startIndex, String index,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.element(toIntArray(values),startIndex,toVar(index),TypeRank.ANY, toCondition(operator, set)));
+                p -> p.element(toIntArray(values), startIndex, toVar(index), TypeRank.ANY,
+                        toCondition(operator, set)));
 
     }
 
@@ -2372,7 +2483,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addElement(List<String> variables, int startIndex, String index,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.element(toVarArray(variables),startIndex,toVar(index),TypeRank.ANY, toCondition(operator, min.intValue(), max.intValue())));
+                p -> p.element(toVarArray(variables), startIndex, toVar(index), TypeRank.ANY,
+                        toCondition(operator, min.intValue(), max.intValue())));
 
     }
 
@@ -2380,7 +2492,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addElement(List<String> values, int startIndex, String index,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.element(toVarArray(values),startIndex,toVar(index),TypeRank.ANY, toCondition(operator, set)));
+                p -> p.element(toVarArray(values), startIndex, toVar(index), TypeRank.ANY,
+                        toCondition(operator, set)));
 
     }
 
@@ -2389,7 +2502,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             String rowIndex, int startColIndex, String colIndex,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.element(toIntMatrix(matrix),startRowIndex,toVar(rowIndex),startColIndex,toVar(colIndex), toCondition(operator, min.intValue(), max.intValue())));
+                p -> p.element(toIntMatrix(matrix), startRowIndex, toVar(rowIndex), startColIndex,
+                        toVar(colIndex), toCondition(operator, min.intValue(), max.intValue())));
 
     }
 
@@ -2398,7 +2512,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             String rowIndex, int startColIndex, String colIndex,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.element(toIntMatrix(matrix),startRowIndex,toVar(rowIndex),startColIndex,toVar(colIndex), toCondition(operator, set)));
+                p -> p.element(toIntMatrix(matrix), startRowIndex, toVar(rowIndex), startColIndex,
+                        toVar(colIndex), toCondition(operator, set)));
 
     }
 
@@ -2407,7 +2522,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             int startColIndex, String colIndex, UniverseSetBelongingOperator operator,
             BigInteger min, BigInteger max) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.element(toVarMatrix(matrix),startRowIndex,toVar(rowIndex),startColIndex,toVar(colIndex), toCondition(operator, min.intValue(), max.intValue())));
+                p -> p.element(toVarMatrix(matrix), startRowIndex, toVar(rowIndex), startColIndex,
+                        toVar(colIndex), toCondition(operator, min.intValue(), max.intValue())));
 
     }
 
@@ -2416,7 +2532,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             int startColIndex, String colIndex, UniverseSetBelongingOperator operator,
             List<BigInteger> set) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.element(toVarMatrix(matrix),startRowIndex,toVar(rowIndex),startColIndex,toVar(colIndex), toCondition(operator, set)));
+                p -> p.element(toVarMatrix(matrix), startRowIndex, toVar(rowIndex), startColIndex,
+                        toVar(colIndex), toCondition(operator, set)));
 
     }
 
@@ -2424,7 +2541,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMaximumArg(List<String> variables, UniverseRelationalOperator operator,
             BigInteger value) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.maximumArg(toVarArray(variables),TypeRank.ANY,toCondition(operator, value.intValue())));
+                p -> p.maximumArg(toVarArray(variables), TypeRank.ANY,
+                        toCondition(operator, value.intValue())));
 
     }
 
@@ -2432,7 +2550,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMaximumArg(List<String> variables, UniverseRelationalOperator operator,
             String variable) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.maximumArg(toVarArray(variables),TypeRank.ANY,toCondition(operator, variable)));
+                p -> p.maximumArg(toVarArray(variables), TypeRank.ANY,
+                        toCondition(operator, variable)));
 
     }
 
@@ -2440,7 +2559,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMinimumArg(List<String> variables, UniverseRelationalOperator operator,
             BigInteger value) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.minimumArg(toVarArray(variables),TypeRank.ANY,toCondition(operator, value.intValue())));
+                p -> p.minimumArg(toVarArray(variables), TypeRank.ANY,
+                        toCondition(operator, value.intValue())));
 
     }
 
@@ -2448,7 +2568,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMinimumArg(List<String> variables, UniverseRelationalOperator operator,
             String variable) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.minimumArg(toVarArray(variables),TypeRank.ANY,toCondition(operator, variable)));
+                p -> p.minimumArg(toVarArray(variables), TypeRank.ANY,
+                        toCondition(operator, variable)));
 
     }
 
@@ -2456,7 +2577,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMaximumArgIntension(List<IUniverseIntensionConstraint> variables,
             UniverseRelationalOperator operator, BigInteger value) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.maximumArg(toXnode(variables),TypeRank.ANY,toCondition(operator, value.intValue())));
+                p -> p.maximumArg(toXnode(variables), TypeRank.ANY,
+                        toCondition(operator, value.intValue())));
 
     }
 
@@ -2464,7 +2586,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMaximumArgIntension(List<IUniverseIntensionConstraint> variables,
             UniverseRelationalOperator operator, String variable) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.maximumArg(toXnode(variables),TypeRank.ANY,toCondition(operator, variable)));
+                p -> p.maximumArg(toXnode(variables), TypeRank.ANY,
+                        toCondition(operator, variable)));
 
     }
 
@@ -2472,7 +2595,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMinimumArgIntension(List<IUniverseIntensionConstraint> variables,
             UniverseRelationalOperator operator, BigInteger value) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.minimumArg(toXnode(variables),TypeRank.ANY,toCondition(operator, value.intValue())));
+                p -> p.minimumArg(toXnode(variables), TypeRank.ANY,
+                        toCondition(operator, value.intValue())));
 
     }
 
@@ -2480,7 +2604,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMinimumArgIntension(List<IUniverseIntensionConstraint> variables,
             UniverseRelationalOperator operator, String variable) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.minimumArg(toXnode(variables),TypeRank.ANY,toCondition(operator, variable)));
+                p -> p.minimumArg(toXnode(variables), TypeRank.ANY,
+                        toCondition(operator, variable)));
 
     }
 
@@ -2488,7 +2613,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMaximumArg(List<String> variables, UniverseSetBelongingOperator operator,
             BigInteger min, BigInteger max) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.maximumArg(toVarArray(variables),TypeRank.ANY,toCondition(operator, min.intValue(),max.intValue())));
+                p -> p.maximumArg(toVarArray(variables), TypeRank.ANY,
+                        toCondition(operator, min.intValue(), max.intValue())));
 
     }
 
@@ -2496,7 +2622,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMaximumArg(List<String> variables, UniverseSetBelongingOperator operator,
             List<BigInteger> set) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.maximumArg(toVarArray(variables),TypeRank.ANY,toCondition(operator, set)));
+                p -> p.maximumArg(toVarArray(variables), TypeRank.ANY, toCondition(operator, set)));
 
     }
 
@@ -2504,7 +2630,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMinimumArg(List<String> variables, UniverseSetBelongingOperator operator,
             BigInteger min, BigInteger max) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.minimumArg(toVarArray(variables),TypeRank.ANY,toCondition(operator, min.intValue(),max.intValue())));
+                p -> p.minimumArg(toVarArray(variables), TypeRank.ANY,
+                        toCondition(operator, min.intValue(), max.intValue())));
 
     }
 
@@ -2512,7 +2639,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMinimumArg(List<String> variables, UniverseSetBelongingOperator operator,
             List<BigInteger> set) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.minimumArg(toVarArray(variables),TypeRank.ANY,toCondition(operator, set)));
+                p -> p.minimumArg(toVarArray(variables), TypeRank.ANY, toCondition(operator, set)));
 
     }
 
@@ -2520,7 +2647,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMaximumArgIntension(List<IUniverseIntensionConstraint> variables,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.maximumArg(toXnode(variables),TypeRank.ANY,toCondition(operator, min.intValue(),max.intValue())));
+                p -> p.maximumArg(toXnode(variables), TypeRank.ANY,
+                        toCondition(operator, min.intValue(), max.intValue())));
 
     }
 
@@ -2528,7 +2656,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMaximumArgIntension(List<IUniverseIntensionConstraint> variables,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.maximumArg(toXnode(variables),TypeRank.ANY,toCondition(operator, set)));
+                p -> p.maximumArg(toXnode(variables), TypeRank.ANY, toCondition(operator, set)));
 
     }
 
@@ -2536,7 +2664,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMinimumArgIntension(List<IUniverseIntensionConstraint> variables,
             UniverseSetBelongingOperator operator, BigInteger min, BigInteger max) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.minimumArg(toXnode(variables),TypeRank.ANY,toCondition(operator, min.intValue(),max.intValue())));
+                p -> p.minimumArg(toXnode(variables), TypeRank.ANY,
+                        toCondition(operator, min.intValue(), max.intValue())));
 
     }
 
@@ -2544,14 +2673,16 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     public void addMinimumArgIntension(List<IUniverseIntensionConstraint> variables,
             UniverseSetBelongingOperator operator, List<BigInteger> set) {
         getHead().xcsp3.addConstraintsToAdd(
-                p -> p.minimumArg(toXnode(variables),TypeRank.ANY,toCondition(operator, set)));
+                p -> p.minimumArg(toXnode(variables), TypeRank.ANY, toCondition(operator, set)));
 
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#newVariableSymbolic(java.lang.String, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#newVariableSymbolic(java.lang.
+     * String, java.util.List)
      */
     @Override
     public void newVariableSymbolic(String id, List<String> values) {
@@ -2562,7 +2693,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addInstantiationSymbolic(java.lang.String, java.lang.String)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addInstantiationSymbolic(java.
+     * lang.String, java.lang.String)
      */
     @Override
     public void addInstantiationSymbolic(String variable, String value) {
@@ -2573,7 +2706,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addInstantiationSymbolic(java.util.List, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addInstantiationSymbolic(java.
+     * util.List, java.util.List)
      */
     @Override
     public void addInstantiationSymbolic(List<String> variables, List<String> values) {
@@ -2584,7 +2719,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addAllDifferentList(java.util.List, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addAllDifferentList(java.util.
+     * List, java.util.List)
      */
     @Override
     public void addAllDifferentList(List<List<String>> variableLists,
@@ -2596,7 +2733,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCountWithConstantValues(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCountWithConstantValues(java
+     * .util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addCountWithConstantValues(List<String> variables, List<BigInteger> values,
@@ -2608,7 +2749,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCountWithConstantValues(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCountWithConstantValues(java
+     * .util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addCountWithConstantValues(List<String> variables, List<BigInteger> values,
@@ -2620,7 +2765,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCountWithVariableValues(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCountWithVariableValues(java
+     * .util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addCountWithVariableValues(List<String> variables, List<String> values,
@@ -2632,7 +2781,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCountWithVariableValues(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCountWithVariableValues(java
+     * .util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addCountWithVariableValues(List<String> variables, List<String> values,
@@ -2644,7 +2797,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCountIntensionWithConstantValues(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCountIntensionWithConstantValues(java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addCountIntensionWithConstantValues(List<IUniverseIntensionConstraint> expressions,
@@ -2657,7 +2813,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCountIntensionWithConstantValues(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCountIntensionWithConstantValues(java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addCountIntensionWithConstantValues(List<IUniverseIntensionConstraint> expressions,
@@ -2669,7 +2828,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addNValues(java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addNValues(java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addNValues(List<String> variables, UniverseSetBelongingOperator operator,
@@ -2681,7 +2842,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addNValuesExcept(java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addNValuesExcept(java.util.
+     * List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger, java.util.List)
      */
     @Override
     public void addNValuesExcept(List<String> variables, UniverseSetBelongingOperator operator,
@@ -2693,7 +2857,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addNValues(java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addNValues(java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addNValues(List<String> variables, UniverseSetBelongingOperator operator,
@@ -2705,7 +2871,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addNValuesExcept(java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addNValuesExcept(java.util.
+     * List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List, java.util.List)
      */
     @Override
     public void addNValuesExcept(List<String> variables, UniverseSetBelongingOperator operator,
@@ -2717,7 +2886,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addNValuesIntension(java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addNValuesIntension(java.util.
+     * List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addNValuesIntension(List<IUniverseIntensionConstraint> expressions,
@@ -2729,7 +2901,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addNValuesIntension(java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addNValuesIntension(java.util.
+     * List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addNValuesIntension(List<IUniverseIntensionConstraint> expressions,
@@ -2741,7 +2916,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addBinPacking(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addBinPacking(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.math.BigInteger)
      */
     @Override
     public void addBinPacking(List<String> variables, List<BigInteger> sizes,
@@ -2753,7 +2932,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addBinPacking(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addBinPacking(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.lang.String)
      */
     @Override
     public void addBinPacking(List<String> variables, List<BigInteger> sizes,
@@ -2765,7 +2948,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addBinPacking(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addBinPacking(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addBinPacking(List<String> variables, List<BigInteger> sizes,
@@ -2777,7 +2964,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addBinPacking(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addBinPacking(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addBinPacking(List<String> variables, List<BigInteger> sizes,
@@ -2789,7 +2980,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addBinPackingWithConstantCapacities(java.util.List, java.util.List, java.util.List, boolean)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addBinPackingWithConstantCapacities(java.util.List, java.util.List, java.util.List,
+     * boolean)
      */
     @Override
     public void addBinPackingWithConstantCapacities(List<String> variables, List<BigInteger> sizes,
@@ -2801,7 +2994,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addBinPackingWithVariableCapacities(java.util.List, java.util.List, java.util.List, boolean)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addBinPackingWithVariableCapacities(java.util.List, java.util.List, java.util.List,
+     * boolean)
      */
     @Override
     public void addBinPackingWithVariableCapacities(List<String> variables, List<BigInteger> sizes,
@@ -2813,7 +3008,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCumulativeConstantLengthsConstantHeights(java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCumulativeConstantLengthsConstantHeights(java.util.List, java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addCumulativeConstantLengthsConstantHeights(List<String> origins,
@@ -2826,7 +3025,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCumulativeConstantLengthsConstantHeights(java.util.List, java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCumulativeConstantLengthsConstantHeights(java.util.List, java.util.List,
+     * java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addCumulativeConstantLengthsConstantHeights(List<String> origins,
@@ -2839,7 +3042,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCumulativeConstantLengthsConstantHeights(java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCumulativeConstantLengthsConstantHeights(java.util.List, java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addCumulativeConstantLengthsConstantHeights(List<String> origins,
@@ -2852,7 +3059,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCumulativeConstantLengthsConstantHeights(java.util.List, java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCumulativeConstantLengthsConstantHeights(java.util.List, java.util.List,
+     * java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addCumulativeConstantLengthsConstantHeights(List<String> origins,
@@ -2865,7 +3076,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCumulativeConstantLengthsVariableHeights(java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCumulativeConstantLengthsVariableHeights(java.util.List, java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addCumulativeConstantLengthsVariableHeights(List<String> origins,
@@ -2878,7 +3093,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCumulativeConstantLengthsVariableHeights(java.util.List, java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCumulativeConstantLengthsVariableHeights(java.util.List, java.util.List,
+     * java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addCumulativeConstantLengthsVariableHeights(List<String> origins,
@@ -2891,7 +3110,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCumulativeConstantLengthsVariableHeights(java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCumulativeConstantLengthsVariableHeights(java.util.List, java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addCumulativeConstantLengthsVariableHeights(List<String> origins,
@@ -2904,7 +3127,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCumulativeConstantLengthsVariableHeights(java.util.List, java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCumulativeConstantLengthsVariableHeights(java.util.List, java.util.List,
+     * java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addCumulativeConstantLengthsVariableHeights(List<String> origins,
@@ -2917,7 +3144,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCumulativeVariableLengthsConstantHeights(java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCumulativeVariableLengthsConstantHeights(java.util.List, java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addCumulativeVariableLengthsConstantHeights(List<String> origins,
@@ -2930,7 +3161,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCumulativeVariableLengthsConstantHeights(java.util.List, java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCumulativeVariableLengthsConstantHeights(java.util.List, java.util.List,
+     * java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addCumulativeVariableLengthsConstantHeights(List<String> origins,
@@ -2943,7 +3178,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCumulativeVariableLengthsConstantHeights(java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCumulativeVariableLengthsConstantHeights(java.util.List, java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addCumulativeVariableLengthsConstantHeights(List<String> origins,
@@ -2956,7 +3195,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCumulativeVariableLengthsConstantHeights(java.util.List, java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCumulativeVariableLengthsConstantHeights(java.util.List, java.util.List,
+     * java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addCumulativeVariableLengthsConstantHeights(List<String> origins,
@@ -2969,7 +3212,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCumulativeVariableLengthsVariableHeights(java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCumulativeVariableLengthsVariableHeights(java.util.List, java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addCumulativeVariableLengthsVariableHeights(List<String> origins,
@@ -2982,7 +3229,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCumulativeVariableLengthsVariableHeights(java.util.List, java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCumulativeVariableLengthsVariableHeights(java.util.List, java.util.List,
+     * java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addCumulativeVariableLengthsVariableHeights(List<String> origins,
@@ -2995,7 +3246,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCumulativeVariableLengthsVariableHeights(java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCumulativeVariableLengthsVariableHeights(java.util.List, java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addCumulativeVariableLengthsVariableHeights(List<String> origins,
@@ -3008,7 +3263,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addCumulativeVariableLengthsVariableHeights(java.util.List, java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#
+     * addCumulativeVariableLengthsVariableHeights(java.util.List, java.util.List,
+     * java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addCumulativeVariableLengthsVariableHeights(List<String> origins,
@@ -3021,7 +3280,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.math.BigInteger, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addKnapsack(List<String> variables, List<BigInteger> weights,
@@ -3034,7 +3299,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.math.BigInteger, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addKnapsack(List<String> variables, List<BigInteger> weights,
@@ -3047,7 +3318,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.lang.String, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addKnapsack(List<String> variables, List<BigInteger> weights,
@@ -3060,7 +3337,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.lang.String, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addKnapsack(List<String> variables, List<BigInteger> weights,
@@ -3073,7 +3356,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.math.BigInteger)
      */
     @Override
     public void addKnapsack(List<String> variables, List<BigInteger> weights,
@@ -3086,7 +3375,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.lang.String)
      */
     @Override
     public void addKnapsack(List<String> variables, List<BigInteger> weights,
@@ -3099,7 +3394,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addKnapsack(List<String> variables, List<BigInteger> weights,
@@ -3113,7 +3414,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addKnapsack(List<String> variables, List<BigInteger> weights,
@@ -3127,7 +3434,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.math.BigInteger)
      */
     @Override
     public void addKnapsack(List<String> variables, List<BigInteger> weights,
@@ -3140,7 +3453,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.lang.String)
      */
     @Override
     public void addKnapsack(List<String> variables, List<BigInteger> weights,
@@ -3153,7 +3472,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addKnapsack(List<String> variables, List<BigInteger> weights,
@@ -3166,7 +3491,13 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addKnapsack(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addKnapsack(List<String> variables, List<BigInteger> weights,
@@ -3179,7 +3510,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addStretch(java.util.List, java.util.List, java.util.List, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addStretch(java.util.List,
+     * java.util.List, java.util.List, java.util.List)
      */
     @Override
     public void addStretch(List<String> variables, List<BigInteger> values,
@@ -3191,7 +3523,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addStretch(java.util.List, java.util.List, java.util.List, java.util.List, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addStretch(java.util.List,
+     * java.util.List, java.util.List, java.util.List, java.util.List)
      */
     @Override
     public void addStretch(List<String> variables, List<BigInteger> values,
@@ -3204,7 +3537,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addSupportSymbolic(java.lang.String, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addSupportSymbolic(java.lang.
+     * String, java.util.List)
      */
     @Override
     public void addSupportSymbolic(String variable, List<String> allowedValues) {
@@ -3215,7 +3550,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addSupportSymbolic(java.util.List, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addSupportSymbolic(java.util.
+     * List, java.util.List)
      */
     @Override
     public void addSupportSymbolic(List<String> variableTuple, List<List<String>> allowedValues) {
@@ -3226,7 +3563,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addConflictsSymbolic(java.lang.String, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addConflictsSymbolic(java.lang.
+     * String, java.util.List)
      */
     @Override
     public void addConflictsSymbolic(String variable, List<String> forbiddenValues) {
@@ -3237,7 +3576,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addConflictsSymbolic(java.util.List, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addConflictsSymbolic(java.util.
+     * List, java.util.List)
      */
     @Override
     public void addConflictsSymbolic(List<String> variableTuple,
@@ -3249,7 +3590,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMinimum(java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMinimum(java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addMinimum(List<String> variables, UniverseSetBelongingOperator operator,
@@ -3261,7 +3604,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMinimum(java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMinimum(java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addMinimum(List<String> variables, UniverseSetBelongingOperator operator,
@@ -3273,7 +3618,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMinimumIndex(java.util.List, int, java.lang.String, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMinimumIndex(java.util.List,
+     * int, java.lang.String,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.math.BigInteger)
      */
     @Override
     public void addMinimumIndex(List<String> variables, int startIndex, String index,
@@ -3285,7 +3634,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMinimumIndex(java.util.List, int, java.lang.String, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMinimumIndex(java.util.List,
+     * int, java.lang.String,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.lang.String)
      */
     @Override
     public void addMinimumIndex(List<String> variables, int startIndex, String index,
@@ -3297,7 +3650,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMinimumIndex(java.util.List, int, java.lang.String, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMinimumIndex(java.util.List,
+     * int, java.lang.String,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addMinimumIndex(List<String> variables, int startIndex, String index,
@@ -3309,7 +3666,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMinimumIndex(java.util.List, int, java.lang.String, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMinimumIndex(java.util.List,
+     * int, java.lang.String,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addMinimumIndex(List<String> variables, int startIndex, String index,
@@ -3321,7 +3682,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMinimumIntension(java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMinimumIntension(java.util.
+     * List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addMinimumIntension(List<IUniverseIntensionConstraint> intensionConstraints,
@@ -3333,7 +3697,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMinimumIntension(java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMinimumIntension(java.util.
+     * List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addMinimumIntension(List<IUniverseIntensionConstraint> intensionConstraints,
@@ -3345,7 +3712,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMaximum(java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMaximum(java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addMaximum(List<String> variables, UniverseSetBelongingOperator operator,
@@ -3357,7 +3726,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMaximum(java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMaximum(java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addMaximum(List<String> variables, UniverseSetBelongingOperator operator,
@@ -3369,7 +3740,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMaximumIndex(java.util.List, int, java.lang.String, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMaximumIndex(java.util.List,
+     * int, java.lang.String,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.math.BigInteger)
      */
     @Override
     public void addMaximumIndex(List<String> variables, int startIndex, String index,
@@ -3381,7 +3756,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMaximumIndex(java.util.List, int, java.lang.String, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator, java.lang.String)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMaximumIndex(java.util.List,
+     * int, java.lang.String,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator,
+     * java.lang.String)
      */
     @Override
     public void addMaximumIndex(List<String> variables, int startIndex, String index,
@@ -3393,7 +3772,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMaximumIndex(java.util.List, int, java.lang.String, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMaximumIndex(java.util.List,
+     * int, java.lang.String,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addMaximumIndex(List<String> variables, int startIndex, String index,
@@ -3405,7 +3788,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMaximumIndex(java.util.List, int, java.lang.String, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMaximumIndex(java.util.List,
+     * int, java.lang.String,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addMaximumIndex(List<String> variables, int startIndex, String index,
@@ -3417,7 +3804,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMaximumIntension(java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMaximumIntension(java.util.
+     * List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addMaximumIntension(List<IUniverseIntensionConstraint> intensionConstraints,
@@ -3429,7 +3819,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMaximumIntension(java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see
+     * fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addMaximumIntension(java.util.
+     * List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addMaximumIntension(List<IUniverseIntensionConstraint> intensionConstraints,
@@ -3441,7 +3834,9 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addLex(java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addLex(java.util.List,
+     * java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator)
      */
     @Override
     public void addLex(List<String> variables, List<BigInteger> limit,
@@ -3453,7 +3848,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addFlow(java.util.List, java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.math.BigInteger, java.math.BigInteger)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addFlow(java.util.List,
+     * java.util.List, java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.math.BigInteger, java.math.BigInteger)
      */
     @Override
     public void addFlow(List<String> variables, List<BigInteger> balance,
@@ -3466,7 +3864,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     /*
      * (non-Javadoc)
      *
-     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addFlow(java.util.List, java.util.List, java.util.List, java.util.List, fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator, java.util.List)
+     * @see fr.univartois.cril.juniverse.csp.IUniverseCSPSolver#addFlow(java.util.List,
+     * java.util.List, java.util.List, java.util.List,
+     * fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator,
+     * java.util.List)
      */
     @Override
     public void addFlow(List<String> variables, List<BigInteger> balance,
@@ -3476,12 +3877,34 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
         throw new UnsupportedOperationException();
     }
 
-	@Override
-	public void setLogStream(OutputStream stream) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void setLogStream(OutputStream stream) {
+        // TODO Auto-generated method stub
 
-	
+    }
+
+    @Override
+    public List<String> getAuxiliaryVariables() {
+        // TODO Auto-generated method stub.
+        return null;
+    }
+
+    @Override
+    public boolean checkSolution() {
+        // TODO Auto-generated method stub.
+        return false;
+    }
+
+    @Override
+    public boolean checkSolution(Map<String, BigInteger> assignment) {
+        // TODO Auto-generated method stub.
+        return false;
+    }
+
+    @Override
+    public List<IUniverseConstraint> getConstraints() {
+        return Arrays.stream(getHead().getSolver().problem.constraints).map(
+                JUniverseAceConstraintAdapter::new).collect(Collectors.toList());
+    }
 
 }
