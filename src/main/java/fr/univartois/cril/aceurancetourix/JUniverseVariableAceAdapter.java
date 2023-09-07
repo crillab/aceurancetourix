@@ -20,6 +20,8 @@
 
 package fr.univartois.cril.aceurancetourix;
 
+
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -85,6 +87,7 @@ public class JUniverseVariableAceAdapter implements IUniverseVariable {
         return Arrays.stream(x.ctrs).map(
                 JUniverseAceConstraintAdapter::new).collect(Collectors.toList());
     }
+
 
 }
 

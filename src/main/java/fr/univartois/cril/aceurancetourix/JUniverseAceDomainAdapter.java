@@ -99,18 +99,37 @@ public class JUniverseAceDomainAdapter implements IUniverseDomain {
         }
     }
 
-    @Override
-    public List<BigInteger> getCurrentValues() {
-        List<BigInteger> values = new ArrayList<>();
-        for(int a=dom.first();a!=-1;a=dom.next(a)) {
-            values.add(BigInteger.valueOf(dom.toVal(a)));
+	@Override
+	public long currentSize() {
+		return dom.size();
+	}
+
+	@Override
+	public List<BigInteger> getCurrentValues() {
+        List<BigInteger> current = new ArrayList<>((int) currentSize());
+		for (int i = dom.first(); i != -1; i = dom.next(i)) {
+            current.add(BigInteger.valueOf(dom.toVal(i)));
         }
-        return values;
-    }
+        return current;
+	}
 
-    @Override
-    public long currentSize() {
-        return this.dom.size();
-    }
+	@Override
+	public void keepValues(BigInteger min, BigInteger max) {
+		throw new UnsupportedOperationException();
+	}
 
+	@Override
+	public void keepValues(List<BigInteger> values) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void removeValues(BigInteger min, BigInteger max) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void removeValues(List<BigInteger> values) {
+		throw new UnsupportedOperationException();
+	}
 }

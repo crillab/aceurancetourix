@@ -74,4 +74,14 @@ class JUniverseAceConstraintAdapter implements IUniverseConstraint {
         return constraint.wdeg();
     }
 
+	@Override
+	public void setIgnored(boolean ignored) {
+		constraint.ignored = ignored;
+	}
+
+	@Override
+	public boolean isIgnored() {
+		return constraint.ignored;
+	}
+
 }

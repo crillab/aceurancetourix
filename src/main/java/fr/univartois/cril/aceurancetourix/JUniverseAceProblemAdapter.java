@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.
- * If not, see {@link http://www.gnu.org/licenses}.
+ * If not, see <http://www.gnu.org/licenses>.
  */
 
 package fr.univartois.cril.aceurancetourix;
@@ -42,7 +42,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.xcsp.common.Condition;
 import org.xcsp.common.Condition.ConditionIntset;
@@ -82,6 +84,7 @@ import fr.univartois.cril.juniverse.csp.operator.UniverseArithmeticOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseBooleanOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator;
+import fr.univartois.cril.juniverse.listener.IUniverseSearchListener;
 import fr.univartois.cril.juniverse.optim.IUniverseOptimizationSolver;
 import main.Head;
 import problem.Problem;
@@ -118,6 +121,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
 
     private List<List<BigInteger>> previousList;
 
+    private UniverseSolverResult result;
     /**
      * Creates a new JUniverseAceProblemAdapter.
      */
@@ -289,6 +293,42 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
 
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.core.IUniverseSolver#addSearchListener(fr.univartois.cril.juniverse.listener.IUniverseSearchListener)
+     */
+    @Override
+    public void addSearchListener(IUniverseSearchListener listener) {
+        var observer = new AceSearchListenerAdapter(listener, this);
+
+        getHead().getSolver().observersOnSolution.add(observer);
+        getHead().getSolver().observersOnAssignments.add(observer);
+        getHead().getSolver().observersOnConflicts.add(observer);
+        getHead().getSolver().observersOnRuns.add(observer);
+        getHead().getSolver().observersOnSolving.add(observer);
+        getHead().getSolver().observersOnDecisions.add(observer);
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.core.IUniverseSolver#removeSearchListener(fr.univartois.cril.juniverse.listener.IUniverseSearchListener)
+     */
+    @Override
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public void removeSearchListener(IUniverseSearchListener listener) {
+        Predicate p = l -> (l instanceof AceSearchListenerAdapter)
+                && (((AceSearchListenerAdapter) l).getAdaptee() == listener);
+
+        getHead().getSolver().observersOnSolution.removeIf(p);
+        getHead().getSolver().observersOnAssignments.removeIf(p);
+        getHead().getSolver().observersOnConflicts.removeIf(p);
+        getHead().getSolver().observersOnRuns.removeIf(p);
+        getHead().getSolver().observersOnSolving.removeIf(p);
+        getHead().getSolver().observersOnDecisions.removeIf(p);
+    }
+
     @Override
     public void setTimeout(long arg0) {
         setTimeoutMs(arg0 * 1000);
@@ -348,8 +388,8 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
 
     @Override
     public UniverseSolverResult solve() {
-        var v = getHead().isSatisfiable();
-        return v;
+        result = getHead().isSatisfiable();
+        return result;
     }
 
     @Override
@@ -381,11 +421,18 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             assumpts.add(new Assumption(id, assumpt.isEqual(),
                     assumpt.getValue().intValueExact()));
         }
-        var v = getHead().isSatisfiable(assumpts);
-        System.out.println(v + " from ace");
-        return v;
+        result = getHead().isSatisfiable(assumpts);
+        return result;
+    }
 
 
+    /**
+     * Gives the result of this JUniverseAceProblemAdapter.
+     *
+     * @return This JUniverseAceProblemAdapter's result.
+     */
+    UniverseSolverResult getResult() {
+        return result;
     }
 
     @Override
@@ -1746,10 +1793,10 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
     }
 
     @Override
-    public void valueHeuristicStatic(List<String> vars, List<? extends Number> order) {
-        getHead().xcsp3.addConstraintsToAdd(
-                p -> p.staticValHeuristic(toVarArray(vars), toIntArray(order)));
-    }
+	public void valueHeuristicStatic(List<String> vars, List<? extends Number> order) {
+		getHead().xcsp3.addConstraintsToAdd(p->p.staticValHeuristic(toVarArray(vars), toIntArray(order)));
+	}
+
 
     /**
      * Creates an array of {@code int} values from a List of {@link Number}.
@@ -3877,34 +3924,45 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void setLogStream(OutputStream stream) {
-        // TODO Auto-generated method stub
+	@Override
+	public void setLogStream(OutputStream stream) {
+        throw new UnsupportedOperationException();
+	}
 
-    }
-
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.core.IUniverseSolver#getAuxiliaryVariables()
+     */
     @Override
     public List<String> getAuxiliaryVariables() {
-        // TODO Auto-generated method stub.
-        return null;
+        throw new UnsupportedOperationException();
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.core.IUniverseSolver#checkSolution()
+     */
     @Override
     public boolean checkSolution() {
-        // TODO Auto-generated method stub.
-        return false;
+        throw new UnsupportedOperationException();
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.univartois.cril.juniverse.core.IUniverseSolver#checkSolution(java.util.Map)
+     */
     @Override
     public boolean checkSolution(Map<String, BigInteger> assignment) {
-        // TODO Auto-generated method stub.
-        return false;
+        throw new UnsupportedOperationException();
     }
 
-    @Override
-    public List<IUniverseConstraint> getConstraints() {
-        return Arrays.stream(getHead().getSolver().problem.constraints).map(
-                JUniverseAceConstraintAdapter::new).collect(Collectors.toList());
-    }
+	@Override
+	public List<IUniverseConstraint> getConstraints() {
+		return Stream.of(getHead().getSolver().problem.constraints).map(JUniverseAceConstraintAdapter::new).collect(Collectors.toList());
+	}
+
 
 }
