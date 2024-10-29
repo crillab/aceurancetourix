@@ -2445,7 +2445,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             var solution = solution();
             String stringSolution = solution.stream().map(BigInteger::toString).collect(
                     Collectors.joining(" "));
-            getHead().getSolver().warmStarter = new WarmStarter(stringSolution, head.solver);
+            getHead().getSolver().warmStarter = head.solver.new WarmStarter(stringSolution, head.solver);
         }
     }
 
@@ -2456,7 +2456,7 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             var solution = solution();
             String stringSolution = solution.stream().map(BigInteger::toString).collect(
                     Collectors.joining(" "));
-            getHead().getSolver().warmStarter = new WarmStarter(stringSolution, head.solver);
+            getHead().getSolver().warmStarter = head.solver.new WarmStarter(stringSolution, head.solver);
         }
     }
 

@@ -16,7 +16,7 @@ apply plugin: "maven-publish"
  **********************/
 
 group = "fr.cril"
-version = "0.1.18"
+version = "0.1.19"
 
 def outDir = "${rootDir}/dist"
 def jarDir = "${outDir}/home"
@@ -40,7 +40,7 @@ repositories {
 }
 
 dependencies {
-    implementation files("lib/ace-2.1.jar")
+    implementation files("lib/ace-2.4.jar")
     implementation files("lib/xcsp3-tools-2.3.jar")
     implementation group: 'fr.cril', name:'juniverse', version: '0.2.14'
 
