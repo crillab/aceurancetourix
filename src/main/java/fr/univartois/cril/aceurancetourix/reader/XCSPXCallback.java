@@ -35,7 +35,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.IntStream;
 
+import static org.xcsp.common.Types.TypeFlag.UNCLEAN_TUPLES;
 import org.xcsp.common.Condition;
 import org.xcsp.common.Condition.ConditionIntset;
 import org.xcsp.common.Condition.ConditionIntvl;
@@ -70,6 +72,7 @@ import fr.univartois.cril.juniverse.csp.operator.UniverseBooleanOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseRelationalOperator;
 import fr.univartois.cril.juniverse.csp.operator.UniverseSetBelongingOperator;
+import variables.Variable;
 
 /**
  * The XCSPXCallback is an implementation of {@link XCallbacks2} that hides all
@@ -1076,7 +1079,6 @@ final class XCSPXCallback implements XCallbacks2 {
     @Override
     public void buildCtrExtension(String id, XVarInteger x, int[] values, boolean positive,
             Set<TypeFlag> flags) {
-
         if (positive) {
             listener.addSupport(x.id(), toBigInteger(values));
         } else {

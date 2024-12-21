@@ -28,6 +28,7 @@ import static fr.univartois.cril.juniverse.csp.intension.UniverseIntensionConstr
 import static fr.univartois.cril.juniverse.csp.intension.UniverseIntensionConstraintFactory.neq;
 import static fr.univartois.cril.juniverse.csp.intension.UniverseIntensionConstraintFactory.unary;
 import static fr.univartois.cril.juniverse.csp.intension.UniverseIntensionConstraintFactory.variable;
+import static org.xcsp.common.Types.TypeFramework.values;
 import static utility.Kit.control;
 
 import java.io.File;
@@ -45,6 +46,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.IntStream;
 
 import org.xcsp.common.Condition;
 import org.xcsp.common.Condition.ConditionIntset;
@@ -1366,7 +1368,11 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
         var t = new int[arg1.size()];
         toTuples(arg1, t);
 
-        getHead().xcsp3.addConstraintsToAdd(p -> p.extension((Variable) toVar(arg0), t, true));
+        getHead().xcsp3.addConstraintsToAdd(p -> {
+            var y = (Variable) toVar(arg0);
+		    var tuple = IntStream.of(t).filter(v -> y.dom.containsValue(v)).toArray();
+            p.extension(y, tuple, true);
+        });
     }
 
     @Override
@@ -1374,18 +1380,17 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             throws UniverseContradictionException {
         int[][] t;
         boolean starred;
-        if (arg1 == previousList) {
-            t = previousArray;
-            starred = previousStarred;
-        } else {
-            t = new int[arg1.size()][arg1.get(0).size()];
-            starred = toTuples(arg1, t);
-            previousList = arg1;
-            previousArray = t;
-            previousStarred = starred;
-        }
-
-        getHead().xcsp3.addConstraintsToAdd(p -> p.extension(toVarArray(arg0), t, true, starred));
+        t = new int[arg1.size()][arg1.get(0).size()];
+        starred = toTuples(arg1, t);
+        previousList = arg1;
+        previousArray = t;
+        previousStarred = starred;
+        getHead().xcsp3.addConstraintsToAdd(p -> {
+            var array = toVarArray(arg0);
+            Variable[] scp = Stream.of(array).map(x -> (Variable) x).toArray(Variable[]::new);
+		    var tuple = Stream.of(t).filter(x -> Variable.isValidTuple(scp, x, false)).toArray(int[][]::new);
+            p.extension(array, tuple, true, starred);
+        });
 
     }
 
@@ -1395,7 +1400,12 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
         var t = new int[arg1.size()];
         toTuples(arg1, t);
 
-        getHead().xcsp3.addConstraintsToAdd(p -> p.extension((Variable) toVar(arg0), t, false));
+
+        getHead().xcsp3.addConstraintsToAdd(p -> {
+            var y = (Variable) toVar(arg0);
+		    var tuple = IntStream.of(t).filter(v -> y.dom.containsValue(v)).toArray();
+            p.extension(y, tuple, false);
+        });
 
     }
 
@@ -1404,17 +1414,17 @@ public class JUniverseAceProblemAdapter implements IUniverseCSPSolver, IUniverse
             throws UniverseContradictionException {
         int[][] t;
         boolean starred;
-        if (arg1 == previousList) {
-            t = previousArray;
-            starred = previousStarred;
-        } else {
-            t = new int[arg1.size()][arg1.get(0).size()];
-            starred = toTuples(arg1, t);
-            previousList = arg1;
-            previousArray = t;
-            previousStarred = starred;
-        }
-        getHead().xcsp3.addConstraintsToAdd(p -> p.extension(toVarArray(arg0), t, false, starred));
+        t = new int[arg1.size()][arg1.get(0).size()];
+        starred = toTuples(arg1, t);
+        previousList = arg1;
+        previousArray = t;
+        previousStarred = starred;
+        getHead().xcsp3.addConstraintsToAdd(p -> {
+            var array = toVarArray(arg0);
+            Variable[] scp = Stream.of(array).map(x -> (Variable) x).toArray(Variable[]::new);
+		    var tuple = Stream.of(t).filter(x -> Variable.isValidTuple(scp, x, false)).toArray(int[][]::new);
+            p.extension(array, tuple, false, starred);
+        });
 
     }
 

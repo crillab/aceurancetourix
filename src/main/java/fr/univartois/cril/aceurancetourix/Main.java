@@ -62,9 +62,9 @@ public class Main {
         solver.loadInstance(args[0]);
         //solver.setBounds(BigInteger.valueOf(74), BigInteger.valueOf(862));
         System.out.println(solver.solve());
-        solver.reset();
-        solver.setUpperBound(BigInteger.valueOf(148));
-        System.out.println(solver.solve());
+        //solver.reset();
+        //solver.setUpperBound(BigInteger.valueOf(148));
+        //System.out.println(solver.solve());
         
     }
 
